@@ -1,5 +1,6 @@
 package com.example.teamproject2025.dto.User;
 
+import com.example.teamproject2025.entity.User.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

@@ -16,17 +16,20 @@ public class UserCreateRequestDto {
     private String password;
     private String name;
     private String email;
+    private String universityName;
     private String studentId;
-    private Integer universityId; // university entity 로 받아와야 함
+    private String profileImage = "https://i.sstatic.net/l60Hf.png";
 
-    public User toEntity() {
+    // DTO → Entity 변환 메서드
+    public User toEntity(Integer universityId, String encodedPassword) {
         return User.builder()
-                .username(username)
-                .password(password)
-                .name(name)
-                .email(email)
-                .studentId(studentId)
+                .username(this.username)
+                .password(encodedPassword) // 암호화된 비밀번호
+                .name(this.name)
+                .email(this.email)
                 .universityId(universityId)
+                .studentId(studentId)
+                .profileImage(profileImage)
                 .build();
     }
 }

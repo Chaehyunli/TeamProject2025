@@ -1,33 +1,26 @@
-//package com.example.teamproject2025.controller;
-//
-//import com.example.teamproject2025.dto.UserDto;
-//import com.example.teamproject2025.entity.User;
-//import com.example.teamproject2025.repository.UserRepository;
-//import org.springframework.web.bind.annotation.*;
-//
-//import java.util.List;
-//
-//@RestController
-//@RequestMapping("/api/users") // API 엔드포인트
-//public class UserController {
-//
-//    private final UserRepository userRepository;
-//
-//    public UserController(UserRepository userRepository) {
-//        this.userRepository = userRepository;
-//    }
-//
-//    @PostMapping
-//    public String createUser(@RequestBody UserDto userDto) {
-//        try {
-//            // DTO -> 엔티티 변환
-//            User user = new User();
-//            user.setName(userDto.getName());
-//            user.setEmail(userDto.getEmail());
-//            userRepository.save(user);
-//            return "사용자 정보가 성공적으로 저장되었습니다!";
-//        } catch (Exception e) {
-//            return "저장 중 오류가 발생했습니다: " + e.getMessage();
-//        }
-//    }
-//}
+package com.example.teamproject2025.controller.User;
+
+import com.example.teamproject2025.dto.Common.CommonResponseDto;
+import com.example.teamproject2025.dto.User.UserCreateRequestDto;
+import com.example.teamproject2025.dto.User.UserDetailResponseDto;
+import com.example.teamproject2025.service.User.UserService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/api/v1/users") // API 엔드포인트
+public class UserController {
+
+    private final UserService userService;
+
+    // 사용자 등록
+    @PostMapping("/register")
+    public ResponseEntity<CommonResponseDto<UserDetailResponseDto>> register(@RequestBody UserCreateRequestDto userCreateRequestDto) {
+        UserDetailResponseDto userResponse = userService.register(userCreateRequestDto);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(CommonResponseDto.success(HttpStatus.CREATED.value(), "User registered successfully", userResponse));
+    }
+}

@@ -24,19 +24,39 @@ repositories {
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-websocket'
-	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-	compileOnly 'org.projectlombok:lombok'
-	runtimeOnly 'com.mysql:mysql-connector-j'
-	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6:3.1.1.RELEASE'
+	// Spring Boot 기본 Starter
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa' // JPA 관련 의존성
+	implementation 'org.springframework.boot:spring-boot-starter-web' // Web 관련 의존성 (REST API)
+	implementation 'org.springframework.boot:spring-boot-starter-websocket' // WebSocket 관련 의존성
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf' // Thymeleaf 템플릿 엔진
+
+	// Lombok
+	compileOnly 'org.projectlombok:lombok' // Lombok 의존성
+	annotationProcessor 'org.projectlombok:lombok' // Lombok Annotation Processor
+
+	// Database 관련
+	runtimeOnly 'com.mysql:mysql-connector-j' // MySQL Connector
+
+	// Spring Security
+	implementation 'org.springframework.boot:spring-boot-starter-security' // Spring Security 기본 Starter
+	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6:3.1.1.RELEASE' // Thymeleaf와 Spring Security 통합
+
+	// Redis 관련
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis' // Spring Data Redis Starter
+
+	// 이메일 관련
+	implementation 'org.springframework.boot:spring-boot-starter-mail' // JavaMailSender
+
+	// 테스트 관련
+	testImplementation 'org.springframework.boot:spring-boot-starter-test' // Spring Boot 테스트 관련 Starter
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher' // JUnit 플랫폼 런처
+	testImplementation 'org.testcontainers:testcontainers:1.18.0' // Testcontainers 의존성
+	testImplementation 'org.testcontainers:junit-jupiter:1.18.0' // JUnit 5와 Testcontainers 통합
+	testCompileOnly 'org.projectlombok:lombok'// Test 를 위한 Lombok
+	testAnnotationProcessor 'org.projectlombok:lombok'
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+	jvmArgs '-Xshare:off' // JVM 아규먼트 설정
 }
