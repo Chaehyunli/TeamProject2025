@@ -1,10 +1,7 @@
 package com.example.teamproject2025.entity.User;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -12,7 +9,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "users")
@@ -51,6 +48,7 @@ public class User {
 
     @UpdateTimestamp
     private LocalDateTime updatedAt; // 계정 업데이트 시간 for users/update
+
 
 }
 
