@@ -19,15 +19,14 @@ public class RedisEmailVerificationRepository {
 
     // Token 을 TTL (Time To Live -> 생명주기) 적용해서 저장
 
-    public void saveToken(String token, String email) {
-        HashOperations<String, String, String> hashOps = redisTemplate.opsForHash();
-        hashOps.put(TOKEN_HASH_KEY, token, email);
-        redisTemplate.expire(TOKEN_HASH_KEY, EXPIRATION_TIME, TimeUnit.MINUTES); // TTL 설정
+    // 인증번호 저장 (email -> verificationCode)
+    public void saveVerificationCode(String email, String verificationCode) {
+        redisTemplate.opsForValue().set(email, verificationCode, EXPIRATION_TIME, TimeUnit.MINUTES);
     }
 
-    public String getEmailByToken(String token) {
-        HashOperations<String, String, String> hashOps = redisTemplate.opsForHash();
-        return hashOps.get(TOKEN_HASH_KEY, token);
+    // 인증번호 조회
+    public String getVerificationCode(String email) {
+        return redisTemplate.opsForValue().get(email);
     }
 
     public void deleteToken(String token) {
@@ -35,7 +34,8 @@ public class RedisEmailVerificationRepository {
         hashOps.delete(TOKEN_HASH_KEY, token);
     }
 
-    public void deleteAllTokens() { // Admin 관점에서 모든 토큰 삭제를 할 일이 올 수도 있음
-        redisTemplate.delete(TOKEN_HASH_KEY);
+    // 인증번호 삭제
+    public void deleteVerificationCode(String email) {
+        redisTemplate.delete(email);
     }
 }

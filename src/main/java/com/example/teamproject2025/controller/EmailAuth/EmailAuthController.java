@@ -11,7 +11,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/email")
+@RequestMapping("/api/v1/auth/email")
 @RequiredArgsConstructor
 public class EmailAuthController {
     private final EmailService emailService;
@@ -27,7 +27,7 @@ public class EmailAuthController {
     // 이메일 인증 확인
     @PostMapping("/verify")
     public ResponseEntity<CommonResponseDto<Object>> verifyEmail(@RequestBody @Validated EmailVerificationDto request) {
-        emailService.verifyEmail(request.getToken());
+        emailService.verifyEmail(request.getEmail(), request.getVerificationCode());
         return ResponseEntity.status(HttpStatus.OK)
                 .body(CommonResponseDto.success(HttpStatus.OK.value(), "Email verified successfully", null));
     }

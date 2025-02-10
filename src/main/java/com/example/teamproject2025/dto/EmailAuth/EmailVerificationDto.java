@@ -10,5 +10,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EmailVerificationDto {
-    private String token;
+    private String email; // 이메일
+    private String verificationCode; // 6자리 인증번호
 }

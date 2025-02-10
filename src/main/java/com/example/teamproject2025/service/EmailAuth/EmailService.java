@@ -9,6 +9,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import java.util.Random;
 import java.util.UUID;
 
 @Service
@@ -16,29 +17,36 @@ import java.util.UUID;
 public class EmailService {
 
     private final JavaMailSender mailSender;
-    private final RedisEmailVerificationRepository tokenRepository;
     private final UserRepository userRepository;
+    private final RedisEmailVerificationRepository redisEmailVerificationRepository;
 
     private static final String EMAIL_SUBJECT = "Email Verification";
 
     // 이메일 인증 요청 메서드
     public void sendVerificationEmail(String email){
         // 사용자 확인
-        User user = (User) userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+//        User user = (User) userRepository.findByEmail(email)
+//                .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        String token = UUID.randomUUID().toString(); // 인증 토큰 생성
-        tokenRepository.saveToken(token, email); // Redis에 토큰 저장
+        String verificationCode = generateVerificationCode(); // 6자리 인증번호 생성
+        redisEmailVerificationRepository.saveVerificationCode(email, verificationCode); // Redis에 인증번호 저장
 
-        String emailBody = generateVerificationEmailBody(token);
+        String emailBody = generateVerificationEmailBody(verificationCode);
 
         sendEmail(email, EMAIL_SUBJECT, emailBody);
     }
 
     // 이메일 본문 생성 메서드
-    private String generateVerificationEmailBody(String token) {
-        return "아래 링크를 클릭하여 이메일을 인증하세요: \n"
-                + "http://localhost:8080/api/v1/auth/email/verify?token=" + token;
+    private String generateVerificationEmailBody(String verificationCode) {
+        return "아래 인증번호를 입력하여 이메일을 인증하세요:\n\n" + verificationCode + "\n\n"
+                + "인증번호는 20분간 유효합니다.";
+    }
+
+    // 6자리 인증번호 생성
+    private String generateVerificationCode() {
+        Random random = new Random();
+        int code = 100000 + random.nextInt(900000); // 100000 ~ 999999 사이 숫자 생성
+        return String.valueOf(code);
     }
 
     // 이메일 전송 부 구현
@@ -51,12 +59,12 @@ public class EmailService {
     }
 
     // 이메일 인증 확인
-    public void verifyEmail(String token){
+    public void verifyEmail(String email, String verificationCode){
         // Redis 에서 token 을 확인해야 함
-        String email = tokenRepository.getEmailByToken(token); // 토큰으로 이메일 찾음
-        if (email == null) {
-            throw new IllegalArgumentException("Invalid or expired token");
-         }
+        String savedCode = redisEmailVerificationRepository.getVerificationCode(email);
+        if (savedCode == null || !savedCode.equals(verificationCode)) {
+            throw new IllegalArgumentException("Invalid or expired verification code");
+        }
 
         // 사용자 인증 상태를 User 데이터베이스에 업데이트 해야함 (의문: 이거에도 updated_at 을 적용해야하나)
         User user = (User) userRepository.findByEmail(email) // 아니 싀발 왜 자꾸 캐스팅 안하면 에러내는거야
@@ -82,7 +90,8 @@ public class EmailService {
 
         userRepository.save(updatedUser);
 
-        tokenRepository.deleteToken(token); // Redis에서 토큰 삭제
+        // 인증번호 삭제
+        redisEmailVerificationRepository.deleteVerificationCode(email);
     }
 
 }
