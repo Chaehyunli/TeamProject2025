@@ -39,7 +39,7 @@ public class EmailService {
     // 이메일 본문 생성 메서드
     private String generateVerificationEmailBody(String verificationCode) {
         return "아래 인증번호를 입력하여 이메일을 인증하세요:\n\n" + verificationCode + "\n\n"
-                + "인증번호는 20분간 유효합니다.";
+                + "인증번호는 5분간 유효합니다.";
     }
 
     // 6자리 인증번호 생성

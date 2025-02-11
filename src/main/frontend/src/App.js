@@ -64,31 +64,18 @@
 //
 //
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-// import UserForm from "./components/UserForm";
+// import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import EmailVerificationForm from "./components/EmailVerificationForm";
 
 function App() {
     return (
         <Router> {/* BrowserRouter 대신 Router 사용 */}
-            <nav style={navStyle}>
-                <Link to="/">사용자 입력</Link> | <Link to="/email-verification">이메일 인증</Link>
-            </nav>
-
             <Routes>
-                {/*<Route path="/" element={<UserForm />} />*/}
                 <Route path="/email-verification" element={<EmailVerificationForm />} />
             </Routes>
         </Router>
     );
 }
-
-// 네비게이션 바 스타일
-const navStyle = {
-    marginBottom: "20px",
-    padding: "10px",
-    background: "#f0f0f0",
-    textAlign: "center",
-};
 
 export default App;
