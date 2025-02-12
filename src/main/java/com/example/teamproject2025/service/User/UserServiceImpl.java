@@ -2,6 +2,7 @@ package com.example.teamproject2025.service.User;
 
 import com.example.teamproject2025.dto.User.UserCreateRequestDto;
 import com.example.teamproject2025.dto.User.UserDetailResponseDto;
+import com.example.teamproject2025.dto.User.UserResponseDto;
 import com.example.teamproject2025.dto.User.UserUpdateRequestDto;
 import com.example.teamproject2025.entity.User.User;
 import com.example.teamproject2025.repository.User.UniversityRepository;
@@ -23,9 +24,9 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public UserDetailResponseDto register(UserCreateRequestDto dto) {
+    public UserResponseDto register(UserCreateRequestDto dto) {
         // 1. universityName으로 universityId 조회 -> 서비스 가능한 대학교인가?
-        Integer universityId = universityRepository.findByUniversityName(dto.getUniversityName())
+        Long universityId = universityRepository.findByUniversityName(dto.getUniversityName())
                 .orElseThrow(() -> new IllegalArgumentException("University not found: " + dto.getUniversityName()))
                 .getUniversityId();
 
@@ -42,19 +43,33 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.save(dto.toEntity(universityId, encodedPassword));
 
         // 5. Client 에게 응답할 DTO Build
-        return UserDetailResponseDto.builder()
+//        return UserResponseDto.builder()
+//                .username(user.getUsername())
+//                .studentId(Integer.parseInt(user.getStudentId()))
+//                .university(dto.getUniversityName())
+//                .email(user.getEmail())
+//                .profileImage(user.getProfileImage())
+//                .joinedClubs(List.of())
+//                .managedClubs(List.of())
+//                .build();
+
+        return UserResponseDto.builder()
+                .userId(user.getUserId())
                 .username(user.getUsername())
-                .studentId(Integer.parseInt(user.getStudentId()))
-                .university(dto.getUniversityName())
                 .email(user.getEmail())
+                .name(user.getName())
+                .studentId(user.getStudentId())
+                .universityId(user.getUniversityId())
+                .universityName(dto.getUniversityName())
+                .isEmailVerified(user.getIsEmailVerified())
+                .isUniVerified(user.getIsUniVerified())
                 .profileImage(user.getProfileImage())
-                .joinedClubs(List.of())
-                .managedClubs(List.of())
+                .createdAt(user.getCreatedAt())
                 .build();
     }
 
     @Override
-    public UserDetailResponseDto update(Long userId, UserUpdateRequestDto dto){
+    public UserResponseDto update(Long userId, UserUpdateRequestDto dto){
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
@@ -62,10 +77,10 @@ public class UserServiceImpl implements UserService {
 
         userRepository.save(updatedUser);
 
-        return UserDetailResponseDto.builder()
+        return UserResponseDto.builder()
                 .username(updatedUser.getUsername())
-                .studentId(Integer.parseInt(updatedUser.getStudentId()))
-                .university(null) // 추가 로직 필요 시 처리
+                .studentId(updatedUser.getStudentId())
+                .universityName(null) // 추가 로직 필요 시 처리
                 .email(updatedUser.getEmail())
                 .profileImage(updatedUser.getProfileImage())
                 .build();

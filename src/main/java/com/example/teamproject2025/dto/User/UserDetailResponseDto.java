@@ -14,13 +14,12 @@ import java.util.List;
 @AllArgsConstructor
 public class UserDetailResponseDto {
     private String username;
-    private Integer studentId;
-    private String university;
+    private String studentId;
+    private String universityName;
     private String email;
     private String profileImage;
     private List<ClubInfoDto> joinedClubs;  // 가입한 동아리 정보
     private List<ClubInfoDto> managedClubs; // 관리하는 동아리 정보
-
 }
 
 @Data

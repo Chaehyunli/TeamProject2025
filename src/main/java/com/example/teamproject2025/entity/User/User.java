@@ -21,7 +21,7 @@ public class User {
     private Long userId; // 사용자 고유 ID
 
     @Column(nullable = true)
-    private Integer universityId; // 소속 대학교 ID (nullable, foreign key)
+    private Long universityId; // 소속 대학교 ID (nullable, foreign key)
 
     @Column(nullable = false, unique = true, length = 50)
     private String username; // 사용자 아이디

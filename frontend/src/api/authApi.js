@@ -15,7 +15,8 @@ export const requestVerificationCode = async (email) => {
 // 인증 코드 검증 요청
 export const verifyCode = async (email, verificationCode) => {
     try {
-        await axios.post(`${API_BASE_URL}/email/verify`, { email, verificationCode });
+        const response = await axios.post(`${API_BASE_URL}/email/verify`, { email, verificationCode });
+        return response.data;
     } catch (error) {
         console.error("인증 코드 검증 오류: ", error);
         throw error;

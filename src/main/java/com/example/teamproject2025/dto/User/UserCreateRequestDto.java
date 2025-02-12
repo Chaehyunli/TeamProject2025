@@ -22,7 +22,7 @@ public class UserCreateRequestDto {
     private Boolean isEmailVerified = false; // Ref1
 
     // DTO → Entity 변환 메서드
-    public User toEntity(Integer universityId, String encodedPassword) {
+    public User toEntity(Long universityId, String encodedPassword) {
         return User.builder()
                 .username(this.username)
                 .password(encodedPassword) // 암호화된 비밀번호

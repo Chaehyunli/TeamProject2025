@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 public class University {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer universityId; // 대학교 아이디
+    private Long universityId; // 대학교 아이디
 
     @Column(nullable = false , unique = true, length = 100)
     private String universityName; // 대학교 이름

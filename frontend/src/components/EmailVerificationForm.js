@@ -24,10 +24,12 @@ const EmailVerificationForm = () => {
     // 인증 코드 검증 요청
     const handleVerifyCode = async () => {
         try {
-            await verifyCode(email, verificationCode);
+            const response = await verifyCode(email, verificationCode);
             setMessage("✅ 이메일 인증이 완료되었습니다.");
             setTimer(0);
             setIsCodeSent(false);
+
+            onVerificationSuccess(response); // 부모 컴포넌트로 성공 전달
         } catch (error) {
             setMessage("❌ 인증 코드가 올바르지 않거나 만료되었습니다.");
             console.error(error);
