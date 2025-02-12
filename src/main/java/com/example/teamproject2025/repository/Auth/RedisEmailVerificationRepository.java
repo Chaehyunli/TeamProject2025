@@ -1,4 +1,4 @@
-package com.example.teamproject2025.repository.EmailAuth;
+package com.example.teamproject2025.repository.Auth;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;

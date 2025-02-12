@@ -1,4 +1,4 @@
-package com.example.teamproject2025.dto.EmailAuth;
+package com.example.teamproject2025.dto.Auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -53,6 +53,7 @@ public class UserServiceImpl implements UserService {
 //                .managedClubs(List.of())
 //                .build();
 
+        // 5. Client 에게 응답할 DTO Build
         return UserResponseDto.builder()
                 .userId(user.getUserId())
                 .username(user.getUsername())

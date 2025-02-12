@@ -1,15 +1,13 @@
-package com.example.teamproject2025.service.EmailAuth;
+package com.example.teamproject2025.service.Auth;
 
-import com.example.teamproject2025.dto.EmailAuth.EmailResponseDto;
-import com.example.teamproject2025.repository.EmailAuth.RedisEmailVerificationRepository;
+import com.example.teamproject2025.dto.Auth.EmailResponseDto;
+import com.example.teamproject2025.repository.Auth.RedisEmailVerificationRepository;
 import com.example.teamproject2025.repository.User.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import java.security.SecureRandom;
-
-import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +21,7 @@ public class EmailServiceImpl implements EmailService {
     private static final String EMAIL_SUBJECT = "Email Verification";
 
     // 이메일 인증 요청 메서드
+    @Override
     public void sendVerificationEmail(String email){
 
         String verificationCode = generateVerificationCode(); // 6자리 인증번호 생성
@@ -46,6 +45,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
     // 이메일 전송 부 구현
+    @Override
     public void sendEmail(String to, String subject, String text) {
         try {
             SimpleMailMessage message = new SimpleMailMessage();
@@ -59,6 +59,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
     // 이메일 인증 확인
+    @Override
     public EmailResponseDto verifyEmail(String email, String verificationCode){
         try {
             String savedCode = redisEmailVerificationRepository.getVerificationCode(email);

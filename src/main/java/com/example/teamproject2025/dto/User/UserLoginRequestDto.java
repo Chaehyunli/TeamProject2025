@@ -1,4 +1,4 @@
-package com.example.teamproject2025.dto.EmailAuth;
+package com.example.teamproject2025.dto.User;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class EmailResponseDto {
-    private String email;
-    private Boolean isEmailVerified;
+public class UserLoginRequestDto {
+    private String username;
+    private String password;
 }
