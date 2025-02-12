@@ -34,8 +34,8 @@ public class UserServiceImpl implements UserService {
 
         // 3. 이메일이 인증된다면, isVerified = true 인 dto 를 불러온다. Ref1,2,3
         if (!dto.getIsEmailVerified()) {
-//            throw new Ille("이메일 인증이 완료되지 않았습니다.");
             System.out.println("이메일 인증이 완료되지 않았습니다."); // Temporary
+            throw new IllegalArgumentException("Email is not Verified");
         }
 
         // 4. DTO → Entity 변환 및 저장
