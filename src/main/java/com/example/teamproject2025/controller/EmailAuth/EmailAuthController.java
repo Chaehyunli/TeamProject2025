@@ -2,6 +2,7 @@ package com.example.teamproject2025.controller.EmailAuth;
 
 import com.example.teamproject2025.dto.Common.CommonResponseDto;
 import com.example.teamproject2025.dto.EmailAuth.EmailRequestDto;
+import com.example.teamproject2025.dto.EmailAuth.EmailResponseDto;
 import com.example.teamproject2025.dto.EmailAuth.EmailVerificationDto;
 import com.example.teamproject2025.service.EmailAuth.EmailService;
 import lombok.RequiredArgsConstructor;
@@ -27,8 +28,8 @@ public class EmailAuthController {
     // 이메일 인증 확인
     @PostMapping("/verify")
     public ResponseEntity<CommonResponseDto<Object>> verifyEmail(@RequestBody @Validated EmailVerificationDto request) {
-        emailService.verifyEmail(request.getEmail(), request.getVerificationCode());
+        EmailResponseDto emailResponseDto = emailService.verifyEmail(request.getEmail(), request.getVerificationCode());
         return ResponseEntity.status(HttpStatus.OK)
-                .body(CommonResponseDto.success(HttpStatus.OK.value(), "Email verified successfully", null));
+                .body(CommonResponseDto.success(HttpStatus.OK.value(), "Email verified successfully", emailResponseDto));
     }
 }

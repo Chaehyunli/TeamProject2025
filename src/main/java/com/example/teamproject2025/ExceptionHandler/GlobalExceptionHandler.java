@@ -28,7 +28,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<CommonResponseDto<Void>> handleIllegalArgumentException(IllegalArgumentException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-//                .body(CommonResponseDto.error(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
-                .body(CommonResponseDto.error(HttpStatus.BAD_REQUEST.value(), "Sibar"));
+                .body(CommonResponseDto.error(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
+    }
+
+    // Run Time Error
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<CommonResponseDto<Void>> handleRuntimeException(RuntimeException e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(CommonResponseDto.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()));
     }
 }

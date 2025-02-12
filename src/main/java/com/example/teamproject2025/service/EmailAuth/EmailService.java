@@ -1,5 +1,6 @@
 package com.example.teamproject2025.service.EmailAuth;
 
+import com.example.teamproject2025.dto.EmailAuth.EmailResponseDto;
 import com.example.teamproject2025.dto.User.UserUpdateRequestDto;
 import com.example.teamproject2025.entity.User.User;
 import com.example.teamproject2025.repository.EmailAuth.RedisEmailVerificationRepository;
@@ -8,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+import java.security.SecureRandom;
 
 import java.util.Random;
 import java.util.UUID;
@@ -19,6 +21,7 @@ public class EmailService {
     private final JavaMailSender mailSender;
     private final UserRepository userRepository;
     private final RedisEmailVerificationRepository redisEmailVerificationRepository;
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
     private static final String EMAIL_SUBJECT = "Email Verification";
 
@@ -42,31 +45,47 @@ public class EmailService {
     // 6자리 인증번호 생성
     private String generateVerificationCode() {
         Random random = new Random();
-        int code = 100000 + random.nextInt(900000); // 100000 ~ 999999 사이 숫자 생성
+        int code = 100000 + SECURE_RANDOM.nextInt(900000); // 100000 ~ 999999 사이 숫자 생성
         return String.valueOf(code);
     }
 
     // 이메일 전송 부 구현
     public void sendEmail(String to, String subject, String text) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(to);
-        message.setSubject(subject);
-        message.setText(text);
-        mailSender.send(message);
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo(to);
+            message.setSubject(subject);
+            message.setText(text);
+            mailSender.send(message);
+        } catch (Exception e) {
+            throw new RuntimeException("Send Mail is Failed: " + e.getMessage(), e);
+        }
     }
 
     // 이메일 인증 확인
-    public void verifyEmail(String email, String verificationCode){
-        // Redis 에서 token 을 확인해야 함
-        String savedCode = redisEmailVerificationRepository.getVerificationCode(email);
-        if (savedCode == null || !savedCode.equals(verificationCode)) {
-            throw new IllegalArgumentException("Invalid or expired verification code");
+    public EmailResponseDto verifyEmail(String email, String verificationCode){
+        try {
+            String savedCode = redisEmailVerificationRepository.getVerificationCode(email);
+            if (savedCode == null) { // Ref3
+                throw new IllegalArgumentException("Invalid or Expired Verification Code");
+            }
+
+            if (!savedCode.equals(verificationCode)) {
+                throw new IllegalArgumentException("Verification Code is not matched");
+            }
+
+            // 인증번호 삭제
+            redisEmailVerificationRepository.deleteVerificationCode(email);
+
+            return EmailResponseDto.builder()
+                    .email(email)
+                    .isEmailVerified(true)
+                    .build();
+
+        } catch (RuntimeException e) {
+             throw new RuntimeException("Email Verification is Failed: " + e.getMessage(), e);
         }
-
-        // 인증번호 삭제
-        redisEmailVerificationRepository.deleteVerificationCode(email);
     }
-
 }
 
 /* 💡Descriptions
@@ -117,5 +136,15 @@ public class EmailService {
 *           * https://skatpdnjs.tistory.com/13
 *           * https://velog.io/@kjh1232100/Java-setter-vs-builder
 *           * https://choihjhj.tistory.com/entry/jpa-JUnit-테스트시-Setter-대신-Builder-간편-사용
+*
+*     Ref3. 예외처리를 좀 더 세분화했다.
+*
+*           기존코드 ::
+*               if (savedCode == null || !savedCode.equals(verificationCode)) {
+                    throw new IllegalArgumentException("Invalid or expired verification code");
+                }
+*
+*           이렇게 했을 떄, API 테스트 과정에서 인증코드가 불일치하는건지 Redis 에 저장이 안된건지 판단이 어려웠다.
+*           이렇게 분리하면, 단순 잘못 입력인지 아니면 Redis 문제인지 쉽게 파악할 수 있다.
 * */
 
