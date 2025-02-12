@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import { requestVerificationCode, verifyCode } from "../api/authApi";
 
 const EmailVerificationForm = () => {
     const [email, setEmail] = useState("");
@@ -9,9 +9,9 @@ const EmailVerificationForm = () => {
     const [timer, setTimer] = useState(300); // 5분 (300초)
 
     // 이메일 인증 요청
-    const requestVerificationCode = async () => {
+    const handleRequestVerificationCode = async () => {
         try {
-            await axios.post("http://localhost:8080/api/v1/auth/email", { email });
+            await requestVerificationCode(email);
             setIsCodeSent(true);
             setMessage("✅ 인증 코드가 이메일로 전송되었습니다.");
             setTimer(300);
@@ -22,14 +22,9 @@ const EmailVerificationForm = () => {
     };
 
     // 인증 코드 검증 요청
-    const verifyCode = async () => {
+    const handleVerifyCode = async () => {
         try {
-            await axios.post("http://localhost:8080/api/v1/auth/email/verify", {
-                email,
-                verificationCode,
-            });
-
-            // 인증 성공 시 UI 초기화
+            await verifyCode(email, verificationCode);
             setMessage("✅ 이메일 인증이 완료되었습니다.");
             setTimer(0);
             setIsCodeSent(false);
@@ -57,103 +52,43 @@ const EmailVerificationForm = () => {
     };
 
     return (
-        <div style={containerStyle}>
-            <div style={inputContainer}>
+        <div className="max-w-md mx-auto mt-12 p-6 text-center border border-gray-300 rounded-lg shadow-lg bg-white">
+            <div className="flex items-center gap-2 mb-3">
                 <input
                     type="email"
                     placeholder="이메일"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    style={inputStyle}
+                    className="flex-1 px-4 py-2 text-lg border border-gray-300 rounded-full bg-gray-100 focus:outline-none"
                     disabled={isCodeSent}
                 />
-                <button onClick={requestVerificationCode} style={buttonStyle}>
+                <button onClick={handleRequestVerificationCode} className="px-4 py-2 text-lg border border-gray-300 rounded-full bg-gray-100 hover:bg-gray-200 transition">
                     인증번호 발송
                 </button>
             </div>
 
             {isCodeSent && (
                 <>
-                    <div style={inputContainer}>
+                    <div className="flex items-center gap-2 mb-3">
                         <input
                             type="text"
                             placeholder="인증번호"
                             value={verificationCode}
                             onChange={(e) => setVerificationCode(e.target.value)}
-                            style={inputStyle}
+                            className="flex-1 px-4 py-2 text-lg border border-gray-300 rounded-full bg-gray-100 focus:outline-none"
                         />
-                        <button onClick={verifyCode} style={buttonStyle} disabled={timer === 0}>
+                        <button onClick={handleVerifyCode} className="px-4 py-2 text-lg border border-gray-300 rounded-full bg-gray-100 hover:bg-gray-200 transition" disabled={timer === 0}>
                             인증
                         </button>
-                        <span style={timerStyle}>{formatTime(timer)}</span>
+                        <span className="text-sm font-bold text-gray-600 min-w-[50px] text-right">{formatTime(timer)}</span>
                     </div>
-                    <p style={infoText}>*인증번호는 5분 이내에 입력해야 하며, 시간이 초과되면 다시 요청해야 합니다.</p>
+                    <p className="text-xs text-gray-500">*인증번호는 5분 이내에 입력해야 하며, 시간이 초과되면 다시 요청해야 합니다.</p>
                 </>
             )}
 
-            {message && <p style={messageStyle}>{message}</p>}
+            {message && <p className="mt-3 text-sm text-gray-700">{message}</p>}
         </div>
     );
 };
 
-// 스타일 정의
-const containerStyle = {
-    maxWidth: "400px",
-    margin: "40px auto",
-    padding: "20px",
-    textAlign: "center",
-    border: "1px solid #ddd",
-    borderRadius: "10px",
-    boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-    backgroundColor: "#fff",
-};
-
-const inputContainer = {
-    display: "flex",
-    alignItems: "center",
-    gap: "10px",
-    marginBottom: "10px",
-};
-
-const inputStyle = {
-    flex: 1,
-    padding: "12px",
-    fontSize: "16px",
-    borderRadius: "20px",
-    border: "1px solid #ccc",
-    backgroundColor: "#f9f9f9",
-    outline: "none",
-};
-
-const buttonStyle = {
-    padding: "12px",
-    backgroundColor: "#f9f9f9",
-    // color: "white",
-    fontSize: "16px",
-    border: "1px solid #ccc",
-    cursor: "pointer",
-    borderRadius: "20px",
-    transition: "0.3s",
-};
-
-const timerStyle = {
-    fontSize: "14px",
-    fontWeight: "bold",
-    color: "#666666",
-    minWidth: "50px",
-    textAlign: "right",
-};
-
-const messageStyle = {
-    marginTop: "10px",
-    fontSize: "14px",
-    color: "#333",
-};
-
-const infoText = {
-    fontSize: "12px",
-    color: "#777",
-};
-
 export default EmailVerificationForm;
-
