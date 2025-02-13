@@ -4,6 +4,7 @@ import com.example.teamproject2025.dto.Common.CommonResponseDto;
 import com.example.teamproject2025.dto.User.UserCreateRequestDto;
 import com.example.teamproject2025.dto.User.UserResponseDto;
 import com.example.teamproject2025.service.User.UserService;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,5 +23,12 @@ public class UserController {
         UserResponseDto userResponse = userService.register(userCreateRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(CommonResponseDto.success(HttpStatus.CREATED.value(), "User registered successfully", userResponse));
+    }
+
+    // 사용자 탈퇴 (이메일 인증 필수)
+    @DeleteMapping()
+    public ResponseEntity<CommonResponseDto<Void>> deleteUser(HttpSession session) {
+        session.setAttribute("deleted_mail_verified",true);
+        return userService.deleteUser(session);
     }
 }

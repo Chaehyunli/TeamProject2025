@@ -6,15 +6,15 @@ import com.example.teamproject2025.dto.Auth.EmailResponseDto;
 import com.example.teamproject2025.dto.Auth.EmailVerificationDto;
 import com.example.teamproject2025.dto.User.UserLoginRequestDto;
 import com.example.teamproject2025.dto.User.UserLoginResponseDto;
-import com.example.teamproject2025.entity.User.User;
-import com.example.teamproject2025.repository.User.UserRepository;
 import com.example.teamproject2025.service.Auth.EmailServiceImpl;
 import com.example.teamproject2025.service.Auth.LoginService;
+import com.example.teamproject2025.service.Auth.LogoutService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
     private final EmailServiceImpl emailServiceImpl;
     private final LoginService loginService;
+    private final LogoutService logoutService;
 
     // 이메일 인증 요청
     @PostMapping("/email")
@@ -61,6 +62,13 @@ public class AuthController {
         }
         return ResponseEntity.status(HttpStatus.OK)
                 .body(CommonResponseDto.success(HttpStatus.OK.value(), "Session user retrieved", username.toString()));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<CommonResponseDto<Object>> logout(HttpServletRequest request, HttpServletResponse response) {
+        logoutService.logout(request, response);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CommonResponseDto.success(HttpStatus.OK.value(), "Logged out successfully", null));
     }
 }
 

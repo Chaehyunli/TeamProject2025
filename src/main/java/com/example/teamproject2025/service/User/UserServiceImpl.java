@@ -1,5 +1,6 @@
 package com.example.teamproject2025.service.User;
 
+import com.example.teamproject2025.dto.Common.CommonResponseDto;
 import com.example.teamproject2025.dto.User.UserCreateRequestDto;
 import com.example.teamproject2025.dto.User.UserDetailResponseDto;
 import com.example.teamproject2025.dto.User.UserResponseDto;
@@ -7,12 +8,16 @@ import com.example.teamproject2025.dto.User.UserUpdateRequestDto;
 import com.example.teamproject2025.entity.User.User;
 import com.example.teamproject2025.repository.User.UniversityRepository;
 import com.example.teamproject2025.repository.User.UserRepository;
+import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -51,7 +56,7 @@ public class UserServiceImpl implements UserService {
 //                .profileImage(user.getProfileImage())
 //                .joinedClubs(List.of())
 //                .managedClubs(List.of())
-//                .build();
+//                .build(); -> 나중에 업데이트 부 구현할 때 그대로 써먹으려고 남김
 
         // 5. Client 에게 응답할 DTO Build
         return UserResponseDto.builder()
@@ -85,11 +90,38 @@ public class UserServiceImpl implements UserService {
                 .email(updatedUser.getEmail())
                 .profileImage(updatedUser.getProfileImage())
                 .build();
+    }
 
+    @Override
+    public ResponseEntity<CommonResponseDto<Void>> deleteUser(HttpSession session) {
+        // 현재 로그인한 사용자 확인
+        Long sessionUserId = (Long) session.getAttribute("userId");
+        Boolean deletedMailVerified = (Boolean) session.getAttribute("deleted_mail_verified"); // Ref4
+
+        if (sessionUserId == null) {
+            throw new IllegalStateException("Invalid user session or unauthorized request");
+        }
+
+        if (deletedMailVerified == null || !deletedMailVerified) {
+            throw new IllegalStateException("Email verification required before account deletion");
+        }
+
+        // 유저 존재 여부 확인
+        User user = userRepository.findById(sessionUserId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        // 유저 삭제
+        userRepository.delete(user);
+
+        // 세션 무효화
+        session.invalidate();
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CommonResponseDto.success(HttpStatus.OK.value(), "User deleted successfully"));
     }
 }
 
-/* 💡Descriptions
+/* 💡Descriptions @dev_taehyun
 *
 *     Ref1. 그냥 isVerified 처리하면 되지, 왜 dto 로 받아오나요?
 *
@@ -117,5 +149,38 @@ public class UserServiceImpl implements UserService {
 *           Backend 의 경우는 Postman 등으로 테스트를 진행한다면,
 *           isVerified 의 부분이 true 인지 False 인지 임의로 시나리오 상정해서
 *           검증하면 된다.
+*
+*
+*     Ref4. 두가지 방식의 처리가 가능하다. 첫번째는 이메일의 인증걸과로 프론트에서
+*           response.data 를 받은 후, 이를 API 요청과 함께 body 에 실어서 보내는 방법.
+*           두번째는 Front 에서 response.data 를 보고 동일한 JSESSIONID 에 대해
+*           session 에 속성 값을 추가하는 방법이 있다. (더 있을 수도 있고...)
+*
+*           delete 는 요청 시 requestBody 가 없으니 dev_seohyeon 님의 방식대로 가는게 깔끔할 것이다.
+*
+*     Ref5. 이건 Load Balancing 환경에서는 Session 이 여러 서버 간에 공유될 수 있는데,
+*           이때 속성이 남아있을 가능성이 있다. 이 말은 삭제 요청을 했음에도 다른 서버에 남아있을 수 있다는 소리다.
+*           프로젝트를 AWS 에 load 할 때 서버의 부하를 줄이기 위해서 ELB 를 사용할 수도 있을텐데,
+*           이게 로드밸런싱 하는건데, 이때 예기치 못한 에러가 발생할 수 있다는거다.
+*           (근데 우린 단일 Instance 쓸거라 이건 해당안됨 -> 비용 이슈...)
+*
+*           또한, Multi-Thread 환경에서도 문제가 될 수 있다. SPring Boot 의 HTTP 요청처리는 기본적으로
+*           멀티쓰레드 환경에서 실행된다. 하지만 각 요청은 서도 다른 쓰레드에서 실행되므로, 요청 간 순서가 항상 보장되지 않는다.
+*           그렇게 되면 A 요청에서 invalidate 호출한 직후, 다른 Thread 에서 Session 이 무효화되었음에도 불구하고
+*           B 요청으로 해당 속성을 사용하려고 할 수도 있다. 그럼 당연히 IllegalStateException 이 발생할 것이다.
+*           (Java로 Singleton Pattern 구현할 때 Synchronized 를 사용하는게 이러한 맥락 때문)
+*
+*           따라서, 이러한 문제를 방지하려면 명시적으로 먼저 delete_email_verified 를 삭제해주는게 좋다.
+*           이건 특정 순간에만 존재하는 속성이면서도 보안적으로 중요한 이슈를 떠안는 그런 속성에 대해서 적용하면 좋으며,
+*           모든 특성에 대해서 이렇게 처리할 필요는 없다. -> delete_email_verified 만 명시적으로 삭제함
+*
+*
+*     Ref6. 이메일 인증이 끝나면 delete_email_verified 의 Session 값을 서버에서 처리하려면?
+*
+*           이메일 API 를 건드리면 회원가입했을 때 세션이 필요없음에도 세션을 만들게 됨 -> X
+*           그러면 session update 를 위한 별도 API 를 만들면 될 것 같음
+*           근데 이러면 session update 안하고 회원가입때처럼 response.data 를
+*           request body 에 실어서 요청하면 그 값으로 인증완료 처리 가능.
+*           이건 일단 냅두고, 좀 논의해봐야할거같음. 어찌되었건 방법만 정해지면 구현은 쉬워서 큰 문제 안될듯
 *
 * */

@@ -37,4 +37,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(CommonResponseDto.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()));
     }
+
+    // State 에 따른 예외처리
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<CommonResponseDto<Void>> handleIllegalStateException(IllegalStateException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(CommonResponseDto.error(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
+    }
 }

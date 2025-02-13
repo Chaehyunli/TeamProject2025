@@ -47,6 +47,7 @@ public class LoginServiceImpl implements LoginService {
         session.setAttribute("username", user.getUsername());
         session.setAttribute("name", user.getName());
 
+
         return UserLoginResponseDto.builder()
                 .userId(user.getUserId())
                 .username(user.getUsername())
