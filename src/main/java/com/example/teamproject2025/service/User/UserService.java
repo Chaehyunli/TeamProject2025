@@ -11,4 +11,5 @@ public interface UserService {
     UserResponseDto register(UserCreateRequestDto userCreateRequestDto);
     UserResponseDto update(Long userId, UserUpdateRequestDto userUpdatedRequestDto);
     ResponseEntity<CommonResponseDto<Void>> deleteUser(HttpSession session);
+    UserResponseDto getUserProfile(Long userId);
 }

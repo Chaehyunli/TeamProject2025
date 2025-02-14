@@ -119,6 +119,31 @@ public class UserServiceImpl implements UserService {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(CommonResponseDto.success(HttpStatus.OK.value(), "User deleted successfully"));
     }
+
+    @Transactional
+    @Override
+    public UserResponseDto getUserProfile(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        // universityName을 조회 (UniversityRepository 사용)
+        String universityName = universityRepository.findByUniversityId(user.getUniversityId())
+                .map(university -> university.getUniversityName())
+                .orElse(null); // 대학이 없을 경우 null 반환
+
+        return UserResponseDto.builder()
+                .userId(user.getUserId())
+                .username(user.getUsername())
+                .name(user.getName())
+                .email(user.getEmail())
+                .profileImage(user.getProfileImage()) // 프로필 이미지 추가
+                .universityId(user.getUniversityId()) // 대학 ID 가져오기
+                .universityName(universityName) // 대학 이름 가져오기 (조회한 값)
+                .isEmailVerified(user.getIsEmailVerified()) // 이메일 인증 여부
+                .isUniVerified(user.getIsUniVerified()) // 대학 인증 여부 (getter 메서드 필요)
+                .createdAt(user.getCreatedAt()) // 계정 생성 날짜 추가
+                .build();
+    }
 }
 
 /* 💡Descriptions @dev_taehyun

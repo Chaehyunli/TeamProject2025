@@ -31,4 +31,21 @@ public class UserController {
         session.setAttribute("deleted_mail_verified",true);
         return userService.deleteUser(session);
     }
+
+    // 현재 로그인된 사용자 정보 조회 API
+    @GetMapping("/profile")
+    public ResponseEntity<CommonResponseDto<UserResponseDto>> getUserProfile(HttpSession session) {
+        Long userId = (Long) session.getAttribute("userId");
+
+        if (userId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(CommonResponseDto.error(HttpStatus.UNAUTHORIZED.value(), "로그인이 필요합니다."));
+        }
+
+        UserResponseDto userResponse = userService.getUserProfile(userId);
+
+        return ResponseEntity.ok(
+                CommonResponseDto.success(HttpStatus.OK.value(), "사용자 정보 조회 성공", userResponse)
+        );
+    }
 }
