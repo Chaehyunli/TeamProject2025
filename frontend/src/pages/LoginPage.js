@@ -34,10 +34,14 @@ function LoginPage() {
         <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
             <div className="bg-white p-6 md:p-8 rounded-lg shadow-md w-full max-w-md border border-gray-300">
                 <h2 className="text-2xl font-bold text-center text-gray-800 mb-4">로그인</h2>
-                <LoginForm onSubmit={handleLogin} />  {/* LoginForm 사용 */}
+                <LoginForm onSubmit={handleLogin}/> {/* LoginForm 사용 */}
                 <div className="flex justify-between text-sm mt-3 text-gray-600">
-                    <a href="#" className="hover:text-blue-500 transition">아이디/비밀번호 찾기</a>
-                    <a href="#" className="hover:text-blue-500 transition">회원가입</a>
+                    <span className="hover:text-[#65A3FF] transition cursor-pointer" onClick={() => navigate("/account/find")}>
+                        아이디/비밀번호 찾기
+                    </span>
+                    <span className="hover:text-[#65A3FF] transition cursor-pointer" onClick={() => navigate("/register")}>
+                        회원가입
+                    </span>
                 </div>
             </div>
         </div>

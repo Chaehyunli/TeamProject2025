@@ -42,21 +42,31 @@ const TopNavbar = () => {
         setIsLoggedIn(false);
         setUsername("");
         setUserImage("");
-        window.location.href = "/"; // 홈 화면으로 리다이렉트 -> 추후 변경, 로그인 페이지로 수정
+        navigate("/login");
     };
 
     return (
-        <nav className="fixed top-0 left-0 w-full h-[72px] flex items-center border-b-[0.5px] border-black px-12 justify-between bg-white z-50 shadow-md">
+        <nav
+            className="fixed top-0 left-0 w-full h-[72px] flex items-center border-b-[0.5px] border-black px-12 justify-between bg-white z-50 shadow-md">
             {/* 로고 및 메뉴 */}
             <div className="flex items-center gap-8">
                 <span className="text-black text-base font-bold">NAME || LOGO</span>
-                <a href="/home" className="text-black text-base font-bold hover:text-gray-700">홈</a>
-                <a href="/clubs" className="text-[#717171] text-base font-normal hover:text-gray-700">등록신청</a>
-                <a href="/chatrooms" className="text-[#717171] text-base font-normal hover:text-gray-700">채팅</a>
+                <span  className="text-black text-base font-bold hover:text-gray-700 cursor-pointer"
+                       onClick={() => navigate("/home")}>
+                    홈
+                </span>
+                <span className="text-[#717171] text-base font-normal hover:text-gray-700 cursor-pointer"
+                      onClick={() => navigate("/clubs")}>
+                    등록신청
+                </span>
+                <span className="text-[#717171] text-base font-normal hover:text-gray-700 cursor-pointer"
+                      onClick={() => navigate("/chatrooms")}>
+                    채팅
+                </span>
             </div>
 
             <div className="flex items-center gap-6">
-                {/* 검색창 */}
+            {/* 검색창 */}
                 <div className="relative flex w-[248px] h-10 px-3 py-2 rounded-lg border-[0.5px] border-black">
                     <input
                         ref={inputRef}
@@ -79,10 +89,13 @@ const TopNavbar = () => {
                     </div>
                 ) : (
                     <div className="flex items-center gap-4">
-                        <button className="px-5 py-2 bg-white rounded-[15px] border-[0.5px] border-black text-black font-bold hover:bg-gray-100" onClick={() => navigate("/login")}>
+                        <button
+                            className="px-5 py-2 bg-white rounded-[15px] border-[0.5px] border-black text-black font-bold hover:bg-gray-100"
+                            onClick={() => navigate("/login")}>
                             로그인
                         </button>
-                        <button className="px-5 py-2 bg-[#65A3FF] rounded-[15px] text-white font-bold hover:bg-blue-500">
+                        <button
+                            className="px-5 py-2 bg-[#65A3FF] rounded-[15px] text-white font-bold hover:bg-blue-500">
                             회원가입
                         </button>
                     </div>
