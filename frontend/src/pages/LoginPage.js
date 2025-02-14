@@ -6,14 +6,6 @@ import LoginForm from "../components/LoginForm";
 function LoginPage() {
     const navigate = useNavigate(); // 페이지 이동을 위한 훅
 
-    useEffect(() => {
-        // 로그인 상태 확인 후 자동 이동
-        const storedUsername = localStorage.getItem("username");
-        if (storedUsername) {
-            navigate("/home");
-        }
-    }, [navigate]);
-
     // 로그인 처리 함수 (LoginForm에서 호출)
     const handleLogin = async (formData, setMessage) => {
         try {
@@ -24,7 +16,7 @@ function LoginPage() {
             localStorage.setItem("username", result.username);
             localStorage.setItem("name", result.name);
 
-            window.location.href = "/home";  // 로그인 성공 시 이동
+            navigate("/home");  // 로그인 성공 시 이동
         } catch (error) {
             setMessage("오류 발생: " + error.message);
         }
