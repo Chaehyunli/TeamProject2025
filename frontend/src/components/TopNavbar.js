@@ -56,7 +56,7 @@ const TopNavbar = () => {
                     홈
                 </span>
                 <span className="text-[#717171] text-base font-normal hover:text-gray-700 cursor-pointer"
-                      onClick={() => navigate("/clubs")}>
+                      onClick={() => navigate("/club-registration")}>
                     등록신청
                 </span>
                 <span className="text-[#717171] text-base font-normal hover:text-gray-700 cursor-pointer"
@@ -95,7 +95,8 @@ const TopNavbar = () => {
                             로그인
                         </button>
                         <button
-                            className="px-5 py-2 bg-[#65A3FF] rounded-[15px] text-white font-bold hover:bg-blue-500">
+                            className="px-5 py-2 bg-[#65A3FF] rounded-[15px] text-white font-bold hover:bg-blue-500"
+                            onClick={() => navigate("/register")}>
                             회원가입
                         </button>
                     </div>
