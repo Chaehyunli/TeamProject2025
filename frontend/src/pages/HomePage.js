@@ -8,7 +8,7 @@ const HomePage = () => {
     useEffect(() => {
         const checkLoginStatus = () => {
             const storedUsername = localStorage.getItem("name");
-            if (storedUsername) {
+            if (storedUsername && storedUsername !== "undefined") {
                 setUsername(storedUsername);
             } else {
                 navigate("/login"); // 로그인되지 않았으면 로그인 페이지로 이동
