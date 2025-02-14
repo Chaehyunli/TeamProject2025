@@ -136,6 +136,7 @@ public class UserServiceImpl implements UserService {
                 .username(user.getUsername())
                 .name(user.getName())
                 .email(user.getEmail())
+                .studentId(user.getStudentId()) // 학번 추가
                 .profileImage(user.getProfileImage()) // 프로필 이미지 추가
                 .universityId(user.getUniversityId()) // 대학 ID 가져오기
                 .universityName(universityName) // 대학 이름 가져오기 (조회한 값)
