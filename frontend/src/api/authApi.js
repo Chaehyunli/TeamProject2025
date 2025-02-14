@@ -50,12 +50,21 @@ export const login = async (formData) => {
 };
 
 export const logout = async () => {
-    try{
-        const response = await axios.post(`${API_BASE_URL}/logout`, {}, {withCredentials: true})
+    try {
+        const response = await fetch(`${API_BASE_URL}/logout`, {
+            method: "POST",
+            credentials: "include", // 세션을 포함하여 요청
+        });
 
-        return response.data;
+        if (!response.ok) {
+            throw new Error("로그아웃 실패");
+        }
+
+        localStorage.clear();
+        window.dispatchEvent(new Event("storage")); // 상태 변경 감지 (TopNavbar 업데이트)
+        return true;
     } catch (error) {
         console.error("로그아웃 실패", error);
-        throw error;
+        return false;
     }
 };
