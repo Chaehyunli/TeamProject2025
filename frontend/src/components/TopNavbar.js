@@ -14,6 +14,8 @@ const TopNavbar = () => {
     const [userImage, setUserImage] = useState(localStorage.getItem("profileImage") || "https://via.placeholder.com/50");
     const [searchQuery, setSearchQuery] = useState("");
     const inputRef = useRef(null);
+    const navigate = useNavigate();
+    // const location = useLocation(); // 추후 추가, 현재 페이지 경로 가져오기
 
     // 로그인된 사용자 정보 가져오기
     const fetchProfile = async () => {
@@ -80,7 +82,7 @@ const TopNavbar = () => {
             console.error("로그아웃 실패", error);
         }
     };
-
+    
     const handleSearch = () => {
         console.log("검색어:", searchQuery);
         inputRef.current.blur();
@@ -90,6 +92,20 @@ const TopNavbar = () => {
         if (event.key === "Enter") {
             handleSearch();
         }
+    };
+
+    // const getNavLinkClass = (path) => {
+    //     return location.pathname === path
+    //         ? "text-black text-base font-bold" // 현재 페이지: 굵은 글씨 + 검정색
+    //         : "text-[#727272] text-base font-normal hover:text-gray-700" // 현재 페이지 아닌 것: 일반 굵기 + 회색
+    // };
+    // 추후 변경
+
+    const handleLogout = () => {
+        setIsLoggedIn(false);
+        setUsername("");
+        setUserImage("");
+        window.location.href = "/"; // 홈 화면으로 리다이렉트 -> 추후 변경, 로그인 페이지로 수정
     };
 
     return (
@@ -113,23 +129,23 @@ const TopNavbar = () => {
                         onChange={(e) => setSearchQuery(e.target.value)}
                         onKeyDown={handleKeyDown}
                     />
-                    <FaSearch className="text-gray-500 cursor-pointer" onClick={handleSearch} />
+                    <FaSearch className="text-gray-500 cursor-pointer"
+                              onClick={handleSearch}
+                    />
                 </div>
 
-                {/* 로그인 여부에 따라 다른 UI 표시 */}
+                {/* 로그인 & 회원가입 또는 프로필 */}
                 {isLoggedIn ? (
                     <div className="flex items-center gap-8">
-                        <FaRegBell className="text-gray-600 cursor-pointer" />
-                        <ProfileDropdown username={username} userImage={userImage} onLogout={handleLogout} />
+                        <FaRegBell className="text-gray-600 cursor-pointer"/> {/* 알림 아이콘 */}
+                        <ProfileDropdown username={username} userImage={userImage} onLogout={handleLogout}/>
                     </div>
                 ) : (
                     <div className="flex items-center gap-4">
-                        <button className="px-5 py-2 bg-white rounded-[15px] border-[0.5px] border-black text-black font-bold hover:bg-gray-100"
-                                onClick={() => navigate("/login")}>
+                        <button className="px-5 py-2 bg-white rounded-[15px] border-[0.5px] border-black text-black font-bold hover:bg-gray-100" onClick={() => navigate("/login")}>
                             로그인
                         </button>
-                        <button className="px-5 py-2 bg-[#65A3FF] rounded-[15px] text-white font-bold hover:bg-blue-500"
-                                onClick={() => navigate("/register")}>
+                        <button className="px-5 py-2 bg-[#65A3FF] rounded-[15px] text-white font-bold hover:bg-blue-500">
                             회원가입
                         </button>
                     </div>
@@ -140,12 +156,3 @@ const TopNavbar = () => {
 };
 
 export default TopNavbar;
-
-
-
-
-
-
-
-
-

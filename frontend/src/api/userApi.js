@@ -2,6 +2,18 @@ import axios from "axios";
 
 const API_BASE_URL = "http://localhost:8080/api/v1/users";
 
+// 회원가입
+export const register = async (formData) => {
+    try{
+        await axios.post(`${API_BASE_URL}/register`, formData, {
+            headers: { "Content-Type": "application/json" }
+        });
+    } catch (error) {
+        console.error("회원가입 실패", error);
+        throw error;
+    }
+}
+
 //로그인된 사용자 정보 가져오기 API 호출
 export const getUserProfile = async () => {
     try {
