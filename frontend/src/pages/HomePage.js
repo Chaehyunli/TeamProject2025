@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const HomePage = () => {
-    const [username, setUsername] = useState(localStorage.getItem("name") || ""); // 초기값 설정
+    const [username, setUsername] = useState(localStorage.getItem("name") || null); // 초기값을 null로 설정
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -11,7 +11,8 @@ const HomePage = () => {
             if (storedUsername && storedUsername !== "undefined") {
                 setUsername(storedUsername);
             } else {
-                navigate("/login"); // 로그인되지 않았으면 로그인 페이지로 이동
+                setUsername(null); // 로그인되지 않았으면 상태를 null로 설정
+                navigate("/login"); // 로그인 페이지로 이동
             }
         };
 
@@ -25,6 +26,9 @@ const HomePage = () => {
         };
     }, []);
 
+    // 로그인되지 않았으면 아무것도 렌더링하지 않음
+    if (username === null) return null;
+
     return (
         <div className="flex items-center justify-center min-h-screen bg-gray-100">
             <div className="bg-white p-8 rounded-lg shadow-lg w-96">
@@ -35,6 +39,7 @@ const HomePage = () => {
 };
 
 export default HomePage;
+
 
 
 

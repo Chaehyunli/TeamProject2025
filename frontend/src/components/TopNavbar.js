@@ -1,20 +1,27 @@
 import React, { useState, useEffect, useRef } from "react";
 import { FaSearch, FaRegBell } from "react-icons/fa";
 import ProfileDropdown from "./ProfileDropdown";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { getUserProfile } from "../api/userApi";
 import { logout } from "../api/authApi";
 
 const TopNavbar = () => {
-    const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("name")); // 초기 로그인 상태 설정
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    const [isLoggedIn, setIsLoggedIn] = useState(false); // 기본값 `false`
     const [username, setUsername] = useState(localStorage.getItem("name") || "");
     const [userImage, setUserImage] = useState(localStorage.getItem("profileImage") || "https://via.placeholder.com/50");
     const [searchQuery, setSearchQuery] = useState("");
     const inputRef = useRef(null);
-    const navigate = useNavigate();
 
-    //  사용자 프로필 가져오기 (로그인 상태 확인)
+    // 로그인된 사용자 정보 가져오기
     const fetchProfile = async () => {
+        if (!localStorage.getItem("name")) {
+            setIsLoggedIn(false);
+            return;
+        }
+
         try {
             const response = await getUserProfile();
             if (response.data) {
@@ -33,49 +40,55 @@ const TopNavbar = () => {
         }
     };
 
-    //  로그인 상태 변경 감지 (로그인/로그아웃 시 반영)
+    // 로그인 상태 변경 감지 (로그인/로그아웃 시 반영)
     useEffect(() => {
-        fetchProfile(); //  첫 렌더링 시 프로필 불러오기
+        if (location.pathname === "/login") {
+            setIsLoggedIn(false);
+            return;
+        }
+
+        fetchProfile();
 
         const handleStorageChange = () => {
-            fetchProfile(); //  localStorage 변경 감지 시 업데이트
+            fetchProfile();
         };
 
         window.addEventListener("storage", handleStorageChange);
         return () => {
             window.removeEventListener("storage", handleStorageChange);
         };
-    }, [isLoggedIn]); //  로그인 상태 변경될 때 실행되도록 설정
+    }, [location.pathname]);
 
-    //  검색 실행
+    // 비로그인 상태에서 `/profile` 페이지 접근하면 자동으로 `/login`으로 리디렉션
+    useEffect(() => {
+        if (!isLoggedIn && location.pathname === "/profile") {
+            navigate("/login");
+        }
+    }, [isLoggedIn, location.pathname, navigate]);
+
+    // 로그아웃 처리
+    const handleLogout = async () => {
+        try {
+            await logout();
+            localStorage.clear();
+            setIsLoggedIn(false);
+            setUsername("");
+            setUserImage("");
+            window.dispatchEvent(new Event("storage"));
+            navigate("/login");
+        } catch (error) {
+            console.error("로그아웃 실패", error);
+        }
+    };
+
     const handleSearch = () => {
         console.log("검색어:", searchQuery);
         inputRef.current.blur();
     };
 
-    //  검색창에서 엔터키 입력 감지
     const handleKeyDown = (event) => {
         if (event.key === "Enter") {
             handleSearch();
-        }
-    };
-
-    //  로그아웃 처리
-    const handleLogout = async () => {
-        try {
-            await logout();  // authApi에서 로그아웃 API 호출
-            localStorage.clear();
-            setIsLoggedIn(false);
-            setUsername("");
-            setUserImage("");
-
-            // 상태 변경을 즉시 반영하기 위해 fetchProfile 재실행
-            fetchProfile();
-
-            window.dispatchEvent(new Event("storage")); // 상태 변경 감지
-            navigate("/login");
-        } catch (error) {
-            console.error("로그아웃 실패", error);
         }
     };
 
@@ -103,7 +116,7 @@ const TopNavbar = () => {
                     <FaSearch className="text-gray-500 cursor-pointer" onClick={handleSearch} />
                 </div>
 
-                {/* 로그인 & 회원가입 또는 프로필 */}
+                {/* 로그인 여부에 따라 다른 UI 표시 */}
                 {isLoggedIn ? (
                     <div className="flex items-center gap-8">
                         <FaRegBell className="text-gray-600 cursor-pointer" />
@@ -127,6 +140,9 @@ const TopNavbar = () => {
 };
 
 export default TopNavbar;
+
+
+
 
 
 

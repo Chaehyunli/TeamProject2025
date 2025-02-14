@@ -18,7 +18,8 @@ const ProfilePage = () => {
         const fetchUserInfo = async () => {
             try {
                 const userData = await getUserProfile();
-                setUser(userData); // 사용자 정보 업데이트
+                console.log("가져온 사용자 데이터:", userData);
+                setUser(userData.data || userData); // 사용자 정보 업데이트
             } catch (error) {
                 console.error("사용자 정보를 불러오는 데 실패했습니다.", error);
             }
