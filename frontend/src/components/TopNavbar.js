@@ -6,8 +6,6 @@ import { getUserProfile } from "../api/userApi";
 import { logout } from "../api/authApi";
 
 const TopNavbar = () => {
-    const navigate = useNavigate();
-    const location = useLocation();
 
     const [isLoggedIn, setIsLoggedIn] = useState(false); // 기본값 `false`
     const [username, setUsername] = useState(localStorage.getItem("name") || "");
@@ -15,7 +13,7 @@ const TopNavbar = () => {
     const [searchQuery, setSearchQuery] = useState("");
     const inputRef = useRef(null);
     const navigate = useNavigate();
-    // const location = useLocation(); // 추후 추가, 현재 페이지 경로 가져오기
+    const location = useLocation(); // 추후 추가, 현재 페이지 경로 가져오기
 
     // 로그인된 사용자 정보 가져오기
     const fetchProfile = async () => {
@@ -100,13 +98,6 @@ const TopNavbar = () => {
     //         : "text-[#727272] text-base font-normal hover:text-gray-700" // 현재 페이지 아닌 것: 일반 굵기 + 회색
     // };
     // 추후 변경
-
-    const handleLogout = () => {
-        setIsLoggedIn(false);
-        setUsername("");
-        setUserImage("");
-        window.location.href = "/"; // 홈 화면으로 리다이렉트 -> 추후 변경, 로그인 페이지로 수정
-    };
 
     return (
         <nav className="fixed top-0 left-0 w-full h-[72px] flex items-center border-b-[0.5px] border-black px-12 justify-between bg-white z-50 shadow-md">

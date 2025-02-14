@@ -66,7 +66,9 @@ const ProfilePage = () => {
                     />
                     <div>
                         <h2 className="text-xl font-bold">{user.name}</h2>
-                        <p className="text-gray-500">{user.universityName || "대학교 미입력"}</p>
+                        <p className="text-gray-500">
+                            {user.universityName || "대학교 미입력"} | {user.studentId || "학번 미입력"} | {user.department || "학과 미입력"} | {user.email || "이메일 미입력"}
+                        </p>
                     </div>
                 </div>
             </div>
