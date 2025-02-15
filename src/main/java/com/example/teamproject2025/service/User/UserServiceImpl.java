@@ -2,11 +2,10 @@ package com.example.teamproject2025.service.User;
 
 import com.example.teamproject2025.dto.Common.CommonResponseDto;
 import com.example.teamproject2025.dto.User.UserCreateRequestDto;
-import com.example.teamproject2025.dto.User.UserDetailResponseDto;
 import com.example.teamproject2025.dto.User.UserResponseDto;
 import com.example.teamproject2025.dto.User.UserUpdateRequestDto;
 import com.example.teamproject2025.entity.User.User;
-import com.example.teamproject2025.repository.User.UniversityRepository;
+import com.example.teamproject2025.repository.University.UniversityRepository;
 import com.example.teamproject2025.repository.User.UserRepository;
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
@@ -17,8 +16,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional
