@@ -105,7 +105,7 @@ const TopNavbar = () => {
             <div className="flex items-center gap-8">
                 <span className="text-black text-base font-bold">NAME || LOGO</span>
                 <a href="/home" className="text-black text-base font-bold hover:text-gray-700">홈</a>
-                <a href="/clubs" className="text-[#717171] text-base font-normal hover:text-gray-700">등록신청</a>
+                <a href="/club-registration" className="text-[#717171] text-base font-normal hover:text-gray-700">등록신청</a>
                 <a href="/chatrooms" className="text-[#717171] text-base font-normal hover:text-gray-700">채팅</a>
             </div>
 
@@ -136,7 +136,7 @@ const TopNavbar = () => {
                         <button className="px-5 py-2 bg-white rounded-[15px] border-[0.5px] border-black text-black font-bold hover:bg-gray-100" onClick={() => navigate("/login")}>
                             로그인
                         </button>
-                        <button className="px-5 py-2 bg-[#65A3FF] rounded-[15px] text-white font-bold hover:bg-blue-500">
+                        <button className="px-5 py-2 bg-[#65A3FF] rounded-[15px] text-white font-bold hover:bg-blue-500" onClick={() => navigate("/register")}>
                             회원가입
                         </button>
                     </div>
