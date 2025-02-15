@@ -20,6 +20,7 @@ public class UserCreateRequestDto {
     private String studentId;
     private String profileImage = "https://i.sstatic.net/l60Hf.png";
     private Boolean isEmailVerified = false; // Ref1
+    private Boolean isUniVerified = false;
 
     // DTO → Entity 변환 메서드
     public User toEntity(Long universityId, String encodedPassword) {
@@ -32,6 +33,7 @@ public class UserCreateRequestDto {
                 .studentId(studentId)
                 .profileImage(profileImage)
                 .isEmailVerified(isEmailVerified)
+                .isUniVerified(this.isUniVerified != null ? this.isUniVerified : false)
                 .build();
     }
 }
