@@ -75,4 +75,27 @@ public class User {
         * 지금 코드 비통합 단계라, 회원가입 API 에서 이 로직 처리 안되어있을건데, 처리 해야함
         */
     }
+
+//    public User updatePassword(String newEncodedPassword) {
+//        return User.builder()
+//                .userId(this.userId)
+//                .username(this.username)
+//                .password(newEncodedPassword) // 해싱된 비밀번호만 저장
+//                .name(this.name)
+//                .studentId(this.studentId)
+//                .universityId(this.universityId)
+//                .email(this.email)
+//                .isEmailVerified(this.isEmailVerified)
+//                .profileImage(this.profileImage)
+//                .isUniVerified(this.isUniVerified)
+//                .createdAt(this.createdAt)
+//                .updatedAt(LocalDateTime.now())
+//                .build();
+//    }
+
+    // ✅ 기존 객체 수정 (새로운 객체 생성 X)
+    public void updatePassword(String newEncodedPassword) {
+        this.password = newEncodedPassword;
+        this.updatedAt = LocalDateTime.now(); // updated_at 갱신
+    }
 }

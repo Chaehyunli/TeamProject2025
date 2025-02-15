@@ -74,23 +74,23 @@ public class UserServiceImpl implements UserService {
                 .build();
     }
 
-    @Override
-    public UserResponseDto update(Long userId, UserUpdateRequestDto dto){
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-
-        User updatedUser = user.update(dto);
-
-        userRepository.save(updatedUser);
-
-        return UserResponseDto.builder()
-                .username(updatedUser.getUsername())
-                .studentId(updatedUser.getStudentId())
-                .universityName(null) // 추가 로직 필요 시 처리
-                .email(updatedUser.getEmail())
-                .profileImage(updatedUser.getProfileImage())
-                .build();
-    }
+//    @Override
+//    public UserResponseDto update(Long userId, UserUpdateRequestDto dto){
+//        User user = userRepository.findById(userId)
+//                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+//
+//        User updatedUser = user.update(dto);
+//
+//        userRepository.save(updatedUser);
+//
+//        return UserResponseDto.builder()
+//                .username(updatedUser.getUsername())
+//                .studentId(updatedUser.getStudentId())
+//                .universityName(null) // 추가 로직 필요 시 처리
+//                .email(updatedUser.getEmail())
+//                .profileImage(updatedUser.getProfileImage())
+//                .build();
+//    }
 
     @Override
     public ResponseEntity<CommonResponseDto<Void>> deleteUser(HttpSession session) {
