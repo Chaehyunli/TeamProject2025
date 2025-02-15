@@ -15,7 +15,6 @@ const RegisterForm = ({ onSubmit }) => {
         universityName: "",
         studentId: "",
         isEmailVerified: false,
-        isUniVerified: false,
     });
     const [message, setMessage] = useState("");
 
