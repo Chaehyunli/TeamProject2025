@@ -14,7 +14,7 @@ public class WebConfig {
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/api/**") // API 경로에 대해
                         .allowedOrigins("http://localhost:3000") // React의 주소
-                        .allowedMethods("GET", "POST", "PUT", "DELETE")
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH")
                         .allowedHeaders("*")
                         .allowCredentials(true);
             }

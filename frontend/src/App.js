@@ -6,6 +6,7 @@ import HomePage from "./pages/HomePage";
 import ProfilePage from "./pages/ProfilePage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
+import UpdateProfilePage from "./pages/UpdateProfilePage";
 
 function App() {
     return (
@@ -17,6 +18,7 @@ function App() {
                 <Route path="/club-registration" element={<UnderConstruction />} />
                 <Route path="/chatrooms" element={<UnderConstruction />} />
                 <Route path="/profile" element={<ProfilePage />} />
+                <Route path="/updateProfile" element={<UpdateProfilePage />} />
 
                 {/* Auth */}
                 <Route path="/login" element={<LoginPage />} />

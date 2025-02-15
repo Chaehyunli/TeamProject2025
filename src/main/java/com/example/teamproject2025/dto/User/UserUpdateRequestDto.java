@@ -12,4 +12,7 @@ public class UserUpdateRequestDto {
     private String email;
     private Boolean isEmailVerified; // email 변경하면 재인증 해야 함.
     private String profileImage;
+    private String name;
+    private String studentId;
+    private String department;
 }

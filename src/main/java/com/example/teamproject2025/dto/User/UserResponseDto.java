@@ -23,4 +23,5 @@ public class UserResponseDto {
     private Boolean isUniVerified;
     private String profileImage;
     private LocalDateTime createdAt;
+    private String department;
 }

@@ -25,6 +25,29 @@ export const getUserProfile = async () => {
     }
 };
 
+export const updateUserProfile = async (userData) => {
+    try {
+        const response = await fetch("http://localhost:8080/api/v1/users/profile", {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            credentials: "include",
+            body: JSON.stringify(userData),
+        });
+
+        if (!response.ok) {
+            throw new Error("프로필 업데이트 실패");
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error("프로필 업데이트 오류:", error);
+        throw error;
+    }
+};
+
 // 회원 탈퇴 기능
 export const deleteUser = async () => {
     try {

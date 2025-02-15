@@ -3,6 +3,7 @@ package com.example.teamproject2025.controller.User;
 import com.example.teamproject2025.dto.Common.CommonResponseDto;
 import com.example.teamproject2025.dto.User.UserCreateRequestDto;
 import com.example.teamproject2025.dto.User.UserResponseDto;
+import com.example.teamproject2025.dto.User.UserUpdateRequestDto;
 import com.example.teamproject2025.service.User.UserService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -47,5 +48,18 @@ public class UserController {
         return ResponseEntity.ok(
                 CommonResponseDto.success(HttpStatus.OK.value(), "사용자 정보 조회 성공", userResponse)
         );
+    }
+
+    @PatchMapping("/profile")
+    public ResponseEntity<UserResponseDto> updateUserProfile(
+            HttpSession session, @RequestBody UserUpdateRequestDto dto) {
+
+        Long userId = (Long) session.getAttribute("userId"); // 세션에서 유저 ID 가져오기
+        if (userId == null) {
+            return ResponseEntity.status(401).build(); // 로그인되지 않은 경우
+        }
+
+        UserResponseDto updatedUser = userService.updateUserProfile(userId, dto);
+        return ResponseEntity.ok(updatedUser);
     }
 }

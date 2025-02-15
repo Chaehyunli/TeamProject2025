@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { logout } from "../api/authApi";
 import { deleteUser, getUserProfile } from "../api/userApi";
+import {useNavigate} from "react-router-dom";
 
 const ProfilePage = () => {
     // 초기 사용자 정보 (API 연결 전 기본값 설정)
@@ -11,6 +12,9 @@ const ProfilePage = () => {
     //     university: "명지대학교",
     //     is_uni_verified: false, // 대학교 인증 여부
     // });
+
+    const navigate = useNavigate();
+
     const [user, setUser] = useState(null); // 초기값을 null로 설정
 
     useEffect(() => {
@@ -66,9 +70,17 @@ const ProfilePage = () => {
                     />
                     <div>
                         <h2 className="text-xl font-bold">{user.name}</h2>
-                        <p className="text-gray-500">
-                            {user.universityName || "대학교 미입력"} | {user.studentId || "학번 미입력"} | {user.department || "학과 미입력"} | {user.email || "이메일 미입력"}
-                        </p>
+                        <div className="flex items-center text-gray-500">
+                            <p>
+                                {user.universityName || "대학교 미입력"} | {user.studentId || "학번 미입력"} | {user.department || "학과 미입력"} | {user.email || "이메일 미입력"}
+                            </p>
+                            <button
+                                className="ml-4 px-3 py-1 text-xs text-white bg-blue-500 rounded-lg hover:bg-blue-600"
+                                onClick={() => navigate("/updateProfile")}
+                            >
+                                수정
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>

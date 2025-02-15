@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -75,20 +76,30 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDto update(Long userId, UserUpdateRequestDto dto){
+    public UserResponseDto updateUserProfile(Long userId, UserUpdateRequestDto dto) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        User updatedUser = user.update(dto);
+        // PATCH 방식이므로 값이 존재하는 경우에만 업데이트
+        if (dto.getEmail() != null) user.setEmail(dto.getEmail());
+        if (dto.getProfileImage() != null) user.setProfileImage(dto.getProfileImage());
+        if (dto.getName() != null) user.setName(dto.getName());
+        if (dto.getStudentId() != null) user.setStudentId(dto.getStudentId());
+        if (dto.getDepartment() != null) user.setDepartment(dto.getDepartment());
 
-        userRepository.save(updatedUser);
+        user.setUpdatedAt(LocalDateTime.now());
 
         return UserResponseDto.builder()
-                .username(updatedUser.getUsername())
-                .studentId(updatedUser.getStudentId())
-                .universityName(null) // 추가 로직 필요 시 처리
-                .email(updatedUser.getEmail())
-                .profileImage(updatedUser.getProfileImage())
+                .userId(user.getUserId())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .name(user.getName())
+                .studentId(user.getStudentId())
+                .department(user.getDepartment()) // 학과 정보 반환
+                .profileImage(user.getProfileImage())
+                .isEmailVerified(user.getIsEmailVerified())
+                .isUniVerified(user.getIsUniVerified())
+                .createdAt(user.getCreatedAt())
                 .build();
     }
 
@@ -137,6 +148,7 @@ public class UserServiceImpl implements UserService {
                 .name(user.getName())
                 .email(user.getEmail())
                 .studentId(user.getStudentId()) // 학번 추가
+                .department(user.getDepartment()) // 학과 추가
                 .profileImage(user.getProfileImage()) // 프로필 이미지 추가
                 .universityId(user.getUniversityId()) // 대학 ID 가져오기
                 .universityName(universityName) // 대학 이름 가져오기 (조회한 값)
