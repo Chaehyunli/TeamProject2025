@@ -13,7 +13,7 @@ const UpdateProfilePage = () => {
         profileImage: ""
     });
 
-    // 1단계: 기존 프로필 정보를 가져와 user 상태에 저장
+    // 기존 프로필 정보를 가져와 user 상태에 저장
     useEffect(() => {
         const fetchUserInfo = async () => {
             try {
@@ -28,7 +28,7 @@ const UpdateProfilePage = () => {
         fetchUserInfo();
     }, []);
 
-    // 2단계: user 상태가 변경될 때 formData를 업데이트
+    // user 상태가 변경될 때 formData를 업데이트
     useEffect(() => {
         if (user) {
             setFormData({
