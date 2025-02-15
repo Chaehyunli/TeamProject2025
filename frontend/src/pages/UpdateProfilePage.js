@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { getUserProfile, updateUserProfile } from "../api/userApi";
 import { useNavigate } from "react-router-dom";
+import EmailVerificationForm from "../components/EmailVerificationForm";
 
 const UpdateProfilePage = () => {
     const navigate = useNavigate();
@@ -10,16 +11,17 @@ const UpdateProfilePage = () => {
         studentId: "",
         department: "",
         email: "",
-        profileImage: ""
+        profileImage: "",
+        isEmailVerified: false
     });
 
-    // 1단계: 기존 프로필 정보를 가져와 user 상태에 저장
+    // 기존 프로필 정보를 가져와 user 상태에 저장
     useEffect(() => {
         const fetchUserInfo = async () => {
             try {
                 const userData = await getUserProfile();
                 console.log("불러온 사용자 정보:", userData);
-                setUser(userData.data || userData); // user 상태 업데이트
+                setUser(userData.data || userData);
             } catch (error) {
                 console.error("프로필 정보를 불러오는 데 실패했습니다.", error);
             }
@@ -28,7 +30,7 @@ const UpdateProfilePage = () => {
         fetchUserInfo();
     }, []);
 
-    // 2단계: user 상태가 변경될 때 formData를 업데이트
+    // user 상태가 변경될 때 formData를 업데이트
     useEffect(() => {
         if (user) {
             setFormData({
@@ -36,23 +38,40 @@ const UpdateProfilePage = () => {
                 studentId: user.studentId || "",
                 department: user.department || "",
                 email: user.email || "",
-                profileImage: user.profileImage || ""
+                profileImage: user.profileImage || "",
+                isEmailVerified: user.isEmailVerified || false
             });
         }
-    }, [user]); // user가 변경될 때 실행
+    }, [user]);
 
-    // 입력값 변경 핸들러
-    const handleChange = (e) => {
-        const { name, value } = e.target;
+    // 🔥 EmailVerificationForm에서 변경된 이메일을 받아오는 함수
+    const handleEmailChange = (newEmail) => {
         setFormData((prevData) => ({
             ...prevData,
-            [name]: value
+            email: newEmail,
+            isEmailVerified: false // 이메일이 바뀌면 인증 초기화
         }));
+    };
+
+    // 이메일 인증 성공 시 상태 업데이트
+    const handleEmailVerificationSuccess = (response) => {
+        setFormData((prevData) => ({
+            ...prevData,
+            email: response.email,
+            isEmailVerified: response.isEmailVerified,
+        }));
+        console.log("이메일 인증 완료:", response);
     };
 
     // 변경된 값만 서버로 전송
     const handleSave = async () => {
         if (!user) return;
+
+        // 이메일이 변경되었는데 인증이 안 되어 있으면 저장 불가
+        if (formData.email !== user.email && !formData.isEmailVerified) {
+            alert("이메일 변경 시 인증이 필요합니다.");
+            return;
+        }
 
         // 변경된 데이터만 수집
         const updatedFields = {};
@@ -69,9 +88,9 @@ const UpdateProfilePage = () => {
         }
 
         try {
-            await updateUserProfile(updatedFields); // PATCH 요청
+            await updateUserProfile(updatedFields);
             alert("프로필이 업데이트되었습니다.");
-            navigate("/profile"); // 프로필 페이지로 이동
+            navigate("/profile");
         } catch (error) {
             console.error("프로필 업데이트 실패", error);
             alert("업데이트에 실패했습니다.");
@@ -94,7 +113,7 @@ const UpdateProfilePage = () => {
                         type="text"
                         name="name"
                         value={formData.name}
-                        onChange={handleChange}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                         className="w-full p-2 border rounded-md"
                     />
                 </div>
@@ -105,7 +124,7 @@ const UpdateProfilePage = () => {
                         type="text"
                         name="studentId"
                         value={formData.studentId}
-                        onChange={handleChange}
+                        onChange={(e) => setFormData({ ...formData, studentId: e.target.value })}
                         className="w-full p-2 border rounded-md"
                     />
                 </div>
@@ -116,20 +135,26 @@ const UpdateProfilePage = () => {
                         type="text"
                         name="department"
                         value={formData.department}
-                        onChange={handleChange}
+                        onChange={(e) => setFormData({ ...formData, department: e.target.value })}
                         className="w-full p-2 border rounded-md"
                     />
                 </div>
 
-                <div>
+                {/* 이메일 인증 추가 */}
+                <div className="flex flex-col items-start">
                     <label className="block text-sm font-medium">이메일</label>
-                    <input
-                        type="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        className="w-full p-2 border rounded-md"
-                    />
+                    <div className="flex items-center gap-2 w-full">
+                        <EmailVerificationForm
+                            onVerificationSuccess={handleEmailVerificationSuccess}
+                            initialEmail={formData.email}
+                            onEmailChange={handleEmailChange} // 이메일 변경 시 반영
+                        />
+                    </div>
+                    {formData.isEmailVerified ? (
+                        <p className="text-green-500 text-sm mt-1">✅ 이메일 인증 완료</p>
+                    ) : (
+                        <p className="text-red-500 text-sm mt-1">❌ 이메일 인증이 필요합니다.</p>
+                    )}
                 </div>
 
                 <div>
@@ -138,7 +163,7 @@ const UpdateProfilePage = () => {
                         type="text"
                         name="profileImage"
                         value={formData.profileImage}
-                        onChange={handleChange}
+                        onChange={(e) => setFormData({...formData, profileImage: e.target.value})}
                         className="w-full p-2 border rounded-md"
                     />
                 </div>
@@ -150,7 +175,7 @@ const UpdateProfilePage = () => {
                     className="px-4 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500"
                     onClick={() => navigate("/profile")}
                 >
-                    취소
+                취소
                 </button>
                 <button
                     className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
@@ -164,5 +189,9 @@ const UpdateProfilePage = () => {
 };
 
 export default UpdateProfilePage;
+
+
+
+
 
 

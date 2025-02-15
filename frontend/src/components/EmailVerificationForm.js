@@ -2,12 +2,26 @@ import React, { useState, useEffect } from "react";
 import { requestVerificationCode, verifyCode } from "../api/authApi";
 import InputField from "./InputField";
 
-const EmailVerificationForm = ({ onVerificationSuccess }) => {
-    const [email, setEmail] = useState("");
+const EmailVerificationForm = ({ onVerificationSuccess, initialEmail, onEmailChange}) => {
+    const [email, setEmail] = useState(initialEmail || ""); // 초기값 설정
     const [verificationCode, setVerificationCode] = useState("");
     const [isCodeSent, setIsCodeSent] = useState(false);
     const [message, setMessage] = useState("");
     const [timer, setTimer] = useState(300); // 5분 (300초)
+
+    // `initialEmail` 값이 변경되면 자동으로 `email` 상태에 반영
+    useEffect(() => {
+        if (initialEmail) {
+            setEmail(initialEmail);
+        }
+    }, [initialEmail]); // `initialEmail`이 변경될 때마다 업데이트
+
+    // 이메일 입력값 변경 시 부모 컴포넌트에 전달
+    const handleEmailChange = (e) => {
+        const newEmail = e.target.value;
+        setEmail(newEmail);
+        onEmailChange(newEmail); // 부모 컴포넌트(`UpdateProfilePage`)로 업데이트 반영
+    };
 
     // 이메일 인증 요청
     const handleRequestVerificationCode = async () => {
@@ -60,7 +74,7 @@ const EmailVerificationForm = ({ onVerificationSuccess }) => {
                     type="email"
                     placeholder="이메일"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={handleEmailChange}    
                     disabled={isCodeSent}
                 />
                 <button
