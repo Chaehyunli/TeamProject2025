@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { requestVerificationCode, verifyCode } from "../api/authApi";
+import InputField from "./InputField";
 
-const EmailVerificationForm = () => {
+const EmailVerificationForm = ({ onVerificationSuccess }) => {
     const [email, setEmail] = useState("");
     const [verificationCode, setVerificationCode] = useState("");
     const [isCodeSent, setIsCodeSent] = useState(false);
@@ -24,12 +25,11 @@ const EmailVerificationForm = () => {
     // 인증 코드 검증 요청
     const handleVerifyCode = async () => {
         try {
-            const response = await verifyCode(email, verificationCode);
+            await verifyCode(email, String(verificationCode));
             setMessage("✅ 이메일 인증이 완료되었습니다.");
             setTimer(0);
             setIsCodeSent(false);
-
-            //onVerificationSuccess(response); // 부모 컴포넌트로 성공 전달
+            onVerificationSuccess({ email: email, isEmailVerified: true });
         } catch (error) {
             setMessage("❌ 인증 코드가 올바르지 않거나 만료되었습니다.");
             console.error(error);
@@ -54,35 +54,43 @@ const EmailVerificationForm = () => {
     };
 
     return (
-        <div className="max-w-md mx-auto mt-12 p-6 text-center border border-gray-300 rounded-lg shadow-lg bg-white">
-            <div className="flex items-center gap-2 mb-3">
-                <input
+        <div className="max-w-md w-full mx-auto my-4">
+            <div className="flex items-center justify-between">
+                <InputField
                     type="email"
                     placeholder="이메일"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="flex-1 px-4 py-2 text-lg border border-gray-300 rounded-full bg-gray-100 focus:outline-none"
                     disabled={isCodeSent}
                 />
-                <button onClick={handleRequestVerificationCode} className="px-4 py-2 text-lg border border-gray-300 rounded-full bg-gray-100 hover:bg-gray-200 transition">
+                <button
+                    type="button"
+                    onClick={handleRequestVerificationCode}
+                    className="px-4 py-2 text-sm border border-gray-300 rounded-full hover:bg-gray-200 transition"
+                >
                     인증번호 발송
                 </button>
             </div>
 
             {isCodeSent && (
                 <>
-                    <div className="flex items-center gap-2 mb-3">
-                        <input
+                    <div className="flex items-center justify-between my-4">
+                        <InputField
                             type="text"
                             placeholder="인증번호"
                             value={verificationCode}
                             onChange={(e) => setVerificationCode(e.target.value)}
-                            className="flex-1 px-4 py-2 text-lg border border-gray-300 rounded-full bg-gray-100 focus:outline-none"
                         />
-                        <button onClick={handleVerifyCode} className="px-4 py-2 text-lg border border-gray-300 rounded-full bg-gray-100 hover:bg-gray-200 transition" disabled={timer === 0}>
+                        <span
+                            className="text-sm font-bold text-gray-600 min-w-[50px] text-right">{formatTime(timer)}</span>
+                        <button
+                            type="button"
+                            onClick={handleVerifyCode}
+                            className="px-4 py-2 text-sm border border-gray-300 rounded-full hover:bg-gray-200 transition"
+                            disabled={timer === 0}
+                        >
                             인증
                         </button>
-                        <span className="text-sm font-bold text-gray-600 min-w-[50px] text-right">{formatTime(timer)}</span>
                     </div>
                     <p className="text-xs text-gray-500">*인증번호는 5분 이내에 입력해야 하며, 시간이 초과되면 다시 요청해야 합니다.</p>
                 </>

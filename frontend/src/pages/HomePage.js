@@ -1,35 +1,46 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const HomePage = () => {
-    const [username, setUsername] = useState("");
+    const [username, setUsername] = useState(localStorage.getItem("name") || null); // 초기값을 null로 설정
+    const navigate = useNavigate();
 
     useEffect(() => {
-        const storedUsername = localStorage.getItem("name");
-        if (storedUsername) {
-            setUsername(storedUsername);
-        } else {
-            window.location.href = "/login"; // 로그인 페이지로 리디렉트
-        }
+        const checkLoginStatus = () => {
+            const storedUsername = localStorage.getItem("name");
+            if (storedUsername && storedUsername !== "undefined") {
+                setUsername(storedUsername);
+            } else {
+                setUsername(null); // 로그인되지 않았으면 상태를 null로 설정
+                navigate("/login"); // 로그인 페이지로 이동
+            }
+        };
+
+        checkLoginStatus(); // 초기 실행
+
+        // storage 이벤트 감지하여 상태 변경 (로그아웃하면 로그인 페이지로 이동)
+        window.addEventListener("storage", checkLoginStatus);
+
+        return () => {
+            window.removeEventListener("storage", checkLoginStatus);
+        };
     }, []);
 
-    return ( // 추후 변경, 백 합친 후
+    // 로그인되지 않았으면 아무것도 렌더링하지 않음
+    if (username === null) return null;
+
+    return (
         <div className="flex items-center justify-center min-h-screen bg-gray-100">
             <div className="bg-white p-8 rounded-lg shadow-lg w-96">
                 <h2 className="text-2xl font-bold text-center mb-6">Welcome, {username}님!</h2>
-                <button
-                    onClick={() => {
-                        localStorage.removeItem("userId");
-                        localStorage.removeItem("username");
-                        localStorage.removeItem("name");
-                        window.location.href = "/"; // 로그아웃 후 로그인 페이지로 이동
-                    }}
-                    className="w-full bg-red-500 text-white py-2 rounded-lg hover:bg-red-600"
-                >
-                    로그아웃
-                </button>
             </div>
         </div>
     );
 };
 
 export default HomePage;
+
+
+
+
+

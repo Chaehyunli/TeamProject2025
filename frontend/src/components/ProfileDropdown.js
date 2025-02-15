@@ -11,7 +11,7 @@ const ProfileDropdown = ({ username, userImage, onLogout }) => {
         try {
             await logout();
             alert("로그아웃 되었습니다.");
-            window.location.href = "/"; // 추후 변경, 로그인 페이지로
+            window.location.href = "/login";
         } catch (error) {
             console.error("로그아웃 실패", error);
         }

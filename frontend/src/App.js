@@ -1,23 +1,32 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {BrowserRouter as Router, Routes, Route, Navigate} from "react-router-dom";
 import TopNavbar from "./components/TopNavbar";
+import UnderConstruction from "./components/UnderConstruction";
 import HomePage from "./pages/HomePage";
-import LoginPage from "./pages/LoginPage";
 import ProfilePage from "./pages/ProfilePage";
-import EmailVerificationForm from "./components/EmailVerificationForm";
+import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
+import UpdateProfilePage from "./pages/UpdateProfilePage";
 
 function App() {
-  return (
-      <Router>
-        <TopNavbar />
-        <Routes>
-            <Route path="/home" element={<HomePage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/register" element={<EmailVerificationForm />} /> {/* 추후 변경, 회원가입 페이지로 */}
-        </Routes>
-      </Router>
-  );
+    return (
+        <Router>
+            <TopNavbar />
+            <Routes>
+                <Route path="/" element={<Navigate to="/home" />} />
+                <Route path="/home" element={<HomePage />} />
+                <Route path="/club-registration" element={<UnderConstruction />} />
+                <Route path="/chatrooms" element={<UnderConstruction />} />
+                <Route path="/profile" element={<ProfilePage />} />
+                <Route path="/updateProfile" element={<UpdateProfilePage />} />
+
+                {/* Auth */}
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage />} />
+                <Route path="/account/find" element={<UnderConstruction />} />
+            </Routes>
+        </Router>
+    );
 }
 
 export default App;
