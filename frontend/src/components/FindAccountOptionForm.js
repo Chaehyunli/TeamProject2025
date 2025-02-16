@@ -5,15 +5,17 @@ export default function FindAccountOptionForm({ activeTab, setActiveTab }) {
     const buttonRefs = useRef({ id: null, pw: null });
 
     useEffect(() => {
-        // 애니메이션 타이밍 최적화를 위해 requestAnimationFrame 사용
-        requestAnimationFrame(() => {
+        // setTimeout을 사용하여 DOM 업데이트가 완료된 후 실행하도록 보장
+        setTimeout(() => {
             if (buttonRefs.current[activeTab] && underlineRef.current) {
                 const { offsetLeft, offsetWidth } = buttonRefs.current[activeTab];
-                underlineRef.current.style.transform = `translateX(${offsetLeft}px)`;
+
+                underlineRef.current.style.left = `${offsetLeft}px`;
                 underlineRef.current.style.width = `${offsetWidth}px`;
             }
-        });
-    }, [activeTab]);
+        }, 0); // 0ms 딜레이를 줘서 렌더링 이후 실행됨
+
+    }, [activeTab]); // activeTab 변경 시 실행됨
 
     return (
         <div className="relative flex justify-start gap-x-6 mb-8">
