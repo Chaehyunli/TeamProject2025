@@ -1,26 +1,19 @@
-import { useState, useRef, useEffect } from "react";
-import {useNavigate} from "react-router-dom";
+import { useRef, useEffect } from "react";
 
-export default function FindAccountOptionForm({ onSelectOption }) {
-    const navigate = useNavigate();
-    const [activeTab, setActiveTab] = useState("pw");
-    const [underlineStyle, setUnderlineStyle] = useState({ left: 0, width: 0 });
-
+export default function FindAccountOptionForm({ activeTab, setActiveTab }) {
+    const underlineRef = useRef(null);
     const buttonRefs = useRef({ id: null, pw: null });
 
     useEffect(() => {
-        if (buttonRefs.current[activeTab]) {
-            const { offsetLeft, offsetWidth } = buttonRefs.current[activeTab];
-            setUnderlineStyle({ left: offsetLeft, width: offsetWidth });
-        }
+        // 애니메이션 타이밍 최적화를 위해 requestAnimationFrame 사용
+        requestAnimationFrame(() => {
+            if (buttonRefs.current[activeTab] && underlineRef.current) {
+                const { offsetLeft, offsetWidth } = buttonRefs.current[activeTab];
+                underlineRef.current.style.transform = `translateX(${offsetLeft}px)`;
+                underlineRef.current.style.width = `${offsetWidth}px`;
+            }
+        });
     }, [activeTab]);
-
-    const handleClick = (option, path) => {
-        setActiveTab(option);
-        if (onSelectOption) onSelectOption(option);
-
-        navigate(path);
-    };
 
     return (
         <div className="relative flex justify-start gap-x-6 mb-8">
@@ -30,7 +23,7 @@ export default function FindAccountOptionForm({ onSelectOption }) {
                 className={`text-lg font-semibold transition px-1 py-1 ${
                     activeTab === "id" ? "text-black" : "text-gray-500"
                 }`}
-                onClick={() => handleClick("id", "/account/find/")}
+                onClick={() => setActiveTab("id")}
             >
                 아이디 찾기
             </button>
@@ -41,18 +34,15 @@ export default function FindAccountOptionForm({ onSelectOption }) {
                 className={`text-lg font-semibold transition px-1 py-1 ${
                     activeTab === "pw" ? "text-black" : "text-gray-500"
                 }`}
-                onClick={() => handleClick("pw", "/account/find/pw")}
+                onClick={() => setActiveTab("pw")}
             >
                 비밀번호 찾기
             </button>
 
             {/* 밑줄 애니메이션 */}
             <span
-                className="absolute -bottom-1 h-[3.5px] bg-blue-400 transition-all duration-300"
-                style={{
-                    width: `${underlineStyle.width}px`,
-                    left: `${underlineStyle.left}px`,
-                }}
+                ref={underlineRef}
+                className="absolute -bottom-1 h-[3.5px] bg-blue-400 transition-all duration-300 ease-in-out"
             ></span>
         </div>
     );

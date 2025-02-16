@@ -7,9 +7,8 @@ import ProfilePage from "./pages/ProfilePage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import UpdateProfilePage from "./pages/UpdateProfilePage";
-import FindPasswordPage from "./pages/FindPasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
-import FuckPage from "./pages/FuckPage";
+import FindAccountPage from "./pages/FindAccountPage";
 
 function App() {
     return (
@@ -26,10 +25,8 @@ function App() {
                 {/* Auth */}
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
-                <Route path="/account/find" element={<UnderConstruction />} />
-                <Route path="/account/find/pw" element={<FindPasswordPage />} />
+                <Route path="/account/find" element={<FindAccountPage />} />
                 <Route path="/account/reset-pw" element={<ResetPasswordPage />} />
-                <Route path="/ani" element={<FuckPage />} />
             </Routes>
         </Router>
     );

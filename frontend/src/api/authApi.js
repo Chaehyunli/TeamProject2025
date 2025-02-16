@@ -122,3 +122,30 @@ export const verifyUsername = async (formData) => {
         throw error;
     }
 };
+
+// 아이디 찾기 -> 위의 코드랑 중복이 좀 많긴한데, 프로젝트 어느 정도 완성도가 생기면 어차피 리팩토링 해야함. 그떄 ㄱㄱ
+export const findUsername = async (formData) => {
+    try {
+        const response = await fetch(`${API_BASE_URL}/find-id`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(formData),
+        });
+
+        const result = await response.json();
+        if (!response.ok) {
+            throw new Error(result.message);
+        }
+
+        const foundUsername = result.data.username; // API 응답의 username
+
+        if (!foundUsername) {
+            throw new Error("서버 응답에서 아이디 정보를 찾을 수 없습니다.");
+        }
+
+        return foundUsername;
+
+    } catch (error) {
+        throw error;
+    }
+};
