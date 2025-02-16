@@ -68,3 +68,84 @@ export const logout = async () => {
         return false;
     }
 };
+
+export const resetPassword = async (formData) => {
+    try{
+        const response = await fetch(`${API_BASE_URL}/password-reset`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(formData),
+        });
+
+        const result = await response.json();
+
+        if (!response.ok){
+            throw new Error(result.message);
+        }
+
+        return result;
+    } catch(error) {
+        console.error("비밀번호 재설정 오류: ", error); // 오류 메시지 출력
+        throw error;
+    }
+}
+
+// 아이디 검증 요청 (find-id API 호출) for reset-pw
+export const verifyUsername = async (formData) => {
+    try {
+        const response = await fetch(`${API_BASE_URL}/find-id`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                email: formData.email,
+                isEmailVerified: formData.isEmailVerified,
+            }),
+        });
+
+        const result = await response.json();
+        if (!response.ok) {
+            throw new Error(result.message);
+        }
+
+        const foundUsername = result.data.username; // API 응답의 username
+
+        if (!foundUsername) {
+            throw new Error("서버 응답에서 아이디 정보를 찾을 수 없습니다.");
+        }
+
+        if (foundUsername !== formData.username) {
+            console.error("아이디 불일치 오류 발생");
+            throw new Error("등록되지 않은 아이디입니다.");
+        }
+
+    } catch (error) {
+        throw error;
+    }
+};
+
+// 아이디 찾기 -> 위의 코드랑 중복이 좀 많긴한데, 프로젝트 어느 정도 완성도가 생기면 어차피 리팩토링 해야함. 그떄 ㄱㄱ
+export const findUsername = async (formData) => {
+    try {
+        const response = await fetch(`${API_BASE_URL}/find-id`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(formData),
+        });
+
+        const result = await response.json();
+        if (!response.ok) {
+            throw new Error(result.message);
+        }
+
+        const foundUsername = result.data.username; // API 응답의 username
+
+        if (!foundUsername) {
+            throw new Error("서버 응답에서 아이디 정보를 찾을 수 없습니다.");
+        }
+
+        return foundUsername;
+
+    } catch (error) {
+        throw error;
+    }
+};

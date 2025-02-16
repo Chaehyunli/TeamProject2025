@@ -139,7 +139,9 @@ public class SecurityConfig {
                                 "/api/v1/auth/session",
                                 "/error",
                                 "/api/v1/auth/email",
-                                "/api/v1/auth/email/verify"
+                                "/api/v1/auth/email/verify",
+                                "/api/v1/auth/find-id",
+                                "/api/v1/auth/password-reset"
                         ).permitAll() // 인증 없이 접근 가능
 
                         .requestMatchers("/api/v1/users/delete").authenticated() // 회원탈퇴는 인증 필요

@@ -7,20 +7,38 @@ const EmailVerificationForm = ({ onVerificationSuccess }) => {
     const [verificationCode, setVerificationCode] = useState("");
     const [isCodeSent, setIsCodeSent] = useState(false);
     const [message, setMessage] = useState("");
-    const [timer, setTimer] = useState(300); // 5분 (300초)
+    const [timer, setTimer] = useState(300);
+    const [intervalId, setIntervalId] = useState(null);
 
     // 이메일 인증 요청
     const handleRequestVerificationCode = async () => {
+        setIsCodeSent(true);  // 즉시 UI 변경 (인증번호 입력칸 바로 표시)
+        setMessage("✅ 인증 코드가 이메일로 전송 중입니다...");
+
+        if (intervalId) clearInterval(intervalId);
+        setTimer(300);
+        const newIntervalId = setInterval(() => {
+            setTimer((prevTimer) => prevTimer - 1);
+        }, 1000);
+        setIntervalId(newIntervalId);
+
         try {
             await requestVerificationCode(email);
-            setIsCodeSent(true);
-            setMessage("✅ 인증 코드가 이메일로 전송되었습니다.");
-            setTimer(300);
+
         } catch (error) {
             setMessage("⚠️ 이메일 전송 중 오류가 발생했습니다.");
             console.error(error);
+            setIsCodeSent(false); // 요청 실패 시 다시 원래 상태로 변경
         }
     };
+
+    // isCodeSent 상태 변화를 감지하여 메시지 업데이트
+    useEffect(() => {
+        if (isCodeSent) {
+            setMessage("✅ 인증 코드가 이메일로 전송되었습니다.");
+        }
+    }, [isCodeSent]);
+
 
     // 인증 코드 검증 요청
     const handleVerifyCode = async () => {
@@ -29,6 +47,7 @@ const EmailVerificationForm = ({ onVerificationSuccess }) => {
             setMessage("✅ 이메일 인증이 완료되었습니다.");
             setTimer(0);
             setIsCodeSent(false);
+            clearInterval(intervalId);
             onVerificationSuccess({ email: email, isEmailVerified: true });
         } catch (error) {
             setMessage("❌ 인증 코드가 올바르지 않거나 만료되었습니다.");
@@ -38,13 +57,10 @@ const EmailVerificationForm = ({ onVerificationSuccess }) => {
 
     // 타이머 감소 로직
     useEffect(() => {
-        if (timer > 0) {
-            const interval = setInterval(() => {
-                setTimer((prevTimer) => prevTimer - 1);
-            }, 1000);
-            return () => clearInterval(interval);
+        if (timer <= 0 && intervalId) {
+            clearInterval(intervalId);
         }
-    }, [timer]);
+    }, [timer, intervalId]);
 
     // 초 → MM:SS 변환 함수
     const formatTime = (seconds) => {
@@ -81,8 +97,9 @@ const EmailVerificationForm = ({ onVerificationSuccess }) => {
                             value={verificationCode}
                             onChange={(e) => setVerificationCode(e.target.value)}
                         />
-                        <span
-                            className="text-sm font-bold text-gray-600 min-w-[50px] text-right">{formatTime(timer)}</span>
+                        <span className="text-sm font-bold text-gray-600 min-w-[50px] text-right">
+                            {formatTime(timer)}
+                        </span>
                         <button
                             type="button"
                             onClick={handleVerifyCode}
@@ -92,7 +109,9 @@ const EmailVerificationForm = ({ onVerificationSuccess }) => {
                             인증
                         </button>
                     </div>
-                    <p className="text-xs text-gray-500">*인증번호는 5분 이내에 입력해야 하며, 시간이 초과되면 다시 요청해야 합니다.</p>
+                    <p className="text-xs text-gray-500">
+                        *인증번호는 5분 이내에 입력해야 하며, 시간이 초과되면 다시 요청해야 합니다.
+                    </p>
                 </>
             )}
 

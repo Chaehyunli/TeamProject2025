@@ -54,20 +54,19 @@ public class User {
     @Column(nullable = true, length = 100)
     private String department; // 학과 (기본 null)
 
-    // 기존의 update 메소드 수정
+    // 기존 객체 수정 방식만 유지
     public void update(UserUpdateRequestDto dto) {
         if (dto.getEmail() != null) this.email = dto.getEmail();
         if (dto.getIsEmailVerified() != null) this.isEmailVerified = dto.getIsEmailVerified();
         if (dto.getProfileImage() != null) this.profileImage = dto.getProfileImage();
-        if (dto.getName() != null) this.name = dto.getName(); // ✅ 이름 업데이트 추가
-        if (dto.getStudentId() != null) this.studentId = dto.getStudentId(); // ✅ 학번 업데이트 추가
-        if (dto.getDepartment() != null) this.department = dto.getDepartment(); // ✅ 학과 업데이트 추가
+        if (dto.getName() != null) this.name = dto.getName();
+        if (dto.getStudentId() != null) this.studentId = dto.getStudentId();
+        if (dto.getDepartment() != null) this.department = dto.getDepartment();
         this.updatedAt = LocalDateTime.now();
     }
 
-//    // update 메서드
+    // update 메서드
 //    public User update(UserUpdateRequestDto dto) {
-//
 //        return User.builder()
 //                .userId(this.userId)
 //                .username(this.username)
@@ -82,12 +81,36 @@ public class User {
 //                .createdAt(this.createdAt)
 //                .updatedAt(LocalDateTime.now())
 //                .build();
+//
+//        /*
+//         * ⚠️ Profile Update API 구현할 때 신경써야 할 부분이긴 한데,
+//         * 안전성을 위해 Email 입력란이 비어있게 되면 부분을 업데이트 진행하지 않는 형식으로 했다.
+//         * null 처리하면 Data Integrity 가 깨질거임
+//         * 추후 인증방식이 아니라, 회원가입 API 처럼 인증을 해야만 등록이 가능하도록 설정해야함
+//         * 지금 코드 비통합 단계라, 회원가입 API 에서 이 로직 처리 안되어있을건데, 처리 해야함
+//         */
 //    }
-    /*
-     * ⚠️ Profile Update API 구현할 때 신경써야 할 부분이긴 한데,
-     * 안전성을 위해 Email 입력란이 비어있게 되면 부분을 업데이트 진행하지 않는 형식으로 했다.
-     * null 처리하면 Data Integrity 가 깨질거임
-     * 추후 인증방식이 아니라, 회원가입 API 처럼 인증을 해야만 등록이 가능하도록 설정해야함
-     * 지금 코드 비통합 단계라, 회원가입 API 에서 이 로직 처리 안되어있을건데, 처리 해야함
-     */
+
+//    public User updatePassword(String newEncodedPassword) {
+//        return User.builder()
+//                .userId(this.userId)
+//                .username(this.username)
+//                .password(newEncodedPassword) // 해싱된 비밀번호만 저장
+//                .name(this.name)
+//                .studentId(this.studentId)
+//                .universityId(this.universityId)
+//                .email(this.email)
+//                .isEmailVerified(this.isEmailVerified)
+//                .profileImage(this.profileImage)
+//                .isUniVerified(this.isUniVerified)
+//                .createdAt(this.createdAt)
+//                .updatedAt(LocalDateTime.now())
+//                .build();
+//    }
+
+    // ✅ 기존 객체 수정 (새로운 객체 생성 X)
+    public void updatePassword(String newEncodedPassword) {
+        this.password = newEncodedPassword;
+        this.updatedAt = LocalDateTime.now(); // updated_at 갱신
+    }
 }

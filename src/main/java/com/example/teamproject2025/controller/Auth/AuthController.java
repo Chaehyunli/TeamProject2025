@@ -1,14 +1,14 @@
 package com.example.teamproject2025.controller.Auth;
 
+import com.example.teamproject2025.dto.Auth.*;
 import com.example.teamproject2025.dto.Common.CommonResponseDto;
-import com.example.teamproject2025.dto.Auth.EmailRequestDto;
-import com.example.teamproject2025.dto.Auth.EmailResponseDto;
-import com.example.teamproject2025.dto.Auth.EmailVerificationDto;
 import com.example.teamproject2025.dto.User.UserLoginRequestDto;
 import com.example.teamproject2025.dto.User.UserLoginResponseDto;
 import com.example.teamproject2025.service.Auth.EmailServiceImpl;
+import com.example.teamproject2025.service.Auth.FindUserAuthService;
 import com.example.teamproject2025.service.Auth.LoginService;
 import com.example.teamproject2025.service.Auth.LogoutService;
+import com.example.teamproject2025.service.User.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -25,6 +25,10 @@ public class AuthController {
     private final EmailServiceImpl emailServiceImpl;
     private final LoginService loginService;
     private final LogoutService logoutService;
+    private final UserService userService;
+    private final FindUserAuthService findUserAuthService;
+
+
 
     // 이메일 인증 요청
     @PostMapping("/email")
@@ -70,6 +74,21 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(CommonResponseDto.success(HttpStatus.OK.value(), "Logged out successfully", null));
     }
+
+    @PostMapping("/find-id")
+    public ResponseEntity<CommonResponseDto<Object>> findUserId(@RequestBody @Validated EmailResponseDto request) {
+        FindUserIdResponseDto dto = findUserAuthService.findUserId(request);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CommonResponseDto.success(HttpStatus.OK.value(), "Find ID Successfully", dto));
+    }
+
+    @PostMapping("/password-reset")
+    public ResponseEntity<CommonResponseDto<Object>> resetPassword(@RequestBody @Validated ResetUserPasswordRequestDto request) {
+        findUserAuthService.resetUserPassword(request);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CommonResponseDto.success(HttpStatus.OK.value(), "Password reset successfully", null));
+    }
+
 }
 
 /* 💡Descriptions -- Refactoring @dev_taehuyn
