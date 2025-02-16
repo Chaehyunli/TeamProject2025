@@ -9,6 +9,7 @@ import RegisterPage from "./pages/RegisterPage";
 import UpdateProfilePage from "./pages/UpdateProfilePage";
 import FindPasswordPage from "./pages/FindPasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
+import FuckPage from "./pages/FuckPage";
 
 function App() {
     return (
@@ -28,6 +29,7 @@ function App() {
                 <Route path="/account/find" element={<UnderConstruction />} />
                 <Route path="/account/find/pw" element={<FindPasswordPage />} />
                 <Route path="/account/reset-pw" element={<ResetPasswordPage />} />
+                <Route path="/ani" element={<FuckPage />} />
             </Routes>
         </Router>
     );

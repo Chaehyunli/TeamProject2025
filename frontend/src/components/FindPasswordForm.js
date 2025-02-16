@@ -45,7 +45,7 @@ const FindPasswordForm = () => {
             // 비밀번호 변경 페이지로 이동 (데이터 유지)
             navigate("/account/reset-pw", { state: formData });
         } catch (error){
-            setMessage("오류 발생: " + error.message);
+            setMessage(error.message);
         }
     };
 
