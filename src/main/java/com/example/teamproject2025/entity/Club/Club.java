@@ -50,7 +50,7 @@ public class Club {
     private LocalDateTime createdAt; // 동아리 생성 시간 for /clubs
 
     @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<UserClub> userClubs; // UserClub 테이블과 N:1, 해당 동아리에 가입된 사용자 목록
+    private List<UserClub> userClubs; // UserClub 테이블과 1:N, 해당 동아리에 가입된 사용자 목록
 
     // 회장(PRESIDENT)과 부회장(VICE_PRESIDENT)만 필터링하여 반환
     public List<UserClub> getLeaders() {
