@@ -89,3 +89,36 @@ export const resetPassword = async (formData) => {
         throw error;
     }
 }
+
+// 아이디 검증 요청 (find-id API 호출) for reset-pw
+export const verifyUsername = async (formData) => {
+    try {
+        const response = await fetch(`${API_BASE_URL}/find-id`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                email: formData.email,
+                isEmailVerified: formData.isEmailVerified,
+            }),
+        });
+
+        const result = await response.json();
+        if (!response.ok) {
+            throw new Error(result.message);
+        }
+
+        const foundUsername = result.data.username; // API 응답의 username
+
+        if (!foundUsername) {
+            throw new Error("서버 응답에서 아이디 정보를 찾을 수 없습니다.");
+        }
+
+        if (foundUsername !== formData.username) {
+            console.error("아이디 불일치 오류 발생");
+            throw new Error("등록되지 않은 아이디입니다.");
+        }
+
+    } catch (error) {
+        throw error;
+    }
+};

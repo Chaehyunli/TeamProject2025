@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import EmailVerificationForm from "./EmailVerificationForm";
 import InputField from "./InputField";
+import {verifyUsername} from "../api/authApi";
 
 const FindPasswordForm = () => {
     const navigate = useNavigate();
@@ -30,7 +31,7 @@ const FindPasswordForm = () => {
         console.log("이메일 인증 완료:", response);
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         try {
             // 이메일 인증 확인
@@ -38,6 +39,8 @@ const FindPasswordForm = () => {
                 alert("이메일 인증을 완료해주세요.");
                 return;
             }
+
+            await verifyUsername(formData);
 
             // 비밀번호 변경 페이지로 이동 (데이터 유지)
             navigate("/account/reset-pw", { state: formData });
