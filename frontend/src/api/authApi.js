@@ -68,3 +68,24 @@ export const logout = async () => {
         return false;
     }
 };
+
+export const resetPassword = async (formData) => {
+    try{
+        const response = await fetch(`${API_BASE_URL}/password-reset`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(formData),
+        });
+
+        const result = await response.json();
+
+        if (!response.ok){
+            throw new Error(result.message);
+        }
+
+        return result;
+    } catch(error) {
+        console.error("비밀번호 재설정 오류: ", error); // 오류 메시지 출력
+        throw error;
+    }
+}

@@ -7,6 +7,8 @@ import ProfilePage from "./pages/ProfilePage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import UpdateProfilePage from "./pages/UpdateProfilePage";
+import FindPasswordPage from "./pages/FindPasswordPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 
 function App() {
     return (
@@ -24,6 +26,8 @@ function App() {
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
                 <Route path="/account/find" element={<UnderConstruction />} />
+                <Route path="/account/find/pw" element={<FindPasswordPage />} />
+                <Route path="/account/reset-pw" element={<ResetPasswordPage />} />
             </Routes>
         </Router>
     );
