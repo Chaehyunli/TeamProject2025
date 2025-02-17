@@ -23,14 +23,14 @@ const ClubRegistrationForm = ({ presidentName, onSubmit }) => {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="bg-white shadow-md rounded-lg p-6 max-w-[600px] mx-auto">
+        <form onSubmit={handleSubmit} className="max-w-[600px] mx-auto space-y-4">
             {/* 동아리 회장 이름 (자동 입력, 수정 불가) */}
-            <label className="block text-sm font-medium text-gray-700">동아리 회장 이름</label>
-            <input
+            <InputField
+                label="동아리 회장 이름"
                 type="text"
+                name="presidentName"
                 value={presidentName}
-                disabled
-                className="w-full px-4 py-2 border rounded-md bg-gray-100 shadow-sm"
+                disabled={true}
             />
 
             {/* 동아리 이름 */}

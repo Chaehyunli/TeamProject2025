@@ -28,12 +28,11 @@ const ClubRegistration = () => {
             alert("동아리 등록 중 오류가 발생했습니다.");
         }
      };
-    //bg-white p-6 md:p-8 rounded-lg shadow-md w-full max-w-md border border-gray-300
 
     return (
         <div className="max-w-2xl mx-auto my-28 px-6 py-12">
             <h1 className="text-3xl font-bold">동아리 등록 신청</h1>
-            <div className="mt-4">
+            <div className="my-8">
                 <ClubRegistrationForm presidentName={presidentName} onSubmit={handleSubmit}/>
             </div>
         </div>
