@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import EmailVerificationForm from "./EmailVerificationForm";
 import InputField from "./InputField";
+import UniversitySelect from "./UniversitySelect";
 import { register } from "../api/userApi";
 
 const RegisterForm = ({ onSubmit }) => {
@@ -101,25 +102,8 @@ const RegisterForm = ({ onSubmit }) => {
                 placeholder="학번 (예: 12345678)"
             />
 
-            {/* 학교 입력 */}
-            <div>
-                <label className="block text-sm font-medium text-gray-700">학교</label>
-                <select
-                    name="universityName"
-                    value={formData.universityName}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
-                >
-                    <option value="">학교를 선택하세요</option>
-                    <option value="서울대학교">서울대학교</option>
-                    <option value="연세대학교">연세대학교</option>
-                    <option value="고려대학교">고려대학교</option>
-                    <option value="한양대학교">한양대학교</option>
-                    <option value="성균관대학교">성균관대학교</option>
-                    <option value="명지대학교">명지대학교</option>
-                </select>
-            </div>
+            {/* 학교 선택 (UniversitySelect 컴포넌트 사용) */}
+            <UniversitySelect value={formData.universityName} onChange={handleChange} />
 
             {/* 이메일 인증 폼 */}
             <EmailVerificationForm onVerificationSuccess={handleEmailVerificationSuccess} />
