@@ -69,7 +69,7 @@ const ClubRegistrationForm = ({ presidentName, onSubmit }) => {
             {/* 신청하기 버튼 */}
             <button
                 type="submit"
-                className="bg-blue-500 text-white w-full mt-6 py-2 rounded-md hover:bg-blue-600 transition duration-300"
+                className="bg-primary text-white w-full mt-6 py-2 rounded-md hover:bg-hoverBlueColor transition duration-300"
             >
                 신청하기
             </button>

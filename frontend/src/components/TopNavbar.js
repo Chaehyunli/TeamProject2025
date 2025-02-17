@@ -4,6 +4,7 @@ import ProfileDropdown from "./ProfileDropdown";
 import { useNavigate, useLocation } from "react-router-dom";
 import { getUserProfile } from "../api/userApi";
 import { logout } from "../api/authApi";
+import MainLogoForm from "./MainLogoForm";
 
 const TopNavbar = () => {
 
@@ -103,7 +104,8 @@ const TopNavbar = () => {
         <nav className="fixed top-0 left-0 w-full h-[72px] flex items-center border-b-[0.5px] border-black px-12 justify-between bg-white z-50 shadow-md">
             {/* 로고 및 메뉴 */}
             <div className="flex items-center gap-8">
-                <span className="text-black text-base font-bold">동아리모아</span>
+                {/*<span className="text-black text-base font-bold">동아리모아</span>*/}
+                <MainLogoForm />
                 <a href="/home" className="text-black text-base font-bold hover:text-hoverGrayColor">홈</a>
                 <a href="/club-register" className="text-extraText text-base font-normal hover:text-hoverGrayColor">등록신청</a>
                 <a href="/chatrooms" className="text-extraText text-base font-normal hover:text-hoverGrayColor">채팅</a>

@@ -12,7 +12,7 @@ function RegisterPage() {
                 <div className="font-medium flex justify-center text-gray-500 mt-4 gap-2">
                     <span className="font-medium text-gray-500">계정이 이미 있으신가요?</span>
                     <span
-                        className="hover:text-[#65A3FF] underline cursor-pointer"
+                        className="hover:text-hoverBlueColor underline cursor-pointer"
                         onClick={() => navigate("/login")}
                     >
                         로그인
