@@ -8,6 +8,9 @@ const ClubRegistrationForm = ({ presidentName, onSubmit }) => {
     const [category, setCategory] = useState("");
     const [thumbUrl, setThumbUrl] = useState(null);
 
+    // 카테고리 목록
+    const categories = ["홍보", "예술", "체육", "학술", "취미", "봉사", "기타"];
+
     // 파일 업로드 핸들러
     const handleFileChange = (file) => {
         setThumbUrl(file);
@@ -52,16 +55,20 @@ const ClubRegistrationForm = ({ presidentName, onSubmit }) => {
                 placeholder="동아리 설명을 입력하세요"
             ></textarea>
 
-            {/* 카테고리 */}
-            <InputField
-                label="카테고리"
-                type="text"
+            {/* 카테고리 선택 (드롭다운) */}
+            <label className="block text-sm font-medium text-gray-700 mt-4">카테고리</label>
+            <select
                 name="category"
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
                 required
-                placeholder="카테고리를 선택하세요"
-            />
+                className="w-full px-4 py-2 border rounded-md shadow-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
+            >
+                <option value="">카테고리를 선택하세요</option>
+                {categories.map((cat) => (
+                    <option key={cat} value={cat}>{cat}</option>
+                ))}
+            </select>
 
             {/* 파일 업로드 컴포넌트 */}
             <FileUpload onFileSelect={handleFileChange} />
