@@ -23,7 +23,7 @@ export default function FindAccountOptionForm({ activeTab, setActiveTab }) {
             <button
                 ref={(el) => (buttonRefs.current.id = el)}
                 className={`text-lg font-semibold transition px-1 py-1 ${
-                    activeTab === "id" ? "text-black" : "text-gray-500"
+                    activeTab === "id" ? "text-black" : "text-extraText"
                 }`}
                 onClick={() => setActiveTab("id")}
             >
@@ -34,7 +34,7 @@ export default function FindAccountOptionForm({ activeTab, setActiveTab }) {
             <button
                 ref={(el) => (buttonRefs.current.pw = el)}
                 className={`text-lg font-semibold transition px-1 py-1 ${
-                    activeTab === "pw" ? "text-black" : "text-gray-500"
+                    activeTab === "pw" ? "text-black" : "text-extraText"
                 }`}
                 onClick={() => setActiveTab("pw")}
             >
@@ -44,7 +44,7 @@ export default function FindAccountOptionForm({ activeTab, setActiveTab }) {
             {/* 밑줄 애니메이션 */}
             <span
                 ref={underlineRef}
-                className="absolute -bottom-1 h-[3.5px] bg-blue-400 transition-all duration-300 ease-in-out"
+                className="absolute -bottom-1 h-[3.5px] bg-primary transition-all duration-300 ease-in-out"
             ></span>
         </div>
     );

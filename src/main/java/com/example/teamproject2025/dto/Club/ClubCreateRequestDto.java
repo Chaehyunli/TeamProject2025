@@ -29,7 +29,7 @@ public class ClubCreateRequestDto {
                 .category(category) // 객체 참조
                 .university(university) // 객체 참조
                 .president(president) // 객체 참조
-                .thumbUrl(this.thumbUrl != null ? this.thumbUrl : "https://default-club-thumbnail.png")
+                .thumbUrl(this.thumbUrl != null ? this.thumbUrl : "/uploads/clubs/default-thumbnail.png")
                 .build();
     }
 }

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { getUserProfile, updateUserProfile } from "../api/userApi";
 import { useNavigate } from "react-router-dom";
-import EmailVerificationForm from "../components/EmailVerificationForm";
 
 const UpdateProfilePage = () => {
     const navigate = useNavigate();
@@ -60,7 +59,6 @@ const UpdateProfilePage = () => {
             email: response.email,
             isEmailVerified: response.isEmailVerified,
         }));
-        console.log("이메일 인증 완료:", response);
     };
 
     // 변경된 값만 서버로 전송

@@ -4,17 +4,7 @@ import { deleteUser, getUserProfile } from "../api/userApi";
 import {useNavigate} from "react-router-dom";
 
 const ProfilePage = () => {
-    // 초기 사용자 정보 (API 연결 전 기본값 설정)
-    // const [user, setUser] = useState({
-    //     profileImage: "default_profile_url", // 기본 프로필 이미지 URL
-    //     name: "홍길동",
-    //     username: "gildong123",
-    //     university: "명지대학교",
-    //     is_uni_verified: false, // 대학교 인증 여부
-    // });
-
     const navigate = useNavigate();
-
     const [user, setUser] = useState(null); // 초기값을 null로 설정
 
     useEffect(() => {
@@ -75,7 +65,7 @@ const ProfilePage = () => {
                                 {user.universityName || "대학교 미입력"} | {user.studentId || "학번 미입력"} | {user.department || "학과 미입력"} | {user.email || "이메일 미입력"}
                             </p>
                             <button
-                                className="ml-4 px-3 py-1 text-xs text-white bg-blue-500 rounded-lg hover:bg-blue-600"
+                                className="ml-4 px-3 py-1 text-xs text-white bg-primary rounded-lg hover:bg-hoverBlueColor"
                                 onClick={() => navigate("/updateProfile")}
                             >
                                 수정
@@ -92,7 +82,7 @@ const ProfilePage = () => {
                     <span>{user.username}</span>
                 </div>
 
-                <p className="text-lg font-semibold cursor-pointer text-[#65A3FF]">
+                <p className="text-lg font-semibold cursor-pointer text-primary">
                     비밀번호 변경
                 </p>
 

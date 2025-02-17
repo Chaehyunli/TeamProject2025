@@ -10,10 +10,10 @@ function LoginPage() {
                 <h2 className="text-2xl font-bold text-center text-gray-800 mb-4">로그인</h2>
                 <LoginForm/>
                 <div className="flex justify-between text-sm mt-3 text-gray-600">
-                    <span className="hover:text-[#65A3FF] transition cursor-pointer" onClick={() => navigate("/account/find")}>
+                    <span className="hover:text-hoverBlueColor transition cursor-pointer" onClick={() => navigate("/account/find")}>
                         아이디/비밀번호 찾기
                     </span>
-                    <span className="hover:text-[#65A3FF] transition cursor-pointer" onClick={() => navigate("/register")}>
+                    <span className="hover:text-hoverBlueColor transition cursor-pointer" onClick={() => navigate("/register")}>
                         회원가입
                     </span>
                 </div>

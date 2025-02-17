@@ -25,17 +25,17 @@ const ProfileDropdown = ({ username, userImage, onLogout }) => {
                 onClick={() => setIsOpen(!isOpen)}
             >
                 <img src={userImage} alt="User" className="w-8 h-8 rounded-full border" />
-                <span className="text-gray-700">{username}</span>
-                <FaChevronDown className={`text-gray-500 transition-transform ${isOpen ? "-rotate-180" : ""}`} />
+                <span className="text-black">{username}</span>
+                <FaChevronDown className={`text-extraText transition-transform ${isOpen ? "-rotate-180" : ""}`} />
             </div>
 
             {/* 드롭다운 메뉴 */}
             {isOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white shadow-lg border rounded-lg">
-                    <ul className="py-2 text-sm text-gray-700">
-                        <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={() => navigate("/profile")}>내정보</li>
-                        <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">나의 동아리</li>
-                        <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={handleLogout}>로그아웃</li>
+                    <ul className="py-2 text-sm text-black">
+                        <li className="px-4 py-2 hover:bg-gray-200 cursor-pointer" onClick={() => navigate("/profile")}>내정보</li>
+                        <li className="px-4 py-2 hover:bg-gray-200 cursor-pointer">나의 동아리</li>
+                        <li className="px-4 py-2 hover:bg-gray-200 cursor-pointer" onClick={handleLogout}>로그아웃</li>
                     </ul>
                 </div>
             )}
