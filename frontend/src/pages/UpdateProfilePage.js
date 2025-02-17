@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { getUserProfile, updateUserProfile } from "../api/userApi";
 import { useNavigate } from "react-router-dom";
-import EmailVerificationForm from '../components/EmailVerificationForm';
+import EmailVerificationForm from "../components/EmailVerificationForm";
 
 const UpdateProfilePage = () => {
     const navigate = useNavigate();
@@ -60,6 +60,7 @@ const UpdateProfilePage = () => {
             email: response.email,
             isEmailVerified: response.isEmailVerified,
         }));
+        console.log("이메일 인증 완료:", response);
     };
 
     // 변경된 값만 서버로 전송
@@ -101,13 +102,13 @@ const UpdateProfilePage = () => {
     }
 
     return (
-        <div className="w-full max-w-4xl mx-auto mt-10 p-10">
-            <h2 className="text-2xl font-bold mb-6">프로필 수정</h2>
+        <div className="w-full flex flex-col items-center mt-10 p-10">
+            <h2 className="text-2xl font-bold mb-6 text-center">프로필 수정</h2>
 
             {/* 입력 필드 */}
-            <div className="space-y-4">
+            <div className="space-y-4 w-96">
                 <div>
-                    <label className="block text-sm font-medium">이름</label>
+                    <label className="block text-sm font-medium text-center">이름</label>
                     <input
                         type="text"
                         name="name"
@@ -118,7 +119,7 @@ const UpdateProfilePage = () => {
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium">학번</label>
+                    <label className="block text-sm font-medium text-center">학번</label>
                     <input
                         type="text"
                         name="studentId"
@@ -129,7 +130,7 @@ const UpdateProfilePage = () => {
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium">학과</label>
+                    <label className="block text-sm font-medium text-center">학과</label>
                     <input
                         type="text"
                         name="department"
@@ -140,9 +141,9 @@ const UpdateProfilePage = () => {
                 </div>
 
                 {/* 이메일 인증 추가 */}
-                <div className="flex flex-col items-start">
+                <div className="flex flex-col items-center">
                     <label className="block text-sm font-medium">이메일</label>
-                    <div className="flex items-center gap-2 w-full">
+                    <div className="flex flex-col items-center w-full">
                         <EmailVerificationForm
                             onVerificationSuccess={handleEmailVerificationSuccess}
                             initialEmail={formData.email}
@@ -150,14 +151,14 @@ const UpdateProfilePage = () => {
                         />
                     </div>
                     {formData.isEmailVerified ? (
-                        <p className="text-green-500 text-sm mt-1">✅ 이메일 인증 완료</p>
+                        <p className="text-green-500 text-sm mt-1 text-center">✅ 이메일 인증 완료</p>
                     ) : (
-                        <p className="text-red-500 text-sm mt-1">❌ 이메일 인증이 필요합니다.</p>
+                        <p className="text-red-500 text-sm mt-1 text-center">❌ 이메일 인증이 필요합니다.</p>
                     )}
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium">프로필 이미지 URL</label>
+                    <label className="block text-sm font-medium text-center">프로필 이미지 URL</label>
                     <input
                         type="text"
                         name="profileImage"
@@ -169,12 +170,12 @@ const UpdateProfilePage = () => {
             </div>
 
             {/* 버튼 */}
-            <div className="flex justify-end mt-6 space-x-4">
+            <div className="flex justify-center mt-6 space-x-4">
                 <button
                     className="px-4 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500"
                     onClick={() => navigate("/profile")}
                 >
-                취소
+                    취소
                 </button>
                 <button
                     className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
@@ -188,6 +189,7 @@ const UpdateProfilePage = () => {
 };
 
 export default UpdateProfilePage;
+
 
 
 
