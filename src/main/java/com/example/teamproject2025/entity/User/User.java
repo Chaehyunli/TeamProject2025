@@ -35,6 +35,9 @@ public class User {
     @Column(nullable = false, unique = true, length = 20)
     private String studentId; // 학번 (eg. 60225153)
 
+    @Column(nullable = true, length = 255)
+    private String department; // 전공 학과 (nullable)
+
     @Column(nullable = false, unique = true, length = 100)
     private String email; // 이메일 주소
 
