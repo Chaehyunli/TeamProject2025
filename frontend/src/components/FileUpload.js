@@ -13,7 +13,7 @@ const FileUpload = ({ onFileSelect }) => {
     return (
         <div className="mt-4">
             <InputField
-                label="동아리 대표 사진"
+                label="동아리 대표 사진(선택사항)"
                 type="file"
                 name="clubThumbnail"
                 onChange={handleChange}
