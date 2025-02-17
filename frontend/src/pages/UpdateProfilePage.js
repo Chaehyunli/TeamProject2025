@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { getUserProfile, updateUserProfile } from "../api/userApi";
 import { useNavigate } from "react-router-dom";
+import EmailVerificationForm from '../components/EmailVerificationForm';
 
 const UpdateProfilePage = () => {
     const navigate = useNavigate();
