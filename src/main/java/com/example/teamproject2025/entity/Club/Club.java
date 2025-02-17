@@ -35,8 +35,8 @@ public class Club {
     @JoinColumn(name = "category_id", nullable = false)
     private Category category; // 카테고리 참조(foreign key), N:1 하나의 카테고리에 여러 동아리가 속할 수 있음
 
-    @Column(length = 255)
-    private String thumbUrl; // 동아리 사진 URL
+    @Column(nullable = false, length = 255)
+    private String thumbUrl = "/uploads/clubs/default-thumbnail.png"; // 동아리 사진 URL
 
     @ManyToOne
     @JoinColumn(name = "university_id", nullable = false)
