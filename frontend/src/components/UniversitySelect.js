@@ -1,5 +1,6 @@
 import React from "react";
 
+// 추후 데베에서 가져오는건 어떤가요?
 const universities = [
     "서울대학교",
     "연세대학교",

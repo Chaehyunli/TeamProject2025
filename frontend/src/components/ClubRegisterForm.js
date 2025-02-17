@@ -8,8 +8,8 @@ const ClubRegistrationForm = ({ presidentName, onSubmit }) => {
     const [category, setCategory] = useState("");
     const [thumbUrl, setThumbUrl] = useState(null);
 
-    // 카테고리 목록
-    const categories = ["홍보", "예술", "체육", "학술", "취미", "봉사", "기타"];
+    // 카테고리 목록 (추후 데베에서 가져오는건 어떤가요?)
+    const categories = ["IT/프로그래밍", "예술/공연", "봉사활동", "운동/스포츠", "학술/스터디", "창업", "기타"];
 
     // 파일 업로드 핸들러
     const handleFileChange = (file) => {
