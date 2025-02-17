@@ -38,9 +38,9 @@ export const login = async (formData) => {
 
         const result = await response.json();
 
-        localStorage.setItem("userId", result.userId);
-        localStorage.setItem("username", result.username);
-        localStorage.setItem("name", result.name);
+        localStorage.setItem("userId", result.data.userId);
+        localStorage.setItem("username", result.data.username);
+        localStorage.setItem("name", result.data.name);
 
         return result;
     } catch (error) {
