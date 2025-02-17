@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../api/authApi";
+import { getUserProfile } from "../api/userApi";
 import InputField from "./InputField";
 
 const LoginForm = () => {
@@ -22,6 +23,14 @@ const LoginForm = () => {
         try {
             const result = await login(formData);
             setMessage(result.message);
+
+            localStorage.setItem("userId", result.data.userId);
+            localStorage.setItem("username", result.data.username);
+            localStorage.setItem("name", result.data.name);
+
+            // 사용자 정보 즉시 가져오기 (세션 반영 확인)
+            const userProfile = await getUserProfile();
+            localStorage.setItem("profileImage", userProfile.profileImage);
 
             // 로그인 성공 후 자동으로 홈 페이지로 이동
             navigate("/home");

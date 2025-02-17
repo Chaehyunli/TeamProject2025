@@ -9,6 +9,7 @@ import RegisterPage from "./pages/RegisterPage";
 import UpdateProfilePage from "./pages/UpdateProfilePage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import FindAccountPage from "./pages/FindAccountPage";
+import ClubRegisterPage from "./pages/ClubRegisterPage";
 
 function App() {
     return (
@@ -17,7 +18,7 @@ function App() {
             <Routes>
                 <Route path="/" element={<Navigate to="/home" />} />
                 <Route path="/home" element={<HomePage />} />
-                <Route path="/club-registration" element={<UnderConstruction />} />
+                <Route path="/club-register" element={<ClubRegisterPage />} />
                 <Route path="/chatrooms" element={<UnderConstruction />} />
                 <Route path="/profile" element={<ProfilePage />} />
                 <Route path="/updateProfile" element={<UpdateProfilePage />} />
@@ -27,6 +28,9 @@ function App() {
                 <Route path="/register" element={<RegisterPage />} />
                 <Route path="/account/find" element={<FindAccountPage />} />
                 <Route path="/account/reset-pw" element={<ResetPasswordPage />} />
+
+                {/* Club */}
+                <Route path="/clubs/:clubId" element={<UnderConstruction />} />
             </Routes>
         </Router>
     );
