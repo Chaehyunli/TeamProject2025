@@ -41,11 +41,11 @@ public class User {
     @Column(nullable = false, unique = true, length = 100)
     private String email; // 이메일 주소
 
-    private Boolean isEmailVerified = false; // 이메일 인증 여부
-    private Boolean isUniVerified = false; // 학교 인증 여부
+    private Boolean isEmailVerified ; // 이메일 인증 여부
+    private Boolean isUniVerified ; // 학교 인증 여부
 
     @Column(nullable = false, length = 255)
-    private String profileImage = "https://i.sstatic.net/l60Hf.png";
+    private String profileImage ;
 
     @CreationTimestamp
     private LocalDateTime createdAt; // 계정 생성 시간 for users/register
