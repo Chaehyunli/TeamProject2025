@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { getUserProfile, updateUserProfile } from "../api/userApi";
 import { useNavigate } from "react-router-dom";
-import EmailVerificationForm from "../components/EmailVerificationForm";
-import InputField from "../components/InputField";
+import UpdateProfileForm from "../components/UpdateProfileForm";
 
 const UpdateProfilePage = () => {
     const navigate = useNavigate();
@@ -93,83 +92,16 @@ const UpdateProfilePage = () => {
     }
 
     return (
-        <div className="w-full flex flex-col items-center mt-10 p-10">
-            <div className="w-96">
-                <h2 className="text-2xl font-bold mb-6 text-left">프로필 수정</h2>
-            </div>
-
-            <div className="space-y-4 w-96">
-                <InputField
-                    label="이름"
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                />
-
-                <InputField
-                    label="학번"
-                    type="text"
-                    name="studentId"
-                    value={formData.studentId}
-                    onChange={(e) => setFormData({ ...formData, studentId: e.target.value })}
-                />
-
-                <InputField
-                    label="학과"
-                    type="text"
-                    name="department"
-                    value={formData.department}
-                    onChange={(e) => setFormData({ ...formData, department: e.target.value })}
-                />
-
-                <div className="flex flex-col items-start">
-                    <label className="block text-sm font-medium text-left">이메일</label>
-                    <EmailVerificationForm
-                        onVerificationSuccess={handleEmailVerificationSuccess}
-                        initialEmail={formData.email}
-                        onEmailChange={handleEmailChange}
-                    />
-                    {formData.isEmailVerified ? (
-                        <p className="text-green-500 text-sm mt-1">✅ 이메일 인증 완료</p>
-                    ) : (
-                        <p className="text-red-500 text-sm mt-1">❌ 이메일 인증이 필요합니다.</p>
-                    )}
-                </div>
-
-                <InputField
-                    label="프로필 이미지 URL"
-                    type="text"
-                    name="profileImage"
-                    value={formData.profileImage}
-                    onChange={(e) => setFormData({ ...formData, profileImage: e.target.value })}
-                />
-            </div>
-
-            <div className="flex justify-center mt-6 space-x-4">
-                <button
-                    className="px-4 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500"
-                    onClick={() => navigate("/profile")}
-                >
-                    취소
-                </button>
-                <button
-                    className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-                    onClick={handleSave}
-                >
-                    저장
-                </button>
-            </div>
+        <div className="w-full flex flex-col items-center my-28 py-12">
+            <UpdateProfileForm
+                formData={formData}
+                setFormData={setFormData}
+                handleEmailChange={handleEmailChange}
+                handleEmailVerificationSuccess={handleEmailVerificationSuccess}
+                handleSave={handleSave}
+            />
         </div>
     );
 };
 
 export default UpdateProfilePage;
-
-
-
-
-
-
-
-
