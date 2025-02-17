@@ -25,9 +25,10 @@ export const getUserProfile = async () => {
     }
 };
 
+// 프로필 수정
 export const updateUserProfile = async (userData) => {
     try {
-        const response = await fetch("http://localhost:8080/api/v1/users/profile", {
+        const response = await fetch(`${API_BASE_URL}/profile`, {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
