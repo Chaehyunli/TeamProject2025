@@ -21,11 +21,11 @@ const EmailVerificationForm = ({ onVerificationSuccess, initialEmail, onEmailCha
     const handleEmailChange = (e) => {
         const newEmail = e.target.value;
         setEmail(newEmail);
-        // onEmailChange가 존재하는 경우에만 실행하도록 수정
         if (onEmailChange) {
             onEmailChange(newEmail);
         }
     };
+
 
     // 이메일 인증 요청
     const handleRequestVerificationCode = async () => {
