@@ -54,9 +54,6 @@ public class User {
     @UpdateTimestamp
     private LocalDateTime updatedAt; // 계정 업데이트 시간 for users/update
 
-    @Column(nullable = true, length = 100)
-    private String department; // 학과 (기본 null)
-
     // 기존 객체 수정 방식만 유지
     public void update(UserUpdateRequestDto dto) {
         if (dto.getEmail() != null) this.email = dto.getEmail();
