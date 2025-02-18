@@ -106,7 +106,12 @@ const RegisterForm = ({ onSubmit }) => {
             <UniversitySelect value={formData.universityName} onChange={handleChange} />
 
             {/* 이메일 인증 폼 */}
-            <EmailVerificationForm onVerificationSuccess={handleEmailVerificationSuccess} />
+            <EmailVerificationForm
+                initialEmail={formData.email}
+                onEmailChange={(email) => setFormData((prev) => ({ ...prev, email }))} // 추가
+                onVerificationSuccess={handleEmailVerificationSuccess}
+            />
+
 
             {/* 회원가입 버튼 */}
             <button
