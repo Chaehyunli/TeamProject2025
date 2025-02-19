@@ -1,6 +1,7 @@
 package com.example.teamproject2025.service.Club;
 
 import com.example.teamproject2025.dto.Club.ClubListResponseDto;
+import com.example.teamproject2025.dto.Membership.UserClubResponseDto;
 import com.example.teamproject2025.entity.Club.Club;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -13,5 +14,5 @@ public interface ClubService {
 
     String getUserRoleInClub(Long userId, Long clubId);
 
-    List<Club> getMyClubs(Long userId);
+    List<UserClubResponseDto> getUserClubs(Long userId);
 }

@@ -2,6 +2,7 @@ package com.example.teamproject2025.service.Club;
 
 import com.example.teamproject2025.dto.Club.ClubCreateRequestDto;
 import com.example.teamproject2025.dto.Club.ClubListResponseDto;
+import com.example.teamproject2025.dto.Membership.UserClubResponseDto;
 import com.example.teamproject2025.entity.Club.Category;
 import com.example.teamproject2025.entity.Club.Club;
 import com.example.teamproject2025.entity.Membership.RoleType;
@@ -151,10 +152,18 @@ public class ClubServiceImpl implements ClubService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Club> getMyClubs(Long userId) {
-        return userClubRepository.findAllByUser_UserId(userId)
-                .stream()
-                .map(UserClub::getClub)
+    public List<UserClubResponseDto> getUserClubs(Long userId) {
+        List<UserClub> userClubs = userClubRepository.findByUser_UserId(userId);
+
+        // 조회된 데이터 확인 (디버깅용)
+        System.out.println("사용자의 동아리 수: " + userClubs.size());
+        for (UserClub uc : userClubs) {
+            System.out.println("클럽 ID: " + uc.getClub().getClubId() + ", 사용자 ID: " + uc.getUser().getUserId());
+        }
+
+        // UserClub → UserClubResponseDto 변환하여 반환
+        return userClubs.stream()
+                .map(UserClubResponseDto::fromEntity)
                 .collect(Collectors.toList());
     }
 

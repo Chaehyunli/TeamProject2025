@@ -2,6 +2,7 @@ package com.example.teamproject2025.controller.Club;
 
 import com.example.teamproject2025.dto.Club.ClubListResponseDto;
 import com.example.teamproject2025.dto.Common.CommonResponseDto;
+import com.example.teamproject2025.dto.Membership.UserClubResponseDto;
 import com.example.teamproject2025.entity.Club.Club;
 import com.example.teamproject2025.service.Club.ClubService;
 import jakarta.servlet.http.HttpSession;
@@ -74,7 +75,7 @@ public class ClubController {
 
     // 나의 동아리 목록 불러오기
     @GetMapping("/my-clubs")
-    public ResponseEntity<CommonResponseDto<List<Club>>> getMyClubs(HttpSession session) {
+    public ResponseEntity<CommonResponseDto<List<UserClubResponseDto>>> getMyClubs(HttpSession session) {
         Long userId = (Long) session.getAttribute("userId");
 
         if (userId == null) {
@@ -82,8 +83,15 @@ public class ClubController {
                     .body(CommonResponseDto.error(HttpStatus.UNAUTHORIZED.value(), "로그인이 필요합니다."));
         }
 
-        List<Club> myClubs = clubService.getMyClubs(userId);
-        return ResponseEntity.ok(CommonResponseDto.success(HttpStatus.OK.value(), "내 동아리 목록 조회 성공", myClubs));
+        System.out.println("현재 로그인한 사용자 ID: " + userId);
+
+        List<UserClubResponseDto> userClubs = clubService.getUserClubs(userId);
+
+        System.out.println("조회된 동아리 개수: " + userClubs.size());
+
+        return ResponseEntity.ok(
+                CommonResponseDto.success(200, "내 동아리 목록 조회 성공", userClubs)
+        );
     }
 
 

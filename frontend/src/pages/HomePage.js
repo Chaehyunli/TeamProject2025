@@ -30,7 +30,7 @@ const HomePage = () => {
         const fetchUserClubs = async () => {
             try {
                 const userClubData = await getUserClubs(); // 사용자의 동아리 목록 요청
-                setUserClubs(userClubData);
+                setUserClubs(userClubData); // userClubs 상태 업데이트
             } catch (error) {
                 console.error("사용자의 동아리 목록 불러오기 실패:", error);
                 setUserClubs([]); // 오류 발생 시 빈 배열로 설정

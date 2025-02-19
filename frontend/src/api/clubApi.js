@@ -56,7 +56,7 @@ export const getUserClubRole = async (clubId) => {
 export const getUserClubs = async () => {
     try {
         const response = await axios.get(`${API_BASE_URL}/my-clubs`, { withCredentials: true });
-        return response.data.data; // 사용자가 가입한 동아리 목록 반환
+        return response.data.data || []; // userClubs 배열 반환
     } catch (error) {
         console.error("사용자가 속한 동아리 목록 가져오기 실패:", error);
         return [];
