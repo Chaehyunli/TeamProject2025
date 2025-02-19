@@ -14,5 +14,5 @@ public interface ClubService {
 
     String getUserRoleInClub(Long userId, Long clubId);
 
-    List<UserClubResponseDto> getUserClubs(Long userId);
+    List<UserClubResponseDto> getMyClubs(Long userId);
 }

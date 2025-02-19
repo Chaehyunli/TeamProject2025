@@ -85,12 +85,12 @@ public class ClubController {
 
         System.out.println("현재 로그인한 사용자 ID: " + userId);
 
-        List<UserClubResponseDto> userClubs = clubService.getUserClubs(userId);
+        List<UserClubResponseDto> userMyClubs = clubService.getMyClubs(userId);
 
-        System.out.println("조회된 동아리 개수: " + userClubs.size());
+        System.out.println("조회된 동아리 개수: " + userMyClubs.size());
 
         return ResponseEntity.ok(
-                CommonResponseDto.success(200, "내 동아리 목록 조회 성공", userClubs)
+                CommonResponseDto.success(200, "내 동아리 목록 조회 성공", userMyClubs)
         );
     }
 

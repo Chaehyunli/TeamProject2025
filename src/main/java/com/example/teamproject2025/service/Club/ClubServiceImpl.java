@@ -152,17 +152,17 @@ public class ClubServiceImpl implements ClubService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<UserClubResponseDto> getUserClubs(Long userId) {
-        List<UserClub> userClubs = userClubRepository.findByUser_UserId(userId);
+    public List<UserClubResponseDto> getMyClubs(Long userId) {
+        List<UserClub> myClubs = userClubRepository.findByUser_UserId(userId);
 
         // 조회된 데이터 확인 (디버깅용)
-        System.out.println("사용자의 동아리 수: " + userClubs.size());
-        for (UserClub uc : userClubs) {
+        System.out.println("사용자의 동아리 수: " + myClubs.size());
+        for (UserClub uc : myClubs) {
             System.out.println("클럽 ID: " + uc.getClub().getClubId() + ", 사용자 ID: " + uc.getUser().getUserId());
         }
 
         // UserClub → UserClubResponseDto 변환하여 반환
-        return userClubs.stream()
+        return myClubs.stream()
                 .map(UserClubResponseDto::fromEntity)
                 .collect(Collectors.toList());
     }
