@@ -129,4 +129,34 @@ public class ClubServiceImpl implements ClubService {
         // 4. DTO 변환 후 반환
         return ClubListResponseDto.fromEntity(paginatedClubs, total, limit, offset);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public String getUserRoleInClub(Long userId, Long clubId) {
+        try {
+            System.out.println("userId: " + userId + ", clubId: " + clubId);
+
+            UserClub userClub = userClubRepository.findByUser_UserIdAndClub_ClubId(userId, clubId)
+                    .orElseThrow(() -> new RuntimeException("해당 클럽에 속한 사용자가 아닙니다. userId: " + userId + ", clubId: " + clubId));
+
+            System.out.println("조회된 userClub: " + userClub);
+
+            return userClub.getRole().getRoleName().name(); // "PRESIDENT", "MEMBER" 등 반환
+        } catch (Exception e) {
+            System.err.println("클럽 내 역할 조회 실패: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Club> getMyClubs(Long userId) {
+        return userClubRepository.findAllByUser_UserId(userId)
+                .stream()
+                .map(UserClub::getClub)
+                .collect(Collectors.toList());
+    }
+
+
 }

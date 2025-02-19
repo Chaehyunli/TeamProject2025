@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getClubList } from "../api/clubApi";
+import {getClubList, getUserClubs} from "../api/clubApi";
 import ClubList from "../components/ClubList";
 
 const HomePage = () => {
     const navigate = useNavigate();
     const [username, setUsername] = useState(localStorage.getItem("username"));
     const [clubs, setClubs] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
+    const [userClubs, setUserClubs] = useState([]);
+    //const [isLoading, setIsLoading] = useState(true);
     // 아직 없는 API를 고려하여 userClubs 상태 제거
-    // const [userClubs, setUserClubs] = useState([]);
 
     useEffect(() => {
         if (!username) {
@@ -27,7 +27,18 @@ const HomePage = () => {
             }
         };
 
+        const fetchUserClubs = async () => {
+            try {
+                const userClubData = await getUserClubs(); // 사용자의 동아리 목록 요청
+                setUserClubs(userClubData);
+            } catch (error) {
+                console.error("사용자의 동아리 목록 불러오기 실패:", error);
+                setUserClubs([]); // 오류 발생 시 빈 배열로 설정
+            }
+        };
+
         fetchClubs();
+        fetchUserClubs();
 
         // 추후 API가 추가되면 여기에 fetchUserClubs() 추가
         // const fetchUserClubs = async () => {
@@ -49,7 +60,7 @@ const HomePage = () => {
             {/* userClubs는 빈 배열로 설정 (API 추가 전),
              userClubs를 통해 사용자가 가입한 동아리인지 확인하여
              "지원하기" 버튼을 보이거나 숨기는 기능을 제공*/}
-            <ClubList clubs={clubs} userClubs={[]} />
+            <ClubList clubs={clubs} userClubs={userClubs} />
         </div>
     );
 };

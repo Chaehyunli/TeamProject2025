@@ -36,3 +36,32 @@ export const createClub = async(clubData) => {
         throw error;
     }
 };
+
+// 동아리 내에서의 사용자 역할 반환
+export const getUserClubRole = async (clubId) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/${clubId}/role`, {
+            withCredentials: true
+        });
+
+        const role = response.data.data.role;
+        return role === "NO_ROLE" ? null : role; // NO_ROLE이면 null로 변환
+    } catch (error) {
+        console.error(`클럽 ${clubId}의 사용자 역할 가져오기 실패:`, error);
+        return null;
+    }
+};
+
+// 사용자가 가입한 동아리 목록 가져오기
+export const getUserClubs = async () => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/my-clubs`, { withCredentials: true });
+        return response.data.data; // 사용자가 가입한 동아리 목록 반환
+    } catch (error) {
+        console.error("사용자가 속한 동아리 목록 가져오기 실패:", error);
+        return [];
+    }
+};
+
+
+
