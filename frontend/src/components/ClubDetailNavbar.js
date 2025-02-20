@@ -11,22 +11,22 @@ const ClubDetailNavbar = ({ clubId, userRole }) => {
     // 현재 경로에 따라 활성화된 버튼을 결정
     const getActiveTab = () => {
         if (location.pathname.includes("/notices")) return "공지사항";
-        if (location.pathname.includes("/applicants")) return "지원자관리";
-        if (location.pathname.includes("/permissions")) return "권한";
+        if (location.pathname.includes("/submissions")) return "지원자관리";
+        if (location.pathname.includes("/members")) return "권한";
         if (location.pathname.includes("/apply")) return "지원하기";
         return "게시물"; // 기본값
     };
 
     // 기본 메뉴 (모든 사용자에게 표시)
     let menuItems = [
-        { name: "게시물", path: `/clubs/${clubId}` },
+        { name: "게시물", path: `/clubs/${clubId}/articles` },
         { name: "공지사항", path: `/clubs/${clubId}/notices` }
     ];
 
     // 회장 또는 부회장인 경우 추가 메뉴 표시
     if (userRole === "PRESIDENT" || userRole === "VICE_PRESIDENT") {
-        menuItems.push({ name: "지원자관리", path: `/clubs/${clubId}/applicants` });
-        menuItems.push({ name: "권한", path: `/clubs/${clubId}/permissions` });
+        menuItems.push({ name: "지원자관리", path: `/clubs/${clubId}/submissions` });
+        menuItems.push({ name: "권한", path: `/clubs/${clubId}/members` });
     } else if (!userRole) {
         // 역할이 없으면 "지원하기" 버튼 추가
         menuItems.push({ name: "지원하기", path: `/clubs/${clubId}/apply` });

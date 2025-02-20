@@ -1,6 +1,6 @@
 import React from "react";
 
-const ClubPosts = () => {
+const ClubArticles = () => {
     return (
         <div>
             <h2>게시물 페이지</h2>
@@ -8,4 +8,4 @@ const ClubPosts = () => {
     );
 };
 
-export default ClubPosts;  // default export 확인!
+export default ClubArticles;  // default export 확인!
