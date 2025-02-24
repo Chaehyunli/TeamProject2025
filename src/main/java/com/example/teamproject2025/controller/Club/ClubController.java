@@ -3,14 +3,12 @@ package com.example.teamproject2025.controller.Club;
 import com.example.teamproject2025.dto.Club.ClubListResponseDto;
 import com.example.teamproject2025.dto.Common.CommonResponseDto;
 import com.example.teamproject2025.dto.Membership.UserClubResponseDto;
-import com.example.teamproject2025.entity.Club.Club;
 import com.example.teamproject2025.service.Club.ClubService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
@@ -28,7 +26,7 @@ public class ClubController {
             @RequestPart("clubName") String clubName,
             @RequestPart("description") String description,
             @RequestPart("category") String category,
-            @RequestPart(value = "thumbUrl", required = false) MultipartFile thumbUrl // 파일 업로드
+            @RequestPart(value = "thumbUrl", required = false) String thumbUrl // 파일 업로드
     ) throws IOException {
         String username = (String) session.getAttribute("username"); // 세션에서 사용자 확인
         Long clubId = clubService.createClub(username, clubName, description, category, thumbUrl);

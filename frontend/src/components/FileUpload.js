@@ -1,7 +1,7 @@
 import React from "react";
 import InputField from "./InputField";
 
-const FileUpload = ({ onFileSelect }) => {
+const FileUpload = ({ label = "이미지 업로드", name = "image", onFileSelect }) => {
     const handleChange = (event) => {
         if (event.target.files.length > 0) {
             const file = event.target.files[0];
@@ -13,9 +13,9 @@ const FileUpload = ({ onFileSelect }) => {
     return (
         <div className="mt-4">
             <InputField
-                label="동아리 대표 사진(선택사항)"
+                label={label} // ✅ 라벨 동적으로 변경 가능
                 type="file"
-                name="clubThumbnail"
+                name={name} // ✅ 입력 필드 이름도 변경 가능
                 onChange={handleChange}
                 accept="image/*"
             />

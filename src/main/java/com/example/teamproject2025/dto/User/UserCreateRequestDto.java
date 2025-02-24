@@ -19,7 +19,7 @@ public class UserCreateRequestDto {
     private String universityName;
     private String studentId;
     @Builder.Default
-    private String profileImage = "https://i.sstatic.net/l60Hf.png";
+    private String profileImage = "default-profileImage.png";
     @Builder.Default
     private Boolean isEmailVerified = false; // Ref1
     @Builder.Default
@@ -33,9 +33,9 @@ public class UserCreateRequestDto {
                 .name(this.name)
                 .email(this.email)
                 .universityId(universityId)
-                .studentId(studentId)
-                .profileImage(profileImage)
-                .isEmailVerified(isEmailVerified)
+                .studentId(this.studentId)
+                .profileImage(this.profileImage)
+                .isEmailVerified(this.isEmailVerified)
                 .isUniVerified(this.isUniVerified != null ? this.isUniVerified : false)
                 .build();
     }

@@ -45,8 +45,8 @@ public class User {
     private Boolean isEmailVerified ; // 이메일 인증 여부
     private Boolean isUniVerified ; // 학교 인증 여부
 
-    @Column(nullable = false, length = 255)
-    private String profileImage ;
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String profileImage = "default-profileImage.png";
 
     @CreationTimestamp
     private LocalDateTime createdAt; // 계정 생성 시간 for users/register

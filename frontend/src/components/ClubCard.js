@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { ProtectedImage } from "../api/uploadApi";
 
 const ClubCard = ({ club, isMember }) => {
     const navigate = useNavigate();
@@ -9,11 +10,7 @@ const ClubCard = ({ club, isMember }) => {
     return (
         <div className="w-full max-w-sm bg-white shadow-lg rounded-lg p-6 flex flex-col h-full justify-between">
             {/* 썸네일 */}
-            <img
-                src={`http://localhost:8080${club.thumbUrl}`}
-                alt="Image Loading..."
-                className="w-32 h-32 object-cover rounded-lg mb-4"
-            />
+            <ProtectedImage objectName={club.thumbUrl} alt={club.clubName} />
 
             {/* 동아리 이름 */}
             <h3 className="text-xl font-bold mb-1 break-words">{club.clubName}</h3>

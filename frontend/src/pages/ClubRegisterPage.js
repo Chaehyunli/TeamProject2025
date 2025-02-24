@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ClubRegistrationForm from "../components/ClubRegisterForm";
 import { createClub } from "../api/clubApi";
+import { uploadImageToGCP } from "../api/uploadApi";
 
-const ClubRegistration = () => {
+const ClubRegisterPage = () => {
     const navigate = useNavigate();
     const [presidentName, setPresidentName] = useState("");
 
@@ -17,26 +18,34 @@ const ClubRegistration = () => {
         }
     }, [navigate]);
 
-    // 동아리 등록 신청 핸들러
+    // 동아리 등록 신청 핸들러 (페이지에서 createClub 호출)
     const handleSubmit = async (formData) => {
         try {
-            const response = await createClub(formData);
+            let uploadedFileName = null;
+            if (formData.thumbUrl) {
+                uploadedFileName = await uploadImageToGCP(formData.thumbUrl); // UUID 적용된 파일명 반환
+            }
+
+            // 동아리 데이터에 파일 이름 추가 (Presigned URL은 서버에서 생성)
+            const clubData = { ...formData, thumbUrl: uploadedFileName };
+            await createClub(clubData);
+
             alert("동아리가 성공적으로 등록되었습니다!");
-            navigate("/home"); // 등록 성공 시 홈으로 이동
+            navigate("/home");
         } catch (error) {
             console.error("동아리 등록 오류:", error);
             alert("동아리 등록 중 오류가 발생했습니다.");
         }
-     };
+    };
 
     return (
         <div className="max-w-2xl mx-auto my-28 px-6 py-12">
             <h1 className="text-3xl font-bold">동아리 등록 신청</h1>
             <div className="my-8">
-                <ClubRegistrationForm presidentName={presidentName} onSubmit={handleSubmit}/>
+                <ClubRegistrationForm presidentName={presidentName} onSubmit={handleSubmit} />
             </div>
         </div>
     );
 };
 
-export default ClubRegistration;
+export default ClubRegisterPage;

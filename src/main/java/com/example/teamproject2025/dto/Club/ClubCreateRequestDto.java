@@ -18,7 +18,8 @@ public class ClubCreateRequestDto {
     private String category;
     private String description;
     private Long universityId;
-    private String thumbUrl;
+    @Builder.Default
+    private String thumbUrl = "default-thumbnail.png";
     private Long presidentId;
 
     // DTO → Entity 변환 메서드
@@ -29,7 +30,7 @@ public class ClubCreateRequestDto {
                 .category(category) // 객체 참조
                 .university(university) // 객체 참조
                 .president(president) // 객체 참조
-                .thumbUrl(this.thumbUrl != null ? this.thumbUrl : "/uploads/clubs/default-thumbnail.png")
+                .thumbUrl(this.thumbUrl)
                 .build();
     }
 }

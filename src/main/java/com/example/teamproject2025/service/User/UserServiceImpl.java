@@ -7,9 +7,11 @@ import com.example.teamproject2025.dto.User.UserUpdateRequestDto;
 import com.example.teamproject2025.entity.User.User;
 import com.example.teamproject2025.repository.University.UniversityRepository;
 import com.example.teamproject2025.repository.User.UserRepository;
+import com.google.cloud.storage.Storage;
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,10 +23,13 @@ import java.time.LocalDateTime;
 @Transactional
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-
     private final UserRepository userRepository;
     private final UniversityRepository universityRepository;
     private final PasswordEncoder passwordEncoder;
+    private final Storage storage;
+
+    @Value("${spring.cloud.gcp.storage.bucket}")
+    private String bucketName;
 
     @Override
     public UserResponseDto register(UserCreateRequestDto dto) {
@@ -77,6 +82,13 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
+        // 기존 이미지 삭제 로직 추가(Google Cloud)
+        if (dto.getProfileImage() != null
+                && !dto.getProfileImage().equals(user.getProfileImage())
+                && !dto.getProfileImage().equals("default-profileImage.png")) {
+            deleteImageFromGCS(user.getProfileImage()); // 기존 이미지 삭제 (기본 이미지 제외)
+        }
+
         // PATCH 방식이므로 값이 존재하는 경우에만 업데이트
         if (dto.getEmail() != null) user.setEmail(dto.getEmail());
         if (dto.getProfileImage() != null) user.setProfileImage(dto.getProfileImage());
@@ -98,6 +110,19 @@ public class UserServiceImpl implements UserService {
                 .isUniVerified(user.getIsUniVerified())
                 .createdAt(user.getCreatedAt())
                 .build();
+    }
+
+    // Google Cloud Storage에서 기존 이미지 삭제
+    private void deleteImageFromGCS(String objectName) {
+        if (objectName == null || objectName.trim().isEmpty()) return; // null 또는 빈 값 방지
+        if ("default-profileImage.png".equals(objectName)) return; // 기본 프로필 이미지는 삭제하지 않음
+
+        boolean deleted = storage.delete(bucketName, objectName); // GCS에서 객체 삭제
+        if (deleted) {
+            System.out.println("✅ 기존 프로필 이미지 삭제 완료: " + objectName);
+        } else {
+            System.err.println("❌ 기존 프로필 이미지 삭제 실패 (이미 삭제되었거나 존재하지 않음): " + objectName);
+        }
     }
 
 //    @Override

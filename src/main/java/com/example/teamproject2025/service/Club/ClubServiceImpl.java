@@ -16,14 +16,12 @@ import com.example.teamproject2025.repository.Membership.UserClubRepository;
 import com.example.teamproject2025.repository.Membership.UserRoleRepository;
 import com.example.teamproject2025.repository.University.UniversityRepository;
 import com.example.teamproject2025.repository.User.UserRepository;
+import com.google.cloud.storage.Storage;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,24 +33,27 @@ public class ClubServiceImpl implements ClubService {
     private final UniversityRepository universityRepository;
     private final UserRoleRepository userRoleRepository;
     private final UserClubRepository userClubRepository;
+    private final Storage storage;
 
-    // 업로드 경로 (Spring Boot의 정적 리소스로 활용, 현재 프로젝트 루트 경로에 uploads 폴더 생성)
-    private static final String UPLOAD_DIR = System.getProperty("user.dir") + "/uploads/clubs/";
+    @Value("${spring.cloud.gcp.storage.bucket}")
+    private String bucketName;
 
     public ClubServiceImpl(ClubRepository clubRepository, UserRepository userRepository,
                            CategoryRepository categoryRepository, UniversityRepository universityRepository,
-                           UserRoleRepository userRoleRepository, UserClubRepository userClubRepository) {
+                           UserRoleRepository userRoleRepository, UserClubRepository userClubRepository,
+                           Storage storage) {
         this.clubRepository = clubRepository;
         this.userRepository = userRepository;
         this.categoryRepository = categoryRepository;
         this.universityRepository = universityRepository;
         this.userRoleRepository = userRoleRepository;
         this.userClubRepository = userClubRepository;
+        this.storage = storage;
     }
 
     @Override
     @Transactional
-    public Long createClub(String username, String clubName, String description, String categoryName, MultipartFile thumbUrl) throws IOException {
+    public Long createClub(String username, String clubName, String description, String categoryName, String uploadedFileName) throws IOException {
         // 1. 현재 로그인한 사용자 찾기
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
@@ -65,27 +66,14 @@ public class ClubServiceImpl implements ClubService {
         University university = universityRepository.findById(user.getUniversityId())
                 .orElseThrow(() -> new IllegalArgumentException("대학교 정보를 찾을 수 없습니다."));
 
-        // 4. 이미지 파일 저장 (파일이 존재할 경우만 처리)
-        String storageThumbUrl = null;
-        if (thumbUrl != null && !thumbUrl.isEmpty()) {
-            File uploadFolder = new File(UPLOAD_DIR);
-            if (!uploadFolder.exists() && !uploadFolder.mkdirs()) {
-                throw new IOException("파일 업로드 디렉토리 생성 실패: " + UPLOAD_DIR);
-            }
-
-            // 저장할 파일명: 현재시간_파일명
-            String fileName = System.currentTimeMillis() + "_" + thumbUrl.getOriginalFilename();
-            Path filePath = Paths.get(UPLOAD_DIR, fileName);
-
-            // 파일 저장
-            thumbUrl.transferTo(filePath.toFile());
-
-            // 클라이언트에서 접근할 수 있도록 URL 설정
-            storageThumbUrl = "/uploads/clubs/" + fileName;
-        }
+        // 4. 파일명이 없으면 기본 썸네일 이미지 사용
+        String storageThumbUrl = (uploadedFileName != null && !uploadedFileName.isEmpty())
+                ? uploadedFileName
+                : "default-thumbnail.png"; // 기본 이미지
 
         // 5. 동아리 엔티티 생성 후 저장
-        ClubCreateRequestDto requestDto = new ClubCreateRequestDto(clubName, categoryName, description, university.getUniversityId(), storageThumbUrl, user.getUserId());
+        ClubCreateRequestDto requestDto = new ClubCreateRequestDto(clubName, categoryName, description,
+                university.getUniversityId(), storageThumbUrl, user.getUserId());
         Club newClub = requestDto.toEntity(category, university, user);
         clubRepository.save(newClub);
 
@@ -93,7 +81,7 @@ public class ClubServiceImpl implements ClubService {
         UserRole presidentRole = UserRole.builder()
                 .user(user)
                 .club(newClub)
-                .roleName(RoleType.PRESIDENT) // ENUM 사용
+                .roleName(RoleType.PRESIDENT)
                 .build();
         userRoleRepository.save(presidentRole);
 
@@ -101,9 +89,9 @@ public class ClubServiceImpl implements ClubService {
         UserClub userClub = UserClub.builder()
                 .user(user)
                 .club(newClub)
-                .role(presidentRole) // role 연결
+                .role(presidentRole)
                 .build();
-        userClubRepository.save(userClub); // user_clubs 테이블에 저장
+        userClubRepository.save(userClub);
 
         return newClub.getClubId();
     }
@@ -166,6 +154,4 @@ public class ClubServiceImpl implements ClubService {
                 .map(UserClubResponseDto::fromEntity)
                 .collect(Collectors.toList());
     }
-
-
 }

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { logout } from "../api/authApi";
 import { deleteUser, getUserProfile } from "../api/userApi";
 import {useNavigate} from "react-router-dom";
+import { ProtectedImage } from "../api/uploadApi";
 
 const ProfilePage = () => {
     const navigate = useNavigate();
@@ -53,11 +54,9 @@ const ProfilePage = () => {
             {/* 프로필 정보 */}
             <div className="flex justify-between items-start mt-8">
                 <div className="flex items-center gap-4">
-                    <img
-                        src={user.profileImage || "default_profile_url"}
-                        alt="프로필"
-                        className="w-20 h-20 rounded-full border"
-                    />
+                    <div className="w-28 h-28 rounded-full overflow-hidden border">
+                        <ProtectedImage objectName={user.profileImage} alt="User" className="w-full h-full object-cover"/>
+                    </div>
                     <div>
                         <h2 className="text-xl font-bold">{user.name}</h2>
                         <div className="flex items-center text-gray-500">
