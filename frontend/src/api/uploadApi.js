@@ -52,6 +52,9 @@ export const ProtectedImage = ({ objectName, alt = "Image", className = "w-32 h-
         };
 
         fetchImageUrl();
+        const interval = setInterval(fetchImageUrl, 4 * 60 * 1000 + 20 * 1000); // 4분 30초마다 새 Presigned URL 요청
+
+        return () => clearInterval(interval);
     }, [objectName]);
 
     if (loading) return <div>🔄 이미지 로딩 중...</div>;
