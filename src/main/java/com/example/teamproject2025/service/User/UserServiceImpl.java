@@ -161,6 +161,11 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(sessionUserId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
+        // 기존 프로필 이미지 삭제 (기본 프로필 제외)
+        if (user.getProfileImage() != null && !user.getProfileImage().equals("default-profileImage.png")) {
+            deleteImageFromGCS(user.getProfileImage());
+        }
+
         // 유저 삭제
         userRepository.delete(user);
 
