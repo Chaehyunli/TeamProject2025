@@ -5,6 +5,12 @@ const FileUpload = ({ label = "이미지 업로드", name = "image", onFileSelec
     const handleChange = (event) => {
         if (event.target.files.length > 0) {
             const file = event.target.files[0];
+
+            if (!file.type.startsWith("image/")) {
+                alert("❌ 지원하지 않는 파일 형식입니다. PNG, JPG만 업로드 가능합니다.");
+                return;
+            }
+
             console.log("선택된 파일:", file.name, file.size, file.type); // 파일 정보 출력
             onFileSelect(file);
         }
@@ -13,9 +19,9 @@ const FileUpload = ({ label = "이미지 업로드", name = "image", onFileSelec
     return (
         <div className="mt-4">
             <InputField
-                label={label} // ✅ 라벨 동적으로 변경 가능
+                label={label}
                 type="file"
-                name={name} // ✅ 입력 필드 이름도 변경 가능
+                name={name}
                 onChange={handleChange}
                 accept="image/*"
             />

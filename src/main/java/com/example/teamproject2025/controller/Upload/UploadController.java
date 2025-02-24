@@ -6,6 +6,7 @@ import com.google.cloud.storage.HttpMethod;
 import com.google.cloud.storage.Storage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,13 +30,19 @@ public class UploadController {
     // Presigned URL 생성 (파일 업로드)
     @GetMapping("/presigned-url")
     public ResponseEntity<CommonResponseDto<Map<String, String>>> generatePresignedUrl(
-            @RequestParam String fileName) {
-        //         // UUID를 파일명에 적용하여 고유한 객체명 생성
+            @RequestParam String fileName, @RequestParam(required = false) String fileType) {
+        // 기본값으로 image/* 만 허용
+        if (fileType == null || fileType.isBlank() || !fileType.startsWith("image/")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(CommonResponseDto.error(400, "❌ 지원하지 않는 파일 형식입니다. (PNG, JPG만 가능)"));
+        }
+
+        // UUID를 파일명에 적용하여 고유한 객체명 생성
         String uniqueFileName = UUID.randomUUID() + "_" + fileName;
         BlobInfo blobInfo = BlobInfo.newBuilder(bucketName, uniqueFileName).build();
 
-        // 15분 유효 기간의 presigned URL 생성
-        URL signedUrl = storage.signUrl(blobInfo, 15, TimeUnit.MINUTES,
+        // 5분 유효 기간의 presigned URL 생성
+        URL signedUrl = storage.signUrl(blobInfo, 5, TimeUnit.MINUTES,
                 Storage.SignUrlOption.httpMethod(HttpMethod.PUT),
                 Storage.SignUrlOption.withV4Signature());
 
@@ -53,8 +60,8 @@ public class UploadController {
             @RequestParam String objectName) {
         BlobInfo blobInfo = BlobInfo.newBuilder(bucketName, objectName).build();
 
-        // 15분 유효 기간의 presigned URL 생성 (GET 방식)
-        URL signedUrl = storage.signUrl(blobInfo, 15, TimeUnit.MINUTES,
+        // 5분 유효 기간의 presigned URL 생성 (GET 방식)
+        URL signedUrl = storage.signUrl(blobInfo, 5, TimeUnit.MINUTES,
                 Storage.SignUrlOption.httpMethod(HttpMethod.GET),
                 Storage.SignUrlOption.withV4Signature());
 

@@ -8,7 +8,7 @@ export const uploadImageToGCP = async (file) => {
     try {
         // 1. presigned URL 요청
         const presignedRes = await axios.get(`${API_BASE_URL}/presigned-url`, {
-            params: { fileName: file.name },
+            params: { fileName: file.name, fileType: file.type },
             withCredentials: true
         });
         const { url, objectName } = presignedRes.data.data;
