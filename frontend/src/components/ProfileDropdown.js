@@ -11,6 +11,11 @@ const ProfileDropdown = ({ username, userImage, onLogout }) => {
     const handleLogout = async () => {
         try {
             await logout();
+            localStorage.removeItem("userId");  // userId 삭제
+            localStorage.removeItem("username");  // username 삭제
+            localStorage.removeItem("profileImage");  // profileImage 삭제
+            localStorage.removeItem("name");  // 사용자 이름 삭제
+
             alert("로그아웃 되었습니다.");
             window.location.href = "/login";
         } catch (error) {

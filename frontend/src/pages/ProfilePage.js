@@ -32,6 +32,11 @@ const ProfilePage = () => {
 
         try {
             await deleteUser();
+            localStorage.removeItem("userId");  // userId 삭제
+            localStorage.removeItem("username");  // username 삭제
+            localStorage.removeItem("profileImage");  // profileImage 삭제
+            localStorage.removeItem("name");  // 사용자 이름 삭제
+
             alert("회원 탈퇴가 완료되었습니다.");
             window.location.href = "/"; // 탈퇴 후 홈 화면 이동
         } catch (error) {
@@ -42,6 +47,11 @@ const ProfilePage = () => {
     const handleLogout = async () => {
         try {
             await logout();
+            localStorage.removeItem("userId");  // userId 삭제
+            localStorage.removeItem("username");  // username 삭제
+            localStorage.removeItem("profileImage");  // profileImage 삭제
+            localStorage.removeItem("name");  // 사용자 이름 삭제
+
             alert("로그아웃 되었습니다.");
             window.location.href = "/"
         } catch (error) {
