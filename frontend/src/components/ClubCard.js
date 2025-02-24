@@ -40,6 +40,7 @@ const ClubCard = ({ club, isMember }) => {
                 {/* 지원하기 버튼 */}
                 {!isMember && (
                     <button
+                        onClick={() => navigate(`/clubs/${club.clubId}/apply`)}
                         className="px-5 py-2 rounded-lg bg-primary text-white hover:bg-hoverBlueColor"
                     >
                         지원하기

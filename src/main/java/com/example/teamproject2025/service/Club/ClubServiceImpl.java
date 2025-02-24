@@ -2,6 +2,7 @@ package com.example.teamproject2025.service.Club;
 
 import com.example.teamproject2025.dto.Club.ClubCreateRequestDto;
 import com.example.teamproject2025.dto.Club.ClubListResponseDto;
+import com.example.teamproject2025.dto.Membership.UserClubResponseDto;
 import com.example.teamproject2025.entity.Club.Category;
 import com.example.teamproject2025.entity.Club.Club;
 import com.example.teamproject2025.entity.Membership.RoleType;
@@ -129,4 +130,42 @@ public class ClubServiceImpl implements ClubService {
         // 4. DTO 변환 후 반환
         return ClubListResponseDto.fromEntity(paginatedClubs, total, limit, offset);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public String getUserRoleInClub(Long userId, Long clubId) {
+        try {
+            System.out.println("userId: " + userId + ", clubId: " + clubId);
+
+            UserClub userClub = userClubRepository.findByUser_UserIdAndClub_ClubId(userId, clubId)
+                    .orElseThrow(() -> new RuntimeException("해당 클럽에 속한 사용자가 아닙니다. userId: " + userId + ", clubId: " + clubId));
+
+            System.out.println("조회된 userClub: " + userClub);
+
+            return userClub.getRole().getRoleName().name(); // "PRESIDENT", "MEMBER" 등 반환
+        } catch (Exception e) {
+            System.err.println("클럽 내 역할 조회 실패: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<UserClubResponseDto> getMyClubs(Long userId) {
+        List<UserClub> myClubs = userClubRepository.findByUser_UserId(userId);
+
+        // 조회된 데이터 확인 (디버깅용)
+        System.out.println("사용자의 동아리 수: " + myClubs.size());
+        for (UserClub uc : myClubs) {
+            System.out.println("클럽 ID: " + uc.getClub().getClubId() + ", 사용자 ID: " + uc.getUser().getUserId());
+        }
+
+        // UserClub → UserClubResponseDto 변환하여 반환
+        return myClubs.stream()
+                .map(UserClubResponseDto::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+
 }
