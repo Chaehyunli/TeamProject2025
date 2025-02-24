@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 @Getter
 public class ClubSubmissionResponseDto {
     private Long applyId;
+    private Long userId;
     private Long clubId;
     private String studentId;
     private String contact;
@@ -20,6 +21,7 @@ public class ClubSubmissionResponseDto {
     public ClubSubmissionResponseDto(ClubSubmission submission) {
         this.applyId = submission.getApplyId();
         this.clubId = submission.getClub().getClubId();
+        this.userId = submission.getUser().getUserId();
         this.studentId = submission.getStudentId();
         this.contact = submission.getContact();
         this.department = submission.getDepartment();

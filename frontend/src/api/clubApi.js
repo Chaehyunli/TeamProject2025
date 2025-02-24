@@ -91,5 +91,18 @@ export const getUserClubSubmissionStatus = async (clubId) => {
     }
 };
 
+// 동아리 지원자 목록 조회 
+export const getClubSubmissions = async (clubId) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/${clubId}/submissions`, {
+            withCredentials: true,
+        });
+        return response.data;
+    } catch (error) {
+        console.error(`동아리 ${clubId} 지원자 목록 불러오기 실패:`, error);
+        return [];
+    }
+};
+
 
 
