@@ -63,5 +63,33 @@ export const getUserClubs = async () => {
     }
 };
 
+// 동아리 지원서 제출
+export const submitClubApplication = async (clubId, formData) => {
+    try {
+        const response = await axios.post(
+            `${API_BASE_URL}/${clubId}/submissions`,
+            formData,
+            { withCredentials: true } // 세션 기반 인증 유지
+        );
+        return response.data;
+    } catch (error) {
+        console.error("동아리 지원서 제출 실패:", error);
+        throw error;
+    }
+};
+
+// 사용자의 동아리 지원 여부 확인
+export const getUserClubSubmissionStatus = async (clubId) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/${clubId}/submissions/status`, {
+            withCredentials: true
+        });
+        return response.data.data.hasApplied;
+    } catch (error) {
+        console.error("지원 여부 확인 실패:", error);
+        return false;
+    }
+};
+
 
 

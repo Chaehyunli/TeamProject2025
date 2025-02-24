@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/clubs")
@@ -39,6 +40,21 @@ public class ClubSubmissionController {
         Long submissionId = clubSubmissionService.submitApplication(userId, clubId, dto);
 
         return CommonResponseDto.success(200, "지원서 제출 성공", submissionId);
+    }
+
+    // 사용자의 동아리 지원 여부 조회
+    @GetMapping("/{clubId}/submissions/status")
+    public CommonResponseDto<Map<String, Boolean>> checkSubmissionStatus(
+            @PathVariable Long clubId,
+            HttpSession session) {
+
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            return CommonResponseDto.error(401, "로그인이 필요합니다.");
+        }
+
+        boolean hasApplied = clubSubmissionService.hasUserApplied(userId, clubId);
+        return CommonResponseDto.success(200, "지원 여부 조회 성공", Map.of("hasApplied", hasApplied));
     }
 
 

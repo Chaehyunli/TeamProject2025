@@ -51,6 +51,12 @@ public class ClubSubmissionServiceImpl implements ClubSubmissionService {
         return submission.getApplyId();
     }
 
+    // 사용자의 동아리 지원 여부 확인
+    @Override
+    @Transactional(readOnly = true)
+    public boolean hasUserApplied(Long userId, Long clubId) {
+        return clubSubmissionRepository.existsByUser_UserIdAndClub_ClubId(userId, clubId);
+    }
 
     @Override
     @Transactional(readOnly = true)
