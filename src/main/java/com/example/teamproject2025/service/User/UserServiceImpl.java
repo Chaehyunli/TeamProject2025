@@ -1,5 +1,6 @@
 package com.example.teamproject2025.service.User;
 
+import com.example.teamproject2025.dto.Club.ClubSummaryDto;
 import com.example.teamproject2025.dto.Common.CommonResponseDto;
 import com.example.teamproject2025.dto.User.UserCreateRequestDto;
 import com.example.teamproject2025.dto.User.UserResponseDto;
@@ -18,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @Transactional
@@ -176,8 +178,8 @@ public class UserServiceImpl implements UserService {
                 .body(CommonResponseDto.success(HttpStatus.OK.value(), "User deleted successfully"));
     }
 
-    @Transactional
     @Override
+    @Transactional
     public UserResponseDto getUserProfile(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
@@ -187,21 +189,36 @@ public class UserServiceImpl implements UserService {
                 .map(university -> university.getUniversityName())
                 .orElse(null); // 대학이 없을 경우 null 반환
 
+        // 사용자가 가입한 동아리 목록 조회
+        List<ClubSummaryDto> joinedClubs = user.getUserClubs().stream()
+                .map(userClub -> ClubSummaryDto.fromEntity(userClub.getClub()))
+                .toList();
+
+        // 사용자가 운영하는 동아리 목록 조회 (회장 또는 부회장인 경우만)
+        List<ClubSummaryDto> managedClubs = user.getUserClubs().stream()
+                .filter(userClub -> userClub.getRole().getRoleName().name().equals("PRESIDENT") ||
+                        userClub.getRole().getRoleName().name().equals("VICE_PRESIDENT"))
+                .map(userClub -> ClubSummaryDto.fromEntity(userClub.getClub()))
+                .toList();
+
         return UserResponseDto.builder()
                 .userId(user.getUserId())
                 .username(user.getUsername())
                 .name(user.getName())
                 .email(user.getEmail())
-                .studentId(user.getStudentId()) // 학번 추가
-                .department(user.getDepartment()) // 학과 추가
-                .profileImage(user.getProfileImage()) // 프로필 이미지 추가
-                .universityId(user.getUniversityId()) // 대학 ID 가져오기
-                .universityName(universityName) // 대학 이름 가져오기 (조회한 값)
-                .isEmailVerified(user.getIsEmailVerified()) // 이메일 인증 여부
-                .isUniVerified(user.getIsUniVerified()) // 대학 인증 여부 (getter 메서드 필요)
-                .createdAt(user.getCreatedAt()) // 계정 생성 날짜 추가
+                .studentId(user.getStudentId())
+                .department(user.getDepartment())
+                .profileImage(user.getProfileImage())
+                .universityId(user.getUniversityId())
+                .universityName(universityName)
+                .isEmailVerified(user.getIsEmailVerified())
+                .isUniVerified(user.getIsUniVerified())
+                .createdAt(user.getCreatedAt())
+                .joinedClubs(joinedClubs)   // 가입한 동아리 목록 추가
+                .managedClubs(managedClubs) // 운영하는 동아리 목록 추가
                 .build();
     }
+
 }
 
 /* 💡Descriptions @dev_taehyun

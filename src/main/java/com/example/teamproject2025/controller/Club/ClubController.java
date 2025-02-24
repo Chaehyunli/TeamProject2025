@@ -1,6 +1,7 @@
 package com.example.teamproject2025.controller.Club;
 
 import com.example.teamproject2025.dto.Club.ClubListResponseDto;
+import com.example.teamproject2025.dto.Club.ClubResponseDto;
 import com.example.teamproject2025.dto.Common.CommonResponseDto;
 import com.example.teamproject2025.dto.Membership.UserClubResponseDto;
 import com.example.teamproject2025.service.Club.ClubService;
@@ -92,5 +93,11 @@ public class ClubController {
         );
     }
 
-
+    @GetMapping("/{clubId}")
+    public ResponseEntity<CommonResponseDto<ClubResponseDto>> getClub(@PathVariable Long clubId) {
+        ClubResponseDto club = clubService.getClub(clubId);
+        return ResponseEntity.ok(
+                CommonResponseDto.success(200, "Club details retrieved successfully", club)
+        );
+    }
 }

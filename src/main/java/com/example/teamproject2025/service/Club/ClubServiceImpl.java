@@ -1,7 +1,9 @@
 package com.example.teamproject2025.service.Club;
 
 import com.example.teamproject2025.dto.Club.ClubCreateRequestDto;
+import com.example.teamproject2025.dto.Club.ClubLeaderDto;
 import com.example.teamproject2025.dto.Club.ClubListResponseDto;
+import com.example.teamproject2025.dto.Club.ClubResponseDto;
 import com.example.teamproject2025.dto.Membership.UserClubResponseDto;
 import com.example.teamproject2025.entity.Club.Category;
 import com.example.teamproject2025.entity.Club.Club;
@@ -33,7 +35,6 @@ public class ClubServiceImpl implements ClubService {
     private final UniversityRepository universityRepository;
     private final UserRoleRepository userRoleRepository;
     private final UserClubRepository userClubRepository;
-    private final Storage storage;
 
     @Value("${spring.cloud.gcp.storage.bucket}")
     private String bucketName;
@@ -48,7 +49,6 @@ public class ClubServiceImpl implements ClubService {
         this.universityRepository = universityRepository;
         this.userRoleRepository = userRoleRepository;
         this.userClubRepository = userClubRepository;
-        this.storage = storage;
     }
 
     @Override
@@ -153,5 +153,20 @@ public class ClubServiceImpl implements ClubService {
         return myClubs.stream()
                 .map(UserClubResponseDto::fromEntity)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public ClubResponseDto getClub(Long clubId) {
+        Club club = clubRepository.findById(clubId)
+                .orElseThrow(() -> new IllegalArgumentException("Club not found"));
+
+        // 리더 정보 가져오기
+        List<UserClub> leaders = userClubRepository.findLeadersByClubId(clubId, RoleType.PRESIDENT, RoleType.VICE_PRESIDENT);
+        List<ClubLeaderDto> leaderDtos = leaders.stream().map(ClubLeaderDto::fromEntity).collect(Collectors.toList());
+
+        // 멤버 수 가져오기
+        int membersCount = userClubRepository.countByClubId(clubId);
+
+        return ClubResponseDto.fromEntity(club, leaderDtos, membersCount);
     }
 }
