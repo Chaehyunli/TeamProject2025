@@ -4,8 +4,8 @@ import { ProtectedImage } from "../api/uploadApi";
 
 const ClubCard = ({ club, isMember }) => {
     const navigate = useNavigate();
-    const president = club.leaders?.find(leader => leader.role_name === "PRESIDENT");
-    const vicePresident = club.leaders?.find(leader => leader.role_name === "VICE_PRESIDENT");
+    const president = club.leaders?.find(leader => leader.roleName === "PRESIDENT");
+    const vicePresident = club.leaders?.find(leader => leader.roleName === "VICE_PRESIDENT");
 
     return (
         <div className="w-full max-w-sm bg-white shadow-lg rounded-lg p-6 flex flex-col h-full justify-between">
@@ -16,8 +16,8 @@ const ClubCard = ({ club, isMember }) => {
             <h3 className="text-xl font-bold mb-1 break-words">{club.clubName}</h3>
 
             {/* 회장 및 부회장 정보 */}
-            <p className="text-gray-600 text-sm"><strong>회장:</strong> {president ? president.user_name : "미정"}</p>
-            {vicePresident && <p className="text-gray-600 text-sm"><strong>부회장:</strong> {vicePresident.user_name}</p>}
+            <p className="text-gray-600 text-sm"><strong>회장:</strong> {president ? president.userName : "미정"}</p>
+            {vicePresident && <p className="text-gray-600 text-sm"><strong>부회장:</strong> {vicePresident.userName}</p>}
 
             {/* 설명 */}
             <p className="text-gray-500 text-sm mt-2 break-words max-h-16 overflow-hidden">
