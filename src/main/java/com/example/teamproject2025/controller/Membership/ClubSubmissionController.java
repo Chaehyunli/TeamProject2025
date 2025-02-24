@@ -57,5 +57,20 @@ public class ClubSubmissionController {
         return CommonResponseDto.success(200, "지원 여부 조회 성공", Map.of("hasApplied", hasApplied));
     }
 
+    // 특정 동아리에 대한 지원서 목록 조회
+    @GetMapping("/{clubId}/submissions")
+    public CommonResponseDto<List<ClubSubmissionResponseDto>> getClubSubmissions(
+            @PathVariable Long clubId,
+            HttpSession session) {
+
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            return CommonResponseDto.error(401, "로그인이 필요합니다.");
+        }
+
+        List<ClubSubmissionResponseDto> submissions = clubSubmissionService.getSubmissionsByClub(clubId);
+        return CommonResponseDto.success(200, "지원자 목록 조회 성공", submissions);
+    }
+
 
 }

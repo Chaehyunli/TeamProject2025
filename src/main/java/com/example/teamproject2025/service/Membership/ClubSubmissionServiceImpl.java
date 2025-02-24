@@ -58,18 +58,12 @@ public class ClubSubmissionServiceImpl implements ClubSubmissionService {
         return clubSubmissionRepository.existsByUser_UserIdAndClub_ClubId(userId, clubId);
     }
 
+    // 특정 동아리에 대한 지원서 목록 조회
     @Override
     @Transactional(readOnly = true)
-    public List<ClubSubmissionResponseDto> getApplicationsByClub(Long clubId) {
-        return clubSubmissionRepository.findByClub_ClubId(clubId).stream()
-                .map(ClubSubmissionResponseDto::new)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<ClubSubmissionResponseDto> getApplicationsByUser(Long userId) {
-        return clubSubmissionRepository.findByUser_UserId(userId).stream()
+    public List<ClubSubmissionResponseDto> getSubmissionsByClub(Long clubId) {
+        List<ClubSubmission> submissions = clubSubmissionRepository.findByClub_ClubId(clubId);
+        return submissions.stream()
                 .map(ClubSubmissionResponseDto::new)
                 .collect(Collectors.toList());
     }
