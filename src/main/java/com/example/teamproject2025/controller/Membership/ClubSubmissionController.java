@@ -3,6 +3,7 @@ package com.example.teamproject2025.controller.Membership;
 import com.example.teamproject2025.dto.Common.CommonResponseDto;
 import com.example.teamproject2025.dto.Membership.ClubSubmissionRequestDto;
 import com.example.teamproject2025.dto.Membership.ClubSubmissionResponseDto;
+import com.example.teamproject2025.service.Club.ClubService;
 import com.example.teamproject2025.service.Membership.ClubSubmissionService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -18,9 +19,11 @@ import java.util.Map;
 public class ClubSubmissionController {
 
     private final ClubSubmissionService clubSubmissionService;
+    private final ClubService clubService;
 
-    public ClubSubmissionController(ClubSubmissionService clubSubmissionService) {
+    public ClubSubmissionController(ClubSubmissionService clubSubmissionService, ClubService clubService) {
         this.clubSubmissionService = clubSubmissionService;
+        this.clubService = clubService;
     }
 
     // 동아리 지원서 제출
@@ -68,9 +71,40 @@ public class ClubSubmissionController {
             return CommonResponseDto.error(401, "로그인이 필요합니다.");
         }
 
+        // 해당 사용자의 동아리 내 역할 조회
+        String userRole = clubService.getUserRoleInClub(userId, clubId);
+
+        // 회장(PRESIDENT) 또는 부회장(VICE_PRESIDENT)만 지원서 목록 조회 가능
+        if (!"PRESIDENT".equals(userRole) && !"VICE_PRESIDENT".equals(userRole)) {
+            return CommonResponseDto.error(403, "이 동아리의 지원서 목록을 조회할 권한이 없습니다.");
+        }
+
         List<ClubSubmissionResponseDto> submissions = clubSubmissionService.getSubmissionsByClub(clubId);
         return CommonResponseDto.success(200, "지원자 목록 조회 성공", submissions);
     }
 
+    // 특정 지원서 조회 API
+    @GetMapping("/{clubId}/submissions/{applyId}")
+    public CommonResponseDto<ClubSubmissionResponseDto> getApplicationDetails(
+            @PathVariable Long clubId,
+            @PathVariable Long applyId,
+            HttpSession session) {
+
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            return CommonResponseDto.error(401, "로그인이 필요합니다.");
+        }
+
+        // 사용자의 역할 가져오기
+        String userRole = clubService.getUserRoleInClub(userId, clubId);
+
+        // PRESIDENT 또는 VICE_PRESIDENT가 아니라면 접근 제한
+        if (!"PRESIDENT".equals(userRole) && !"VICE_PRESIDENT".equals(userRole)) {
+            return CommonResponseDto.error(403, "이 지원서를 조회할 권한이 없습니다.");
+        }
+
+        ClubSubmissionResponseDto submission = clubSubmissionService.getApplicationDetails(clubId, applyId);
+        return CommonResponseDto.success(200, "지원서 조회 성공", submission);
+    }
 
 }

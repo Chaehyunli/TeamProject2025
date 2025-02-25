@@ -67,4 +67,13 @@ public class ClubSubmissionServiceImpl implements ClubSubmissionService {
                 .map(ClubSubmissionResponseDto::new)
                 .collect(Collectors.toList());
     }
+
+    // 특정 지원서 상세정보 조회
+    @Override
+    public ClubSubmissionResponseDto getApplicationDetails(Long clubId, Long applyId) {
+        ClubSubmission submission = clubSubmissionRepository.findByClub_ClubIdAndApplyId(clubId, applyId)
+                .orElseThrow(() -> new IllegalArgumentException("지원서를 찾을 수 없습니다."));
+
+        return new ClubSubmissionResponseDto(submission);
+    }
 }

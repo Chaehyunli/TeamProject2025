@@ -40,6 +40,7 @@ const ClubSubmissions = () => {
     return (
         <div className="w-full max-w-4xl mx-auto mt-10 p-6 bg-white shadow-md rounded-lg">
             <h2 className="text-xl font-semibold mb-4">지원자 관리</h2>
+            <p className="text-sm text-gray-500">동아리 ID: {clubId}</p>
             <div className="divide-y divide-gray-300">
                 {submissions.length > 0 ? (
                     submissions.map((applicant) => (
@@ -54,11 +55,14 @@ const ClubSubmissions = () => {
                                 <span className="text-lg font-medium">
                                     사용자 ID : {applicant.userId} {/* 사용자 ID 표시, 이후에 userid로 특정 사용자의 프로필 조회 api 추가시 이름으로 대체 */}
                                 </span>
+                                <span className="text-lg font-medium">
+                                    지원서 ID : {applicant.applyId} {/* 지원서 ID 표시 */}
+                                </span>
                             </div>
 
                             {/* 지원서 보기, 합격, 불합격 버튼 */}
                             <div className="flex gap-2">
-                            <button className="px-3 py-1 border rounded-lg">지원서 보기</button>
+                                <button className="px-3 py-1 border rounded-lg">지원서 보기</button>
                                 <button
                                     className="px-3 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
                                 >
