@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {useNavigate, useParams} from "react-router-dom";
-import { getClubSubmissions } from "../api/clubApi";
-import { getUserClubRole } from "../api/clubApi";
+import { getClubSubmissions, approveSubmission, rejectSubmission, getUserClubRole } from "../api/clubApi";
 
 const ClubSubmissions = () => {
     const { clubId } = useParams(); // URL에서 동아리 ID 가져오기
@@ -31,6 +30,34 @@ const ClubSubmissions = () => {
 
         fetchData();
     }, [clubId]);
+
+    const handleApprove = async (userId) => {
+        const isConfirmed = window.confirm(`${userId} 님을 합격시키겠습니까?`);
+        if (!isConfirmed) return;
+
+        try {
+            await approveSubmission(clubId, userId);
+            alert("승인 완료되었습니다.");
+            navigate(`/clubs/${clubId}/articles`)
+        } catch (error) {
+            alert("승인 처리 중 오류가 발생했습니다.");
+            console.error("승인 오류:", error);
+        }
+    };
+
+    const handleReject = async (userId) => {
+        const isConfirmed = window.confirm(`${userId} 님을 불합격시키겠습니까?`);
+        if (!isConfirmed) return;
+
+        try {
+            await rejectSubmission(clubId, userId);
+            alert("거절 완료되었습니다.");
+            navigate(`/clubs/${clubId}/articles`)
+        } catch (error) {
+            alert("거절 처리 중 오류가 발생했습니다.");
+            console.error("거절 오류:", error);
+        }
+    };
 
 
     if (loading) return <p className="text-center mt-10">⏳ 로딩 중...</p>;
@@ -69,16 +96,21 @@ const ClubSubmissions = () => {
                                 >
                                     지원서 보기
                                 </button>
+
                                 <button
                                     className="px-3 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                                    onClick={() => handleApprove(applicant.userId)}
                                 >
                                     합격
                                 </button>
+                                {/* 이후에 userid 이름 가져오는 api 추가 후에 이름으로 변경 */}
                                 <button
                                     className="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600"
+                                    onClick={() => handleReject(applicant.userId)}
                                 >
                                     불합격
                                 </button>
+                                {/* 이후에 userid 이름 가져오는 api 추가후에 이름으로 변경 */}
                             </div>
                         </div>
                     ))

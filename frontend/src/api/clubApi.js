@@ -114,3 +114,31 @@ export const getClubSubmissionDetail = async (clubId, applyId) => {
         throw error;
     }
 };
+
+// 특정 지원서 승인
+export const approveSubmission = async (clubId, applyId) => {
+    try {
+        const response = await axios.patch(`${API_BASE_URL}/${clubId}/submissions/${applyId}/approve`,
+            {},
+            { withCredentials: true }
+            );
+        return response.data;
+    } catch (error) {
+        console.error("지원서 승인 실패:", error);
+        throw error;
+    }
+};
+
+// 특정 지원서 거절
+export const rejectSubmission = async (clubId, applyId) => {
+    try {
+        const response = await axios.patch(`${API_BASE_URL}/${clubId}/submissions/${applyId}/reject`,
+            {},
+            { withCredentials: true }
+            );
+        return response.data;
+    } catch (error) {
+        console.error("지원서 거절 실패:", error);
+        throw error;
+    }
+};
