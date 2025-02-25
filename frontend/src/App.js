@@ -19,12 +19,7 @@ import ClubApply from "./components/ClubApply";
 import ClubSubmissionDetail from "./components/ClubSubmissionDetail";
 
 function App() {
-    useEffect(() => {
-        localStorage.removeItem("name"); // 이전 로그인 정보 삭제
-        localStorage.removeItem("profileImage");
-        localStorage.removeItem("userId");
-        localStorage.removeItem("username");
-    }, []);
+
     return (
         <Router>
             <TopNavbar />

@@ -4,9 +4,14 @@ import com.example.teamproject2025.dto.Membership.ClubSubmissionRequestDto;
 import com.example.teamproject2025.dto.Membership.ClubSubmissionResponseDto;
 import com.example.teamproject2025.entity.Club.Club;
 import com.example.teamproject2025.entity.Membership.ClubSubmission;
+import com.example.teamproject2025.entity.Membership.RoleType;
+import com.example.teamproject2025.entity.Membership.UserClub;
+import com.example.teamproject2025.entity.Membership.UserRole;
 import com.example.teamproject2025.entity.User.User;
 import com.example.teamproject2025.repository.Club.ClubRepository;
 import com.example.teamproject2025.repository.Membership.ClubSubmissionRepository;
+import com.example.teamproject2025.repository.Membership.UserClubRepository;
+import com.example.teamproject2025.repository.Membership.UserRoleRepository;
 import com.example.teamproject2025.repository.User.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,11 +25,16 @@ public class ClubSubmissionServiceImpl implements ClubSubmissionService {
     private final ClubSubmissionRepository clubSubmissionRepository;
     private final UserRepository userRepository;
     private final ClubRepository clubRepository;
+    private final UserClubRepository userClubRepository;
+    private final UserRoleRepository userRoleRepository;
 
-    public ClubSubmissionServiceImpl(ClubSubmissionRepository clubSubmissionRepository, UserRepository userRepository, ClubRepository clubRepository) {
+
+    public ClubSubmissionServiceImpl(ClubSubmissionRepository clubSubmissionRepository, UserRepository userRepository, ClubRepository clubRepository, UserClubRepository userClubRepository, UserRoleRepository userRoleRepository) {
         this.clubSubmissionRepository = clubSubmissionRepository;
         this.userRepository = userRepository;
         this.clubRepository = clubRepository;
+        this.userClubRepository = userClubRepository;
+        this.userRoleRepository = userRoleRepository;
     }
 
     @Override
@@ -76,4 +86,79 @@ public class ClubSubmissionServiceImpl implements ClubSubmissionService {
 
         return new ClubSubmissionResponseDto(submission);
     }
+
+    // 특정 지원서 승인
+    public void approveSubmission(Long clubId, Long applyId) {
+        ClubSubmission submission = clubSubmissionRepository.findById(applyId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 지원서입니다."));
+
+        // 지원서가 해당 동아리에 속해 있는지 확인
+        if (!submission.getClub().getClubId().equals(clubId)) {
+            throw new IllegalArgumentException("이 지원서는 해당 동아리에 속해 있지 않습니다.");
+        }
+
+        // 이미 승인된 지원서는 다시 승인할 수 없음
+        if (submission.getStatus() == ClubSubmission.SubmissionStatus.APPROVED) {
+            throw new IllegalStateException("이미 승인된 지원서입니다.");
+        }
+
+        // 지원 상태 변경 (APPROVED)
+        submission.setStatus(ClubSubmission.SubmissionStatus.APPROVED);
+        clubSubmissionRepository.save(submission);
+
+        // 해당 사용자를 동아리 회원으로 등록
+        addUserToClub(submission.getUser(), submission.getClub());
+
+        // 지원서 삭제 (승인된 지원서는 필요 없음)
+        clubSubmissionRepository.delete(submission);
+    }
+
+    // 특정 지원서 거절
+    public void rejectSubmission(Long clubId, Long applyId) {
+        ClubSubmission submission = clubSubmissionRepository.findById(applyId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 지원서입니다."));
+
+        // 지원서가 해당 동아리에 속해 있는지 확인
+        if (!submission.getClub().getClubId().equals(clubId)) {
+            throw new IllegalArgumentException("이 지원서는 해당 동아리에 속해 있지 않습니다.");
+        }
+
+        // 이미 거절된 지원서는 다시 거절할 수 없음
+        if (submission.getStatus() == ClubSubmission.SubmissionStatus.REJECTED) {
+            throw new IllegalStateException("이미 거절된 지원서입니다.");
+        }
+
+        // 지원 상태 변경 (REJECTED)
+        submission.setStatus(ClubSubmission.SubmissionStatus.REJECTED);
+        clubSubmissionRepository.save(submission);
+
+        // 지원서 삭제(거절된 지원서는 필요 없음)
+        clubSubmissionRepository.delete(submission);
+    }
+
+    // 동아리 회원에 추가
+    private void addUserToClub(User user, Club club) {
+        // 이미 회원인지 확인
+        boolean isAlreadyMember = userClubRepository.existsByUser_UserIdAndClub_ClubId(user.getUserId(), club.getClubId());
+        if (isAlreadyMember) {
+            throw new IllegalStateException("이미 동아리 회원입니다.");
+        }
+
+        // MEMBER 역할 추가 (user_roles 테이블)
+        UserRole memberRole = UserRole.builder()
+                .user(user)
+                .club(club)
+                .roleName(RoleType.MEMBER) // ENUM 사용
+                .build();
+        userRoleRepository.save(memberRole);
+
+        // user_clubs 테이블에 회원 추가
+        UserClub userClub = UserClub.builder()
+                .user(user)
+                .club(club)
+                .role(memberRole) // 역할과 연결
+                .build();
+        userClubRepository.save(userClub);
+    }
+
 }

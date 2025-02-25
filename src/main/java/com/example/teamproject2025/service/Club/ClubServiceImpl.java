@@ -16,9 +16,11 @@ import com.example.teamproject2025.repository.Membership.UserClubRepository;
 import com.example.teamproject2025.repository.Membership.UserRoleRepository;
 import com.example.teamproject2025.repository.University.UniversityRepository;
 import com.example.teamproject2025.repository.User.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.context.ApplicationContext;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,6 +37,9 @@ public class ClubServiceImpl implements ClubService {
     private final UniversityRepository universityRepository;
     private final UserRoleRepository userRoleRepository;
     private final UserClubRepository userClubRepository;
+
+    @Autowired
+    private ApplicationContext applicationContext;
 
     // 업로드 경로 (Spring Boot의 정적 리소스로 활용, 현재 프로젝트 루트 경로에 uploads 폴더 생성)
     private static final String UPLOAD_DIR = System.getProperty("user.dir") + "/uploads/clubs/";
@@ -167,5 +172,15 @@ public class ClubServiceImpl implements ClubService {
                 .collect(Collectors.toList());
     }
 
+    // 특정 사용자가 클럽 내에서 권한이 있는지 확인하는 메서드
+    @Override
+    @Transactional(readOnly = true)
+    public boolean checkUserPermission(Long userId, Long clubId) {
+        // 프록시를 사용하여 트랜잭션 적용된 메서드 호출
+        ClubService proxyService = applicationContext.getBean(ClubService.class);
+        String userRole = proxyService.getUserRoleInClub(userId, clubId);
+
+        return "PRESIDENT".equals(userRole) || "VICE_PRESIDENT".equals(userRole);
+    }
 
 }

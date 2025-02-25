@@ -15,4 +15,6 @@ public interface ClubService {
     String getUserRoleInClub(Long userId, Long clubId);
 
     List<UserClubResponseDto> getMyClubs(Long userId);
+
+    boolean checkUserPermission(Long userId, Long clubId);
 }

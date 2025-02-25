@@ -75,7 +75,7 @@ public class ClubSubmissionController {
         String userRole = clubService.getUserRoleInClub(userId, clubId);
 
         // 회장(PRESIDENT) 또는 부회장(VICE_PRESIDENT)만 지원서 목록 조회 가능
-        if (!"PRESIDENT".equals(userRole) && !"VICE_PRESIDENT".equals(userRole)) {
+        if (!clubService.checkUserPermission(userId, clubId)) {
             return CommonResponseDto.error(403, "이 동아리의 지원서 목록을 조회할 권한이 없습니다.");
         }
 
@@ -99,12 +99,58 @@ public class ClubSubmissionController {
         String userRole = clubService.getUserRoleInClub(userId, clubId);
 
         // PRESIDENT 또는 VICE_PRESIDENT가 아니라면 접근 제한
-        if (!"PRESIDENT".equals(userRole) && !"VICE_PRESIDENT".equals(userRole)) {
+        if (!clubService.checkUserPermission(userId, clubId)) {
             return CommonResponseDto.error(403, "이 지원서를 조회할 권한이 없습니다.");
         }
 
         ClubSubmissionResponseDto submission = clubSubmissionService.getApplicationDetails(clubId, applyId);
         return CommonResponseDto.success(200, "지원서 조회 성공", submission);
+    }
+
+    // 특정 지원서 승인
+    @PatchMapping("/{clubId}/submissions/{applyId}/approve")
+    public CommonResponseDto<String> approveClubSubmission(
+            @PathVariable Long clubId,
+            @PathVariable Long applyId,
+            HttpSession session) {
+
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            return CommonResponseDto.error(401, "로그인이 필요합니다.");
+        }
+
+        // 권한 체크 (회장 또는 부회장만 승인 가능)
+        if (!clubService.checkUserPermission(userId, clubId)) {
+            return CommonResponseDto.error(403, "이 지원서를 승인할 권한이 없습니다.");
+        }
+
+        // 지원서 승인 처리
+        clubSubmissionService.approveSubmission(clubId, applyId);
+
+        return CommonResponseDto.success(200, "지원서가 승인되었습니다.", null);
+    }
+
+    // 특정 지원서 거절
+    @PatchMapping("/{clubId}/submissions/{applyId}/reject")
+    public CommonResponseDto<String> rejectClubSubmission(
+            @PathVariable Long clubId,
+            @PathVariable Long applyId,
+            HttpSession session) {
+
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            return CommonResponseDto.error(401, "로그인이 필요합니다.");
+        }
+
+        // 권한 체크 (회장 또는 부회장만 거절 가능)
+        if (!clubService.checkUserPermission(userId, clubId)) {
+            return CommonResponseDto.error(403, "이 지원서를 거절할 권한이 없습니다.");
+        }
+
+        // 지원서 거절 처리
+        clubSubmissionService.rejectSubmission(clubId, applyId);
+
+        return CommonResponseDto.success(200, "지원서가 거절되었습니다.", null);
     }
 
 }
