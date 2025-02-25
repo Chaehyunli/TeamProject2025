@@ -7,7 +7,7 @@ import InputField from "../components/InputField";
 const ClubApply = () => {
     const { clubId } = useParams();
     const navigate = useNavigate();
-    const [clubName, setClubName] = useState("");
+    // const [clubName, setClubName] = useState("");
     const [formData, setFormData] = useState({
         studentId: "",
         contact: "",
@@ -22,7 +22,7 @@ const ClubApply = () => {
             setLoading(true);
 
             // 동아리 이름 가져오기
-            //  특정 동아리 조회 api 추가 이후
+            // 특정 동아리 조회 api 추가 이후
 
             // 사용자 정보 가져와 학번 & 학과 자동 입력
             const userData = await getUserProfile();

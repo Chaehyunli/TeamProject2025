@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import {BrowserRouter as Router, Routes, Route, Navigate} from "react-router-dom";
 import TopNavbar from "./components/TopNavbar";
 import UnderConstruction from "./components/UnderConstruction";
@@ -16,8 +16,15 @@ import ClubNotices from "./components/ClubNotices";
 import ClubSubmissions from "./components/ClubSubmissions";
 import ClubMembers from "./components/ClubMembers";
 import ClubApply from "./components/ClubApply";
+import ClubSubmissionDetail from "./components/ClubSubmissionDetail";
 
 function App() {
+    useEffect(() => {
+        localStorage.removeItem("name"); // 이전 로그인 정보 삭제
+        localStorage.removeItem("profileImage");
+        localStorage.removeItem("userId");
+        localStorage.removeItem("username");
+    }, []);
     return (
         <Router>
             <TopNavbar />
@@ -41,6 +48,7 @@ function App() {
                     <Route path="articles" element={<ClubArticles />} /> {/* 게시물 */}
                     <Route path="notices" element={<ClubNotices />} /> {/* 공지사항 */}
                     <Route path="submissions" element={<ClubSubmissions />} /> {/* 지원자 관리 */}
+                    <Route path="submissions/:applyId" element={<ClubSubmissionDetail />} /> {/* 지원서 상세 페이지 관리 */}
                     <Route path="members" element={<ClubMembers />} /> {/* 권한 */}
                     <Route path="apply" element={<ClubApply />} />  {/* 동아리 지원하기 */}
                 </Route>

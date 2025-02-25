@@ -104,5 +104,13 @@ export const getClubSubmissions = async (clubId) => {
     }
 };
 
-
-
+// 특정 지원서 상세정보 조회
+export const getClubSubmissionDetail = async (clubId, applyId) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/${clubId}/submissions/${applyId}`, { withCredentials: true });
+        return response.data;
+    } catch (error) {
+        console.error("지원서 상세 조회 실패:", error);
+        throw error;
+    }
+};

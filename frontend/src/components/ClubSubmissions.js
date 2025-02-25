@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
-import { getClubSubmissions, } from "../api/clubApi";
+import {useNavigate, useParams} from "react-router-dom";
+import { getClubSubmissions } from "../api/clubApi";
 import { getUserClubRole } from "../api/clubApi";
 
 const ClubSubmissions = () => {
@@ -8,6 +8,7 @@ const ClubSubmissions = () => {
     const [submissions, setSubmissions] = useState([]);
     const [userRole, setUserRole] = useState(null);
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -62,7 +63,12 @@ const ClubSubmissions = () => {
 
                             {/* 지원서 보기, 합격, 불합격 버튼 */}
                             <div className="flex gap-2">
-                                <button className="px-3 py-1 border rounded-lg">지원서 보기</button>
+                                <button
+                                    className="px-3 py-1 border rounded-lg"
+                                    onClick={() => navigate(`/clubs/${clubId}/submissions/${applicant.applyId}`)}
+                                >
+                                    지원서 보기
+                                </button>
                                 <button
                                     className="px-3 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
                                 >
