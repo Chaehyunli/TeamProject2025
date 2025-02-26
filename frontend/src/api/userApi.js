@@ -59,3 +59,16 @@ export const deleteUser = async () => {
         throw error;
     }
 };
+
+// 나의 지원서 조회
+export const getMySubmissions = async () => {
+    try {
+        const response = await axios.get("http://localhost:8080/api/v1/users/submissions", {
+            withCredentials: true,
+        });
+        return response.data;
+    } catch (error) {
+        console.error("나의 지원서 목록 조회 실패:", error);
+        return [];
+    }
+};

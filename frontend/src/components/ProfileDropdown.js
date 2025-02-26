@@ -38,7 +38,7 @@ const ProfileDropdown = ({ username, userImage, onLogout }) => {
                         </li>
                         <li className="px-4 py-2 hover:bg-gray-200 cursor-pointer">나의 동아리</li>
                         <li className="px-4 py-2 hover:bg-gray-200 cursor-pointer"
-                            onClick={() => navigate("/mySubmissions")}>나의 지원서
+                            onClick={() => navigate("/users/submissions")}>나의 지원서
                         </li>
                         <li className="px-4 py-2 hover:bg-gray-200 cursor-pointer" onClick={handleLogout}>로그아웃</li>
                     </ul>

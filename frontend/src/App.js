@@ -18,6 +18,7 @@ import ClubMembers from "./components/ClubMembers";
 import ClubApply from "./components/ClubApply";
 import ClubSubmissionDetail from "./components/ClubSubmissionDetail";
 import MySubmissionsPage from "./pages/MySubmissionsPage";
+import MySubmissionsDetailPage from "./pages/MySubmissionsDetailPage";
 
 function App() {
 
@@ -31,7 +32,9 @@ function App() {
                 <Route path="/chatrooms" element={<UnderConstruction />} />
                 <Route path="/profile" element={<ProfilePage />} />
                 <Route path="/updateProfile" element={<UpdateProfilePage />} />
-                <Route path="/mySubmissions" element={<MySubmissionsPage />} />
+                <Route path="/users/submissions" element={<MySubmissionsPage />} />
+                <Route path="/users/submissions/:applyId" element={<MySubmissionsDetailPage />} />
+
 
                 {/* Auth */}
                 <Route path="/login" element={<LoginPage />} />
