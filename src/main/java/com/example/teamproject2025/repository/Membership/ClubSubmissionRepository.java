@@ -11,4 +11,5 @@ public interface ClubSubmissionRepository extends JpaRepository<ClubSubmission, 
     boolean existsByUser_UserIdAndClub_ClubId(Long userId, Long clubId);
 
     Optional<ClubSubmission> findByClub_ClubIdAndApplyId(Long clubId, Long applyId);
+    List<ClubSubmission> findByUser_UserId(Long userId);
 }

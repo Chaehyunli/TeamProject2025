@@ -14,4 +14,5 @@ public interface ClubSubmissionService {
     void approveSubmission(Long clubId, Long applyId);
 
     void rejectSubmission(Long clubId, Long applyId);
+    List<ClubSubmissionResponseDto> getSubmissionsByUser(Long userId);
 }

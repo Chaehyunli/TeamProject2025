@@ -161,4 +161,15 @@ public class ClubSubmissionServiceImpl implements ClubSubmissionService {
         userClubRepository.save(userClub);
     }
 
+    // 사용자의 지원서 조회
+    @Override
+    @Transactional(readOnly = true)
+    public List<ClubSubmissionResponseDto> getSubmissionsByUser(Long userId) {
+        List<ClubSubmission> submissions = clubSubmissionRepository.findByUser_UserId(userId);
+
+        return submissions.stream()
+                .map(ClubSubmissionResponseDto::fromEntity)
+                .collect(Collectors.toList());
+    }
+
 }
