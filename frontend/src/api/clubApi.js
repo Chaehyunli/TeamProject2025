@@ -142,3 +142,16 @@ export const rejectSubmission = async (clubId, applyId) => {
         throw error;
     }
 };
+
+// 동아리 멤버 목록 가져오기
+export const getClubMembers = async (clubId) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/${clubId}/members`, {
+            withCredentials: true,
+        });
+        return response.data;
+    } catch (error) {
+        console.error("동아리 멤버 조회 실패:", error);
+        throw error;
+    }
+};

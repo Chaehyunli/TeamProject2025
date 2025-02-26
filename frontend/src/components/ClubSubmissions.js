@@ -66,7 +66,7 @@ const ClubSubmissions = () => {
     }
 
     return (
-        <div className="w-full max-w-4xl mx-auto mt-10 p-6 bg-white shadow-md rounded-lg">
+        <div className="w-full max-w-5xl mx-auto mt-10 p-6 bg-white shadow-md rounded-lg">
             <h2 className="text-xl font-semibold mb-4">지원자 관리</h2>
             <p className="text-sm text-gray-500">동아리 ID: {clubId}</p>
             <div className="divide-y divide-gray-300">

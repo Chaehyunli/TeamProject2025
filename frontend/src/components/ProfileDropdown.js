@@ -33,8 +33,13 @@ const ProfileDropdown = ({ username, userImage, onLogout }) => {
             {isOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white shadow-lg border rounded-lg">
                     <ul className="py-2 text-sm text-black">
-                        <li className="px-4 py-2 hover:bg-gray-200 cursor-pointer" onClick={() => navigate("/profile")}>내정보</li>
+                        <li className="px-4 py-2 hover:bg-gray-200 cursor-pointer"
+                            onClick={() => navigate("/profile")}>내정보
+                        </li>
                         <li className="px-4 py-2 hover:bg-gray-200 cursor-pointer">나의 동아리</li>
+                        <li className="px-4 py-2 hover:bg-gray-200 cursor-pointer"
+                            onClick={() => navigate("/mySubmissions")}>나의 지원서
+                        </li>
                         <li className="px-4 py-2 hover:bg-gray-200 cursor-pointer" onClick={handleLogout}>로그아웃</li>
                     </ul>
                 </div>
