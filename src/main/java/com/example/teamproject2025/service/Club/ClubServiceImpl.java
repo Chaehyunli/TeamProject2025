@@ -2,6 +2,7 @@ package com.example.teamproject2025.service.Club;
 
 import com.example.teamproject2025.dto.Club.ClubCreateRequestDto;
 import com.example.teamproject2025.dto.Club.ClubListResponseDto;
+import com.example.teamproject2025.dto.Membership.ClubMemberResponseDto;
 import com.example.teamproject2025.dto.Membership.UserClubResponseDto;
 import com.example.teamproject2025.entity.Club.Category;
 import com.example.teamproject2025.entity.Club.Club;
@@ -181,6 +182,21 @@ public class ClubServiceImpl implements ClubService {
         String userRole = proxyService.getUserRoleInClub(userId, clubId);
 
         return "PRESIDENT".equals(userRole) || "VICE_PRESIDENT".equals(userRole);
+    }
+
+    // 동아리 멤버 조회 (ClubMemberResponseDto 사용)
+    @Override
+    @Transactional(readOnly = true)
+    public List<ClubMemberResponseDto> getClubMembers(Long clubId) {
+        List<UserClub> members = userClubRepository.findByClub_ClubId(clubId);
+
+        return members.stream()
+                .map(member -> new ClubMemberResponseDto(
+                        member.getUser().getUserId(),
+                        member.getUser().getName(),  // 사용자 이름 추가
+                        member.getRole().getRoleName().name() // 역할 정보 추가
+                ))
+                .collect(Collectors.toList());
     }
 
 }
