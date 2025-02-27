@@ -85,3 +85,17 @@ export const getMySubmissionDetail = async (applyId) => {
         throw error;
     }
 };
+
+// 나의 지원서 수정
+export const updateMySubmission = async (applyId, data) => {
+    try {
+        const response = await axios.patch(`${API_BASE_URL}/submissions/${applyId}`, data, {
+            withCredentials: true,
+            headers: { "Content-Type": "application/json" }, // JSON 요청 명확히 지정
+        });
+        return response.data;
+    } catch (error) {
+        console.error("나의 지원서 수정 실패:", error);
+        throw error;
+    }
+};
