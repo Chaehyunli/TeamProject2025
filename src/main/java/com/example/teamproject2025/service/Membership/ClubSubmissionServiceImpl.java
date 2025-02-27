@@ -212,4 +212,19 @@ public class ClubSubmissionServiceImpl implements ClubSubmissionService {
         return new UserSubmissionsUpdateResponseDto(submission);
     }
 
+    // 내 지원서 삭제
+    @Override
+    @Transactional
+    public boolean deleteSubmission(Long userId, Long applyId) {
+        ClubSubmission submission = clubSubmissionRepository.findById(applyId)
+                .orElse(null);
+
+        if (submission == null || !submission.getUser().getUserId().equals(userId)) {
+            return false; // 지원서가 없거나, 본인 지원서가 아닐 경우
+        }
+
+        clubSubmissionRepository.delete(submission);
+        return true; // 삭제 성공
+    }
+
 }

@@ -19,4 +19,5 @@ public interface ClubSubmissionService {
     List<ClubSubmissionResponseDto> getSubmissionsByUser(Long userId);
     ClubSubmissionResponseDto getSubmissionById(Long applyId);
     UserSubmissionsUpdateResponseDto updateSubmission(Long userId, Long applyId, UserSubmissionsUpdateRequestDto updateDto);
+    boolean deleteSubmission(Long userId, Long applyId);
 }

@@ -48,7 +48,7 @@ public class UserSubmissionController {
         if (submission == null || !submission.getUserId().equals(userId)) {
             return CommonResponseDto.error(403, "해당 지원서를 조회할 권한이 없습니다.");
         }
-        return CommonResponseDto.success(200, "사용자의 지원서 목록 조회 성공", submission);
+        return CommonResponseDto.success(200, "사용자의 지원서 상세정보 조회 성공", submission);
 
     }
 
@@ -73,4 +73,23 @@ public class UserSubmissionController {
 
         return CommonResponseDto.success(200, "지원서 수정 성공", updatedSubmission);
     }
+
+    // 내 지원서 삭제 API
+    @DeleteMapping("/submissions/{applyId}")
+    public CommonResponseDto<String> deleteUserSubmission(@PathVariable Long applyId, HttpSession session) {
+        // 로그인 확인
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            return CommonResponseDto.error(401, "로그인이 필요합니다.");
+        }
+
+        // 서비스 호출 (지원서 삭제)
+        boolean isDeleted = clubSubmissionService.deleteSubmission(userId, applyId);
+        if (!isDeleted) {
+            return CommonResponseDto.error(403, "해당 지원서를 삭제할 권한이 없습니다.");
+        }
+
+        return CommonResponseDto.success(200, "지원서가 성공적으로 삭제되었습니다.", null);
+    }
+
 }
