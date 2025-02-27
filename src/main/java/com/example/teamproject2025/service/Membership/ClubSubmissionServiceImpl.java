@@ -172,4 +172,13 @@ public class ClubSubmissionServiceImpl implements ClubSubmissionService {
                 .collect(Collectors.toList());
     }
 
+    // 사용자의 특정 지원서 상세 조회
+    @Override
+    @Transactional(readOnly = true)
+    public ClubSubmissionResponseDto getSubmissionById(Long applyId) {
+        return clubSubmissionRepository.findById(applyId)
+                .map(ClubSubmissionResponseDto::new)
+                .orElse(null);
+    }
+
 }

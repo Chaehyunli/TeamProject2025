@@ -30,4 +30,22 @@ public class UserSubmissionController {
         List<ClubSubmissionResponseDto> submissions = clubSubmissionService.getSubmissionsByUser(userId);
         return CommonResponseDto.success(200, "사용자의 지원서 목록 조회 성공", submissions);
     }
+
+    // 사용자의 지원서 상세 정보 조회
+    @GetMapping("/submissions/{applyId}")
+    public CommonResponseDto<ClubSubmissionResponseDto> getUserSubmissionDetail(@PathVariable Long applyId, HttpSession session) {
+        // 세션에서 userId 가져오기
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            return CommonResponseDto.error(401, "로그인이 필요합니다.");
+        }
+
+        // 해당 지원서가 본인의 지원서인지 확인
+        ClubSubmissionResponseDto submission = clubSubmissionService.getSubmissionById(applyId);
+        if (submission == null || !submission.getUserId().equals(userId)) {
+            return CommonResponseDto.error(403, "해당 지원서를 조회할 권한이 없습니다.");
+        }
+        return CommonResponseDto.success(200, "사용자의 지원서 목록 조회 성공", submission);
+
+    }
 }

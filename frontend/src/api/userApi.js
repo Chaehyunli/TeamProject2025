@@ -60,7 +60,7 @@ export const deleteUser = async () => {
     }
 };
 
-// 나의 지원서 조회
+// 나의 지원서 목록 조회
 export const getMySubmissions = async () => {
     try {
         const response = await axios.get("http://localhost:8080/api/v1/users/submissions", {
