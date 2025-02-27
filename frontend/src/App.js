@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React from "react";
 import {BrowserRouter as Router, Routes, Route, Navigate} from "react-router-dom";
 import TopNavbar from "./components/TopNavbar";
 import UnderConstruction from "./components/UnderConstruction";
@@ -19,6 +19,7 @@ import ClubApply from "./components/ClubApply";
 import ClubSubmissionDetail from "./components/ClubSubmissionDetail";
 import MySubmissionsPage from "./pages/MySubmissionsPage";
 import MySubmissionsDetailPage from "./pages/MySubmissionsDetailPage";
+import MySubmissionsUpdatePage from "./pages/MySubmissionsUpdatePage";
 
 function App() {
 
@@ -34,7 +35,7 @@ function App() {
                 <Route path="/updateProfile" element={<UpdateProfilePage />} />
                 <Route path="/users/submissions" element={<MySubmissionsPage />} />
                 <Route path="/users/submissions/:applyId" element={<MySubmissionsDetailPage />} />
-
+                <Route path="/users/submissions/:applyId/edit" element={<MySubmissionsUpdatePage />} />
 
                 {/* Auth */}
                 <Route path="/login" element={<LoginPage />} />

@@ -63,12 +63,25 @@ export const deleteUser = async () => {
 // 나의 지원서 목록 조회
 export const getMySubmissions = async () => {
     try {
-        const response = await axios.get("http://localhost:8080/api/v1/users/submissions", {
+        const response = await axios.get(`${API_BASE_URL}/submissions`, {
             withCredentials: true,
         });
         return response.data;
     } catch (error) {
         console.error("나의 지원서 목록 조회 실패:", error);
-        return [];
+        throw error;
+    }
+};
+
+// 나의 지원서 상세 조회
+export const getMySubmissionDetail = async (applyId) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/submissions/${applyId}`, {
+            withCredentials: true,
+        });
+        return response.data;
+    } catch (error) {
+        console.error("나의 지원서 상세 조회 실패:", error);
+        throw error;
     }
 };
