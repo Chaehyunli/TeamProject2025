@@ -2,6 +2,8 @@ package com.example.teamproject2025.service.Membership;
 
 import com.example.teamproject2025.dto.Membership.ClubSubmissionRequestDto;
 import com.example.teamproject2025.dto.Membership.ClubSubmissionResponseDto;
+import com.example.teamproject2025.dto.Membership.UserSubmissionsUpdateRequestDto;
+import com.example.teamproject2025.dto.Membership.UserSubmissionsUpdateResponseDto;
 import com.example.teamproject2025.entity.Club.Club;
 import com.example.teamproject2025.entity.Membership.ClubSubmission;
 import com.example.teamproject2025.entity.Membership.RoleType;
@@ -179,6 +181,35 @@ public class ClubSubmissionServiceImpl implements ClubSubmissionService {
         return clubSubmissionRepository.findById(applyId)
                 .map(ClubSubmissionResponseDto::new)
                 .orElse(null);
+    }
+
+
+    // 내 지원서 수정
+    @Override
+    @Transactional
+    public UserSubmissionsUpdateResponseDto updateSubmission(Long userId, Long applyId, UserSubmissionsUpdateRequestDto updateDto) {
+        // 지원서 찾기
+        ClubSubmission submission = clubSubmissionRepository.findById(applyId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 지원서를 찾을 수 없습니다."));
+
+        // 사용자가 본인의 지원서인지 확인
+        if (!submission.getUser().getUserId().equals(userId)) {
+            return null;
+        }
+
+        // 지원 상태가 PENDING일 때만 수정 가능
+        if (!submission.getStatus().equals(ClubSubmission.SubmissionStatus.PENDING)) {
+            throw new IllegalStateException("이미 처리된 지원서는 수정할 수 없습니다.");
+        }
+
+        // 값 업데이트
+        submission.setContact(updateDto.getContact());
+        submission.setContents(updateDto.getContents());
+
+        // 변경된 지원서 저장
+        clubSubmissionRepository.save(submission);
+
+        return new UserSubmissionsUpdateResponseDto(submission);
     }
 
 }

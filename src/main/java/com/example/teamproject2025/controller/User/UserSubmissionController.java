@@ -2,8 +2,11 @@ package com.example.teamproject2025.controller.User;
 
 import com.example.teamproject2025.dto.Common.CommonResponseDto;
 import com.example.teamproject2025.dto.Membership.ClubSubmissionResponseDto;
+import com.example.teamproject2025.dto.Membership.UserSubmissionsUpdateRequestDto;
+import com.example.teamproject2025.dto.Membership.UserSubmissionsUpdateResponseDto;
 import com.example.teamproject2025.service.Membership.ClubSubmissionService;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -47,5 +50,27 @@ public class UserSubmissionController {
         }
         return CommonResponseDto.success(200, "사용자의 지원서 목록 조회 성공", submission);
 
+    }
+
+    // 내 지원서 수정 API
+    @PatchMapping("/submissions/{applyId}")
+    public CommonResponseDto<UserSubmissionsUpdateResponseDto> updateUserSubmission(
+            @PathVariable Long applyId,
+            @RequestBody @Valid UserSubmissionsUpdateRequestDto updateDto,
+            HttpSession session) {
+
+        // 로그인 확인
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            return CommonResponseDto.error(401, "로그인이 필요합니다.");
+        }
+
+        // 서비스 호출 (지원서 수정)
+        UserSubmissionsUpdateResponseDto updatedSubmission = clubSubmissionService.updateSubmission(userId, applyId, updateDto);
+        if (updatedSubmission == null) {
+            return CommonResponseDto.error(403, "해당 지원서를 수정할 권한이 없습니다.");
+        }
+
+        return CommonResponseDto.success(200, "지원서 수정 성공", updatedSubmission);
     }
 }
