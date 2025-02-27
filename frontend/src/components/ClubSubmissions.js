@@ -31,12 +31,12 @@ const ClubSubmissions = () => {
         fetchData();
     }, [clubId]);
 
-    const handleApprove = async (userId) => {
+    const handleApprove = async (userId, applyId) => {
         const isConfirmed = window.confirm(`${userId} 님을 합격시키겠습니까?`);
         if (!isConfirmed) return;
 
         try {
-            await approveSubmission(clubId, userId);
+            await approveSubmission(clubId, applyId);
             alert("승인 완료되었습니다.");
             navigate(`/clubs/${clubId}/articles`)
         } catch (error) {
@@ -45,12 +45,12 @@ const ClubSubmissions = () => {
         }
     };
 
-    const handleReject = async (userId) => {
+    const handleReject = async (userId, applyId) => {
         const isConfirmed = window.confirm(`${userId} 님을 불합격시키겠습니까?`);
         if (!isConfirmed) return;
 
         try {
-            await rejectSubmission(clubId, userId);
+            await rejectSubmission(clubId, applyId);
             alert("거절 완료되었습니다.");
             navigate(`/clubs/${clubId}/articles`)
         } catch (error) {
@@ -99,14 +99,14 @@ const ClubSubmissions = () => {
 
                                 <button
                                     className="px-3 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-                                    onClick={() => handleApprove(applicant.userId)}
+                                    onClick={() => handleApprove(applicant.userId, applicant.applyId)}
                                 >
                                     합격
                                 </button>
                                 {/* 이후에 userid 이름 가져오는 api 추가 후에 이름으로 변경 */}
                                 <button
                                     className="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600"
-                                    onClick={() => handleReject(applicant.userId)}
+                                    onClick={() => handleReject(applicant.userId, applicant.applyId)}
                                 >
                                     불합격
                                 </button>

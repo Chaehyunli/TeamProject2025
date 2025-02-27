@@ -99,3 +99,16 @@ export const updateMySubmission = async (applyId, data) => {
         throw error;
     }
 };
+
+// 나의 지원서 삭제
+export const deleteMySubmission = async (applyId) => {
+    try {
+        const response = await axios.delete(`${API_BASE_URL}/submissions/${applyId}`, {
+            withCredentials: true,
+        });
+        return response.data;
+    } catch (error) {
+        console.error("나의 지원서 삭제 실패:", error);
+        throw error;
+    }
+};

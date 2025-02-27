@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getMySubmissions } from "../api/userApi";
+import { getMySubmissions, deleteMySubmission } from "../api/userApi";
 
 const MySubmissionsPage = () => {
     const [submissions, setSubmissions] = useState([]);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
+    const [deleting, setDeleting] = useState(false);
 
     useEffect(() => {
         const fetchSubmissions = async () => {
@@ -21,6 +22,23 @@ const MySubmissionsPage = () => {
 
         fetchSubmissions();
     }, []);
+
+    // 지원서 삭제 함수
+    const handleDelete = async (applyId) => {
+        if (!window.confirm("정말 이 지원서를 삭제하시겠습니까?")) return;
+
+        setDeleting(true);
+        try {
+            await deleteMySubmission(applyId); // 삭제 API 호출
+            setSubmissions(submissions.filter(submission => submission.applyId !== applyId)); // 목록에서 제거
+            alert("지원서가 삭제되었습니다.");
+        } catch (error) {
+            console.error("지원서 삭제 실패:", error);
+            alert("지원서 삭제에 실패했습니다.");
+        } finally {
+            setDeleting(false);
+        }
+    };
 
     if (loading) return <p className="text-center mt-10">⏳ 로딩 중...</p>;
 
@@ -41,6 +59,14 @@ const MySubmissionsPage = () => {
 
                             {/* 버튼 & 상태 */}
                             <div className="flex items-center gap-4">
+                                {/* 내 지원서 삭제 버튼 */}
+                                <button
+                                    className="px-3 py-1 border rounded-lg text-red-500 hover:bg-red-100 transition"
+                                    onClick={() => handleDelete(submission.applyId)}
+                                    disabled={deleting} // 삭제 중이면 비활성화
+                                >
+                                    {deleting ? "삭제 중..." : "삭제"}
+                                </button>
                                 {/* 내 지원서 보기 버튼 */}
                                 <button
                                     className="px-3 py-1 border rounded-lg text-blue-500 hover:bg-blue-100 transition"
