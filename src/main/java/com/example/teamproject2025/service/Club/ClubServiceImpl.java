@@ -172,6 +172,13 @@ public class ClubServiceImpl implements ClubService {
         // 리더 정보 가져오기
         List<UserClub> leaders = userClubRepository.findLeadersByClubId(clubId, RoleType.PRESIDENT, RoleType.VICE_PRESIDENT);
         List<ClubLeaderDto> leaderDtos = leaders.stream().map(ClubLeaderDto::fromEntity).collect(Collectors.toList());
+
+        // 멤버 수 가져오기
+        int membersCount = userClubRepository.countByClubId(clubId);
+
+        return ClubResponseDto.fromEntity(club, leaderDtos, membersCount);
+    }
+
     // 특정 사용자가 클럽 내에서 권한이 있는지 확인하는 메서드
     @Override
     @Transactional(readOnly = true)
@@ -196,11 +203,5 @@ public class ClubServiceImpl implements ClubService {
                         member.getRole().getRoleName().name() // 역할 정보 추가
                 ))
                 .collect(Collectors.toList());
-    }
-
-        // 멤버 수 가져오기
-        int membersCount = userClubRepository.countByClubId(clubId);
-
-        return ClubResponseDto.fromEntity(club, leaderDtos, membersCount);
     }
 }
