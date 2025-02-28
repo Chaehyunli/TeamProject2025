@@ -104,6 +104,18 @@ export const getClubSubmissions = async (clubId) => {
     }
 };
 
+// 특정 동아리 정보 조회
+export const getClub = async (clubId) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/${clubId}`, {
+            withCredentials: true, // 세션 기반 인증 유지
+        });
+        return response.data.data; // ClubResponseDto 데이터 반환
+    } catch (error) {
+        console.error(`동아리 ${clubId} 정보 불러오기 실패:`, error);
+        throw error;
+    }
+};
 // 특정 지원서 상세정보 조회
 export const getClubSubmissionDetail = async (clubId, applyId) => {
     try {

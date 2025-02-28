@@ -39,13 +39,6 @@ const HomePage = () => {
 
         fetchClubs();
         fetchUserClubs();
-
-        // 추후 API가 추가되면 여기에 fetchUserClubs() 추가
-        // const fetchUserClubs = async () => {
-        //   const userClubData = await "소속된 동아리 정보 얻는 API 필요";
-        //   setUserClubs(userClubData);
-        // };
-        // fetchUserClubs();
     }, [username, navigate]);
 
     return (

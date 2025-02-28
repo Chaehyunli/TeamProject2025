@@ -16,6 +16,7 @@ const RegisterForm = ({ onSubmit }) => {
         universityName: "",
         studentId: "",
         isEmailVerified: false,
+        profileImage: "default-profileImage.png"
     });
     const [message, setMessage] = useState("");
 

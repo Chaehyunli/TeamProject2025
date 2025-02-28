@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { getUserProfile, updateUserProfile } from "../api/userApi";
 import { useNavigate } from "react-router-dom";
 import UpdateProfileForm from "../components/UpdateProfileForm";
+import { uploadImageToGCP } from "../api/uploadApi";
 
 const UpdateProfilePage = () => {
     const navigate = useNavigate();
@@ -78,6 +79,11 @@ const UpdateProfilePage = () => {
         }
 
         try {
+            if (formData.profileImage instanceof File) {
+                const uploadedFileName = await uploadImageToGCP(formData.profileImage);
+                updatedFields.profileImage = uploadedFileName;
+            }
+
             await updateUserProfile(updatedFields);
             alert("프로필이 업데이트되었습니다.");
             navigate("/profile");

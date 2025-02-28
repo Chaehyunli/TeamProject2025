@@ -7,19 +7,41 @@ const ClubRegistrationForm = ({ presidentName, onSubmit }) => {
     const [description, setDescription] = useState("");
     const [category, setCategory] = useState("");
     const [thumbUrl, setThumbUrl] = useState(null);
+    const [errorMessage, setErrorMessage] = useState("");
 
-    // 카테고리 목록 (추후 데베에서 가져오는건 어떤가요?)
+    // 카테고리 목록 (추후 DB에서 가져올 수 있음)
     const categories = ["IT/프로그래밍", "예술/공연", "봉사활동", "운동/스포츠", "학술/스터디", "창업", "기타"];
 
-    // 파일 업로드 핸들러
+    // 허용되는 파일 형식
+    const allowedFileTypes = ["image/png", "image/jpeg"];
+    const maxFileSize = 10 * 1024 * 1024; // 10MB 제한
+
+    // 파일 업로드 핸들러 (유효성 검사 포함)
     const handleFileChange = (file) => {
-        setThumbUrl(file);
+        if (file) {
+            if (!allowedFileTypes.includes(file.type)) {
+                setErrorMessage("PNG 또는 JPEG 파일만 업로드할 수 있습니다.");
+                return;
+            }
+            if (file.size > maxFileSize) {
+                setErrorMessage("파일 크기는 최대 10MB까지 업로드 가능합니다.");
+                return;
+            }
+            setErrorMessage(""); // 오류 메시지 초기화
+            setThumbUrl(file);
+        }
     };
 
-    // 폼 제출 핸들러
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        onSubmit({ clubName, description, category, presidentName, thumbUrl });
+    // 폼 제출 핸들러 (페이지의 onSubmit 호출)
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        onSubmit({
+            clubName,
+            description,
+            category,
+            presidentName,
+            thumbUrl,
+        });
     };
 
     return (
@@ -71,7 +93,13 @@ const ClubRegistrationForm = ({ presidentName, onSubmit }) => {
             </select>
 
             {/* 파일 업로드 컴포넌트 */}
-            <FileUpload onFileSelect={handleFileChange} />
+            <FileUpload
+                label="동아리 대표 사진 (선택사항)"
+                name="clubThumbnail"
+                onFileSelect={handleFileChange}
+            />
+
+            {errorMessage && <p className="text-red-500 text-sm">{errorMessage}</p>}
 
             {/* 신청하기 버튼 */}
             <button

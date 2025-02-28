@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { logout } from "../api/authApi";
 import { deleteUser, getUserProfile } from "../api/userApi";
 import {useNavigate} from "react-router-dom";
+import { ProtectedImage } from "../api/uploadApi";
 
 const ProfilePage = () => {
     const navigate = useNavigate();
@@ -31,6 +32,11 @@ const ProfilePage = () => {
 
         try {
             await deleteUser();
+            localStorage.removeItem("userId");  // userId 삭제
+            localStorage.removeItem("username");  // username 삭제
+            localStorage.removeItem("profileImage");  // profileImage 삭제
+            localStorage.removeItem("name");  // 사용자 이름 삭제
+
             alert("회원 탈퇴가 완료되었습니다.");
             window.location.href = "/"; // 탈퇴 후 홈 화면 이동
         } catch (error) {
@@ -41,6 +47,11 @@ const ProfilePage = () => {
     const handleLogout = async () => {
         try {
             await logout();
+            localStorage.removeItem("userId");  // userId 삭제
+            localStorage.removeItem("username");  // username 삭제
+            localStorage.removeItem("profileImage");  // profileImage 삭제
+            localStorage.removeItem("name");  // 사용자 이름 삭제
+
             alert("로그아웃 되었습니다.");
             window.location.href = "/"
         } catch (error) {
@@ -53,11 +64,9 @@ const ProfilePage = () => {
             {/* 프로필 정보 */}
             <div className="flex justify-between items-start mt-8">
                 <div className="flex items-center gap-4">
-                    <img
-                        src={user.profileImage || "default_profile_url"}
-                        alt="프로필"
-                        className="w-20 h-20 rounded-full border"
-                    />
+                    <div className="w-28 h-28 rounded-full overflow-hidden border">
+                        <ProtectedImage objectName={user.profileImage} alt="User" className="w-full h-full object-cover"/>
+                    </div>
                     <div>
                         <h2 className="text-xl font-bold">{user.name}</h2>
                         <div className="flex items-center text-gray-500">

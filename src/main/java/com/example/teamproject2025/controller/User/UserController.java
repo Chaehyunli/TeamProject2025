@@ -63,4 +63,11 @@ public class UserController {
         return ResponseEntity.ok(updatedUser);
     }
 
+    @GetMapping("/{userId}/profile")
+    public ResponseEntity<CommonResponseDto<UserResponseDto>> getUserProfile(@PathVariable Long userId) {
+        UserResponseDto userProfile = userService.getUserProfile(userId);
+        return ResponseEntity.ok(
+                CommonResponseDto.success(200, "User profile retrieved successfully", userProfile)
+        );
+    }
 }
