@@ -19,13 +19,12 @@ import com.example.teamproject2025.repository.Membership.UserClubRepository;
 import com.example.teamproject2025.repository.Membership.UserRoleRepository;
 import com.example.teamproject2025.repository.University.UniversityRepository;
 import com.example.teamproject2025.repository.User.UserRepository;
-import com.google.api.gax.rpc.NotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
 import com.google.cloud.storage.Storage;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.context.ApplicationContext;
 
 import java.io.IOException;
 import java.util.List;
@@ -211,9 +210,9 @@ public class ClubServiceImpl implements ClubService {
     }
 
     @Override
-    public ClubArticleResponseDto createArticle(Long clubId, Long userId, String title, String content,
+    public ClubArticleResponseDto createArticle(Long clubId, Long userId, String title, String contents,
                                                 String uploadedFileName, boolean is_notice) {
-        boolean check = clubSubmissionRepository.existsByUser_UserIdAndClub_ClubId(userId, clubId);
+        boolean check = userClubRepository.existsByUser_UserIdAndClub_ClubId(userId, clubId);
         if (!check) {
             throw new IllegalStateException("해당 동아리에 속한 사람이 아닙니다. userId: " + userId + ", clubId: " + clubId);
         }
@@ -229,7 +228,7 @@ public class ClubServiceImpl implements ClubService {
                 : "default-thumbnail.png"; // 기본 이미지
 
         ClubArticleRequestDto requestDto = new ClubArticleRequestDto(title,
-                content, storageThumbUrl, is_notice);
+                contents, storageThumbUrl, is_notice);
 
         Article newArticle = requestDto.toEntity(club, user);
         clubArticleRepository.save(newArticle);
