@@ -30,6 +30,7 @@ import org.springframework.context.ApplicationContext;
 import java.io.IOException;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,8 +41,8 @@ public class ClubServiceImpl implements ClubService {
     private final UniversityRepository universityRepository;
     private final UserRoleRepository userRoleRepository;
     private final UserClubRepository userClubRepository;
-    private final ClubSubmissionRepository clubSubmissionRepository;
     private final ClubArticleRepository clubArticleRepository;
+
 
     @Autowired
     private ApplicationContext applicationContext;
@@ -61,7 +62,6 @@ public class ClubServiceImpl implements ClubService {
         this.universityRepository = universityRepository;
         this.userRoleRepository = userRoleRepository;
         this.userClubRepository = userClubRepository;
-        this.clubSubmissionRepository = clubSubmissionRepository;
         this.clubArticleRepository = clubArticleRepository;
     }
 
@@ -213,7 +213,7 @@ public class ClubServiceImpl implements ClubService {
     @Override
     public ClubArticleResponseDto createArticle(Long clubId, Long userId, String title, String content,
                                                 String uploadedFileName, boolean is_notice) {
-        boolean check = clubSubmissionRepository.existsByUser_UserIdAndClub_ClubId(userId, clubId);
+        boolean check = userClubRepository.existsByUser_UserIdAndClub_ClubId(userId, clubId);
         if (!check) {
             throw new IllegalStateException("해당 동아리에 속한 사람이 아닙니다. userId: " + userId + ", clubId: " + clubId);
         }
@@ -234,7 +234,46 @@ public class ClubServiceImpl implements ClubService {
         Article newArticle = requestDto.toEntity(club, user);
         clubArticleRepository.save(newArticle);
 
-        return ClubArticleResponseDto.formEntity(newArticle);
+        return ClubArticleResponseDto.fromEntity(newArticle);
+    }
+
+    @Override
+    public ArticleListResponseDto getArticles(Long clubId, int limit, int offset) {
+
+        boolean check = clubArticleRepository.existsByClub_ClubId(clubId);
+        if(!check) {
+            throw new NoSuchElementException("존재 하지 않는 동아리입니다.");
+        }
+
+        List<Article> articleList = clubArticleRepository.findByClub_ClubId(clubId);
+
+        int total = articleList.size();
+
+        List<Article> paginatedArticles = articleList.stream()
+                .skip(offset)
+                .limit(limit)
+                .collect(Collectors.toList());
+
+        return ArticleListResponseDto.fromEntity(paginatedArticles, total, limit, offset);
+    }
+
+    @Override
+    public ClubArticleResponseDto updateArticle(Long userId, Long clubId, Long articleId, ArticleModificationRequestDto requestDto) {
+
+        Article article = clubArticleRepository.findByArticleId(articleId)
+                .orElseThrow(() -> new NoSuchElementException("해당 ID의 게시물이 존재하지 않습니다."));
+
+        if(!article.getUser().getUserId().equals(userId)) {
+            throw new IllegalArgumentException("이 게시물을 수정할 권한이 없습니다.");
+        }
+
+        article.setTitle(requestDto.getTitle());
+        article.setContents(requestDto.getContents());
+        article.setThumbUrl(requestDto.getThumbUrl());
+
+        clubArticleRepository.save(article);
+
+        return ClubArticleResponseDto.fromEntity(article);
     }
 
     @Override
@@ -250,4 +289,5 @@ public class ClubServiceImpl implements ClubService {
         clubArticleRepository.delete(article);
         return true;
     }
+
 }
