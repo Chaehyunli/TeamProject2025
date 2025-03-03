@@ -16,7 +16,7 @@ public class ArticleResponseDto {
     private Long clubId;
     private boolean is_notice;
     private String title;
-    private String content;
+    private String contents;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private String thumbUrl;

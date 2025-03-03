@@ -1,7 +1,6 @@
 package com.example.teamproject2025.dto.Club;
 
 import com.example.teamproject2025.entity.Club.Article;
-import com.example.teamproject2025.entity.Club.Club;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,7 +18,7 @@ public class ClubArticleResponseDto {
     private Long clubId;
     private Long userId;
     private String title;
-    private String content;
+    private String contents;
     private String thumbUrl;
     private LocalDateTime createdAt;
 
@@ -29,7 +28,7 @@ public class ClubArticleResponseDto {
                 .clubId(article.getClub().getClubId())
                 .userId(article.getUser().getUserId())
                 .title(article.getTitle())
-                .content(article.getContent())
+                .contents(article.getContents())
                 .thumbUrl(article.getThumbUrl())
                 .createdAt(article.getCreatedAt())
                 .build();

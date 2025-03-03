@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 public class ClubArticleRequestDto {
 
     private String title;
-    private String content;
+    private String contents;
     private String thumbUrl = "default-thumbnail.png";
     private boolean is_notice;
 
@@ -25,7 +25,7 @@ public class ClubArticleRequestDto {
                 .club(club)
                 .user(user)
                 .title(this.title)
-                .content(this.content)
+                .contents(this.contents)
                 .thumbUrl(this.thumbUrl)
                 .is_notice(this.is_notice)
                 .build();

@@ -1,9 +1,11 @@
 package com.example.teamproject2025.controller.Club;
 
-import com.example.teamproject2025.dto.Club.*;
+import com.example.teamproject2025.dto.Club.ClubArticleRequestDto;
+import com.example.teamproject2025.dto.Club.ClubArticleResponseDto;
+import com.example.teamproject2025.dto.Club.ClubListResponseDto;
+import com.example.teamproject2025.dto.Club.ClubResponseDto;
 import com.example.teamproject2025.dto.Common.CommonResponseDto;
 import com.example.teamproject2025.dto.Membership.UserClubResponseDto;
-import com.example.teamproject2025.repository.Club.ClubArticleRepository;
 import com.example.teamproject2025.service.Club.ClubService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -110,7 +112,7 @@ public class ClubController {
         Long userId = (Long) session.getAttribute("userId");
 
         ClubArticleResponseDto clubArticle = clubService.createArticle(
-                clubId, userId, requestDto.getTitle(), requestDto.getContent(),
+                clubId, userId, requestDto.getTitle(), requestDto.getContents(),
                 requestDto.getThumbUrl(), requestDto.is_notice()
         );
         return ResponseEntity.ok(

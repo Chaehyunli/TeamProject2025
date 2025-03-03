@@ -33,7 +33,7 @@ public class Article {
     private User user;
 
     @Column(nullable = false)
-    private String content; // 게시물 본문
+    private String contents; // 게시물 본문
 
     @Column(nullable = false)
     private boolean is_notice;  // 게시물인가 공지사항인가 구분
