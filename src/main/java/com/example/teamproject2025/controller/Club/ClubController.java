@@ -1,9 +1,9 @@
 package com.example.teamproject2025.controller.Club;
 
-import com.example.teamproject2025.dto.Club.ClubListResponseDto;
-import com.example.teamproject2025.dto.Club.ClubResponseDto;
+import com.example.teamproject2025.dto.Club.*;
 import com.example.teamproject2025.dto.Common.CommonResponseDto;
 import com.example.teamproject2025.dto.Membership.UserClubResponseDto;
+import com.example.teamproject2025.repository.Club.ClubArticleRepository;
 import com.example.teamproject2025.service.Club.ClubService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -100,4 +100,53 @@ public class ClubController {
                 CommonResponseDto.success(200, "Club details retrieved successfully", club)
         );
     }
+
+    @PostMapping("/{clubId}/articles")
+    public ResponseEntity<CommonResponseDto<ClubArticleResponseDto>> createArticle(
+            @PathVariable Long clubId,
+            HttpSession session,
+            @RequestBody ClubArticleRequestDto requestDto
+    ){
+        Long userId = (Long) session.getAttribute("userId");
+
+        ClubArticleResponseDto clubArticle = clubService.createArticle(
+                clubId, userId, requestDto.getTitle(), requestDto.getContent(),
+                requestDto.getThumbUrl(), requestDto.is_notice()
+        );
+        return ResponseEntity.ok(
+                CommonResponseDto.success(200, "Article created successfully", clubArticle)
+        );
+    }
+
+
+//    @GetMapping('/{clubId}/articles')
+//    public ResponseEntity<CommonResponseDto<ArticleListResponseDto>> getClubArticles(
+//            @PathVariable Long clubId,
+//            @RequestParam(defaultValue = "10") int limit,
+//            @RequestParam(defaultValue = "0") int offset
+//
+//    ){
+//
+//    }
+
+    @DeleteMapping("/{clubId}/articles/{articleId}")
+    public CommonResponseDto<String> deleteArticle(
+            @PathVariable Long clubId,
+            @PathVariable Long articleId,
+            HttpSession session
+    ) {
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            return CommonResponseDto.error(401,"로그인이 필요합니다.");
+        }
+
+        boolean isDelete = clubService.deleteArticle(clubId, articleId, userId);
+        if (!isDelete) {
+            return CommonResponseDto.error(403, "해당 게시물 삭제할 권한이 없습니다.");
+        }
+
+        return CommonResponseDto.success(200, "지원서가 성공적으로 삭제되었습니다.", null);
+    }
+
+
 }

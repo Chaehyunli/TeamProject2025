@@ -1,11 +1,9 @@
 package com.example.teamproject2025.service.Club;
 
-import com.example.teamproject2025.dto.Club.ClubCreateRequestDto;
-import com.example.teamproject2025.dto.Club.ClubLeaderDto;
-import com.example.teamproject2025.dto.Club.ClubListResponseDto;
+import com.example.teamproject2025.dto.Club.*;
 import com.example.teamproject2025.dto.Membership.ClubMemberResponseDto;
-import com.example.teamproject2025.dto.Club.ClubResponseDto;
 import com.example.teamproject2025.dto.Membership.UserClubResponseDto;
+import com.example.teamproject2025.entity.Club.Article;
 import com.example.teamproject2025.entity.Club.Category;
 import com.example.teamproject2025.entity.Club.Club;
 import com.example.teamproject2025.entity.Membership.RoleType;
@@ -14,21 +12,24 @@ import com.example.teamproject2025.entity.Membership.UserRole;
 import com.example.teamproject2025.entity.University.University;
 import com.example.teamproject2025.entity.User.User;
 import com.example.teamproject2025.repository.Club.CategoryRepository;
+import com.example.teamproject2025.repository.Club.ClubArticleRepository;
 import com.example.teamproject2025.repository.Club.ClubRepository;
+import com.example.teamproject2025.repository.Membership.ClubSubmissionRepository;
 import com.example.teamproject2025.repository.Membership.UserClubRepository;
 import com.example.teamproject2025.repository.Membership.UserRoleRepository;
 import com.example.teamproject2025.repository.University.UniversityRepository;
 import com.example.teamproject2025.repository.User.UserRepository;
+import com.google.api.gax.rpc.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.google.cloud.storage.Storage;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.context.ApplicationContext;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,6 +40,8 @@ public class ClubServiceImpl implements ClubService {
     private final UniversityRepository universityRepository;
     private final UserRoleRepository userRoleRepository;
     private final UserClubRepository userClubRepository;
+    private final ClubSubmissionRepository clubSubmissionRepository;
+    private final ClubArticleRepository clubArticleRepository;
 
     @Autowired
     private ApplicationContext applicationContext;
@@ -51,13 +54,15 @@ public class ClubServiceImpl implements ClubService {
     public ClubServiceImpl(ClubRepository clubRepository, UserRepository userRepository,
                            CategoryRepository categoryRepository, UniversityRepository universityRepository,
                            UserRoleRepository userRoleRepository, UserClubRepository userClubRepository,
-                           Storage storage) {
+                           Storage storage, ClubSubmissionRepository clubSubmissionRepository, ClubArticleRepository clubArticleRepository) {
         this.clubRepository = clubRepository;
         this.userRepository = userRepository;
         this.categoryRepository = categoryRepository;
         this.universityRepository = universityRepository;
         this.userRoleRepository = userRoleRepository;
         this.userClubRepository = userClubRepository;
+        this.clubSubmissionRepository = clubSubmissionRepository;
+        this.clubArticleRepository = clubArticleRepository;
     }
 
     @Override
@@ -203,5 +208,46 @@ public class ClubServiceImpl implements ClubService {
                         member.getRole().getRoleName().name() // 역할 정보 추가
                 ))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public ClubArticleResponseDto createArticle(Long clubId, Long userId, String title, String content,
+                                                String uploadedFileName, boolean is_notice) {
+        boolean check = clubSubmissionRepository.existsByUser_UserIdAndClub_ClubId(userId, clubId);
+        if (!check) {
+            throw new IllegalStateException("해당 동아리에 속한 사람이 아닙니다. userId: " + userId + ", clubId: " + clubId);
+        }
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다. userId: " + userId));
+
+        Club club = clubRepository.findById(clubId)
+                .orElseThrow(() -> new IllegalArgumentException("동아리를 찾을 수 없습니다."));
+
+        String storageThumbUrl = (uploadedFileName != null && !uploadedFileName.isEmpty())
+                ? uploadedFileName
+                : "default-thumbnail.png"; // 기본 이미지
+
+        ClubArticleRequestDto requestDto = new ClubArticleRequestDto(title,
+                content, storageThumbUrl, is_notice);
+
+        Article newArticle = requestDto.toEntity(club, user);
+        clubArticleRepository.save(newArticle);
+
+        return ClubArticleResponseDto.formEntity(newArticle);
+    }
+
+    @Override
+    public boolean deleteArticle(Long clubId, Long articleId, Long userId) {
+
+        Article article = clubArticleRepository.findByClubIdAndArticleId(clubId, articleId)
+                .orElseThrow(() -> new NoSuchElementException("해당 클럽에 게시글이 존재하지 않습니다."));
+
+
+        if(!article.getUser().getUserId().equals(userId)&& !checkUserPermission(userId, articleId)) {
+            return false;
+        }
+        clubArticleRepository.delete(article);
+        return true;
     }
 }
