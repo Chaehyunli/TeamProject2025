@@ -118,7 +118,6 @@ public class ClubController {
         );
     }
 
-
     @GetMapping("/{clubId}/articles")
     public ResponseEntity<CommonResponseDto<ArticleListResponseDto>> getClubArticles(
             @PathVariable Long clubId,
@@ -169,6 +168,28 @@ public class ClubController {
         return ResponseEntity.ok(
                 CommonResponseDto.success(200, "게시물 수정을 성공적으로 했습니다.", modification)
         );
+    }
+
+    @GetMapping("/{clubId}/articles/{articleId}")
+    public ResponseEntity<CommonResponseDto<SpecificArticleResponseDto>> getUserArticle(
+            HttpSession session,
+            @PathVariable Long clubId,
+            @PathVariable Long articleId
+    ){
+
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            throw new NoSuchElementException("가입되지 않은 회원입니다.");
+        }
+
+        String userName = (String) session.getAttribute("userName");
+
+        SpecificArticleResponseDto article = clubService.getUserArticle(userId, userName, clubId, articleId);
+
+        return ResponseEntity.ok(
+                CommonResponseDto.success(200, "특정 게시물을 성공적으로 조회습니다.", article)
+        );
+
     }
 
 }

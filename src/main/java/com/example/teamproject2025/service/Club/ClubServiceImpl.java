@@ -1,5 +1,6 @@
 package com.example.teamproject2025.service.Club;
 
+import com.example.teamproject2025.dto.Auth.authorDto;
 import com.example.teamproject2025.dto.Club.*;
 import com.example.teamproject2025.dto.Membership.ClubMemberResponseDto;
 import com.example.teamproject2025.dto.Membership.UserClubResponseDto;
@@ -274,6 +275,22 @@ public class ClubServiceImpl implements ClubService {
         clubArticleRepository.save(article);
 
         return ClubArticleResponseDto.fromEntity(article);
+    }
+
+    @Override
+    public SpecificArticleResponseDto getUserArticle(Long userId, String username, Long clubId, Long articleId) {
+        authorDto author = new authorDto(userId, username);
+
+        boolean check = clubArticleRepository.existsByClub_ClubId(clubId);
+        if(!check) {
+            throw new NoSuchElementException("존재 하지 않는 동아리입니다.");
+        }
+
+        Article article = clubArticleRepository.findByArticleId(articleId)
+                .orElseThrow(() -> new NoSuchElementException("해당 ID의 게시물이 존재하지 않습니다."));
+
+
+        return SpecificArticleResponseDto.fromEntity(article, author);
     }
 
     @Override
