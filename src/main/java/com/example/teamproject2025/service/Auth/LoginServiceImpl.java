@@ -46,14 +46,13 @@ public class LoginServiceImpl implements LoginService {
         session.setAttribute("userId", user.getUserId());
         session.setAttribute("username", user.getUsername());
         session.setAttribute("name", user.getName());
-        session.setAttribute("email", user.getEmail());
-
 
         return UserLoginResponseDto.builder()
                 .userId(user.getUserId())
                 .username(user.getUsername())
                 .name(user.getName())
                 .email(user.getEmail())
+                .profileImage(user.getProfileImage())
                 .build();
     }
 

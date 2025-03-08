@@ -14,4 +14,5 @@ public class UserLoginResponseDto {
     String username;
     String name;
     String email;
+    String profileImage;
 }

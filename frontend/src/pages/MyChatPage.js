@@ -60,7 +60,7 @@ const MyChatPage = () => {
                                 입장
                             </button>
                             <button
-                                onClick={() => leaveChatRoom(chat.roomId)}
+                                onClick={() => handleLeaveChatRoom(chat.roomId)}
                                 className="bg-red-500 text-white px-4 py-1 rounded"
                             >
                                 나가기

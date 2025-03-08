@@ -168,14 +168,14 @@ const StompChatPage = () => {
                     {messages.map((msg, index) => {
                         const senderInfo = participants[msg.senderEmail] || {
                             name: "사용자",
-                            profileUrl: "https://via.placeholder.com/40"
+                            profileImage: "https://via.placeholder.com/40"
                         };
 
                         return (
                             <div key={index} className={`flex ${msg.senderEmail === senderEmail ? "justify-end" : "justify-start"} items-start gap-2`}>
                                 {msg.senderEmail !== senderEmail && (
                                     <div className="flex items-start gap-2">
-                                        <img src={senderInfo.profileUrl} alt="프로필" className="w-8 h-8 rounded-full border mt-0" />
+                                        <img src={senderInfo.profileImage} alt="프로필" className="w-8 h-8 rounded-full border mt-0" />
                                         <div className="flex flex-col">
                                             <div className="text-sm font-semibold">{senderInfo.name}</div>
                                             <div className="flex items-end gap-1">

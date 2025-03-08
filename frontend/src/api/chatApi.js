@@ -25,7 +25,7 @@ export const fetchChatParticipants = async (roomId) => {
 
             mappedData[user.email] = {
                 name: user.name,
-                profileUrl: user.profileImage,
+                profileImage: user.profileImage,
                 email: user.email
             };
         });

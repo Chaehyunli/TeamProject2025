@@ -66,7 +66,7 @@ export const fetchUserList = async () => {
         const response = await axios.get(`${API_BASE_URL}/list`, {
             withCredentials: true
         });
-        return response.data;
+        return response.data.data;
     } catch (error) {
         console.error("❌ 회원 목록 불러오기 실패:", error);
         throw error;

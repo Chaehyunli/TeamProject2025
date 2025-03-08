@@ -4,7 +4,7 @@ import { fetchChatParticipants } from "../api/chatApi"; // 🔥 API 함수 가�
 const ChatContext = createContext();
 
 export const ChatProvider = ({ children }) => {
-    const [participants, setParticipants] = useState({}); // { userId: { name, profileUrl } }
+    const [participants, setParticipants] = useState({});
 
     const loadChatParticipants = async (roomId) => {
         console.log("🔍 Fetching participants for room:", roomId);

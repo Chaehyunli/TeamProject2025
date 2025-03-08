@@ -32,9 +32,11 @@ public class ChatRoom{
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
+    @Builder.Default
     @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.REMOVE)
     private List<ChatParticipant> chatParticipants = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<ChatMessage> chatMessages = new ArrayList<>();
 }

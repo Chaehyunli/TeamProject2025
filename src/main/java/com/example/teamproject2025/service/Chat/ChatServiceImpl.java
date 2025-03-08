@@ -46,17 +46,14 @@ public class ChatServiceImpl implements ChatService {
             throw new AuthenticationServiceException("세션이 존재하지 않습니다. 로그인 후 다시 시도하세요.");
         }
 
-        Object userObj = session.getAttribute("user");
+        Long userId = (Long) session.getAttribute("userId"); // ✅ userId를 가져옴
 
-        if (userObj == null) {
+        if (userId == null) {
             throw new AuthenticationServiceException("로그인된 사용자가 없습니다. 다시 로그인해주세요.");
         }
 
-        if (!(userObj instanceof User)) {
-            throw new AuthenticationServiceException("세션에 저장된 사용자 정보가 올바르지 않습니다.");
-        }
-
-        return (User) userObj;
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new AuthenticationServiceException("세션에 저장된 사용자 정보를 찾을 수 없습니다."));
     }
 
     @Override
@@ -65,7 +62,11 @@ public class ChatServiceImpl implements ChatService {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(()-> new EntityNotFoundException("room cannot be found"));
 
         //  보낸사람조회 : sender local storage 속 자신의 email 정보와 함꼐 메시지를 보내면 chatMessageReqDto 가 그걸 받음
-        User sender = (User) userRepository.findByEmail(chatMessageReqDto.getSenderEmail()).orElseThrow(()-> new EntityNotFoundException("user cannot be found"));
+        User sender = userRepository.findByEmail(chatMessageReqDto.getSenderEmail())
+                .orElseThrow(() -> {
+                    System.out.println("❌ No user found with email: " + chatMessageReqDto.getSenderEmail());
+                    return new EntityNotFoundException("user cannot be found");
+                });
 
         // 메시지저장
         ChatMessage chatMessage = ChatMessage.builder()

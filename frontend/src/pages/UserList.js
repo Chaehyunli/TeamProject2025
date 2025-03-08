@@ -45,7 +45,7 @@ const UserList = () => {
                 </thead>
                 <tbody>
                 {userList.map(user => (
-                    <tr key={user.id} className="border">
+                    <tr key={user.userId} className="border">
                         <td className="border p-2">{user.userId}</td>
                         <td className="border p-2">{user.name}</td>
                         <td className="border p-2">{user.email}</td>

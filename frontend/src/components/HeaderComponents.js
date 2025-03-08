@@ -15,8 +15,8 @@ const HeaderComponent = () => {
             const response = await getUserProfile();
             if (response.data) {
                 setIsLoggedIn(true);
-                setUsername(response.data.data.name || "사용자");
-                setUserImage(response.data.data.profileImage || "https://via.placeholder.com/50");
+                setUsername(response.data.name || "사용자");
+                setUserImage(response.data.profileImage || "https://via.placeholder.com/50");
             }
         } catch (error) {
             console.error("❌ 사용자 정보를 불러오지 못했습니다:", error);

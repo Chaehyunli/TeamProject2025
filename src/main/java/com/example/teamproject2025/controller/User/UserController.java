@@ -40,7 +40,8 @@ public class UserController {
     public ResponseEntity<?> userList(){
         List<UserListResDto> dtos = userService.findAll();
         return ResponseEntity.status(HttpStatus.OK)
-                .body(CommonResponseDto.success(HttpStatus.OK.value(), "User List", dtos));}
+                .body(CommonResponseDto.success(HttpStatus.OK.value(), "User List", dtos));
+    }
 
     // 현재 로그인된 사용자 정보 조회 API
     @GetMapping("/profile")

@@ -40,6 +40,7 @@ public class ChatMessage{
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
+    @Builder.Default
     @OneToMany(mappedBy = "chatMessage", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<ReadStatus> readStatuses = new ArrayList<>();
 }

@@ -16,7 +16,8 @@ public class ClubArticleRequestDto {
 
     private String title;
     private String contents;
-    private String thumbUrl = "default-thumbnail.png";
+    @Builder.Default
+    private String thumbUrl = "https://www.mju.ac.kr/sites/mjukr/images/sub01/symbol01.png";
     private boolean is_notice;
 
 
