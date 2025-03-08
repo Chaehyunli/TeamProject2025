@@ -153,7 +153,7 @@ const StompChatPage = () => {
     }
 
     return (
-        <div className="flex flex-col items-center justify-center py-10">
+        <div className="flex flex-col items-center justify-center py-40">
             <div className="w-full max-w-lg bg-white rounded-2xl shadow-lg flex flex-col overflow-hidden">
                 <div
                     className="p-4 border-blue-500 border-b border-b-white flex relative justify-center items-center bg-blue-900 text-white font-semibold text-lg rounded-t-2xl">
@@ -164,7 +164,8 @@ const StompChatPage = () => {
                 </div>
 
 
-                <div className="flex-1 overflow-y-auto p-4 space-y-3 max-h-[600px]">
+                {/*<div className="h-[50vh] flex-1 overflow-y-auto p-4 space-y-3 max-h-[600px]">*/}
+                <div className="h-[600px] overflow-y-auto p-4 space-y-3">
                     {messages.map((msg, index) => {
                         const senderInfo = participants[msg.senderEmail] || {
                             name: "사용자",
@@ -172,17 +173,21 @@ const StompChatPage = () => {
                         };
 
                         return (
-                            <div key={index} className={`flex ${msg.senderEmail === senderEmail ? "justify-end" : "justify-start"} items-start gap-2`}>
+                            <div key={index}
+                                 className={`flex ${msg.senderEmail === senderEmail ? "justify-end" : "justify-start"} items-start gap-2`}>
                                 {msg.senderEmail !== senderEmail && (
                                     <div className="flex items-start gap-2">
-                                        <img src={senderInfo.profileImage} alt="프로필" className="w-8 h-8 rounded-full border mt-0" />
+                                        <img src={senderInfo.profileImage} alt="프로필"
+                                             className="w-8 h-8 rounded-full border mt-0"/>
                                         <div className="flex flex-col">
                                             <div className="text-sm font-semibold">{senderInfo.name}</div>
                                             <div className="flex items-end gap-1">
-                                                <div className="bg-gray-200 rounded-xl p-3 w-fit max-w-xs break-words shadow">
+                                                <div
+                                                    className="bg-gray-200 rounded-xl p-3 w-fit max-w-xs break-words shadow">
                                                     <div className="text-sm">{msg.message}</div>
                                                 </div>
-                                                <span className="text-xs text-gray-500">{formatTimeFromISO(msg.createdAt)}</span>
+                                                <span
+                                                    className="text-xs text-gray-500">{formatTimeFromISO(msg.createdAt)}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -190,8 +195,10 @@ const StompChatPage = () => {
 
                                 {msg.senderEmail === senderEmail && (
                                     <div className="flex items-end gap-1">
-                                        <span className="text-xs text-gray-500">{formatTimeFromISO(msg.createdAt)}</span>
-                                        <div className="bg-blue-500 text-white rounded-xl p-3 w-fit max-w-xs break-words shadow">
+                                        <span
+                                            className="text-xs text-gray-500">{formatTimeFromISO(msg.createdAt)}</span>
+                                        <div
+                                            className="bg-blue-500 text-white rounded-xl p-3 w-fit max-w-xs break-words shadow">
                                             <div className="text-sm">{msg.message}</div>
                                         </div>
                                     </div>
@@ -199,7 +206,7 @@ const StompChatPage = () => {
                             </div>
                         );
                     })}
-                    <div ref={scrollRef} />
+                    <div ref={scrollRef}/>
                 </div>
 
                 <div className="bg-white p-3 border-t flex items-center rounded-b-2xl">
@@ -211,7 +218,8 @@ const StompChatPage = () => {
                         className="flex-1 border border-gray-300 rounded-lg p-2 focus:outline-none"
                         onKeyDown={(e) => e.key === "Enter" && sendMessage()}
                     />
-                    <button onClick={sendMessage} className="ml-3 bg-blue-500 text-white px-4 py-2 rounded-lg">전송</button>
+                    <button onClick={sendMessage} className="ml-3 bg-blue-500 text-white px-4 py-2 rounded-lg">전송
+                    </button>
                 </div>
             </div>
         </div>
