@@ -46,9 +46,9 @@ public class ClubServiceImpl implements ClubService {
     private ApplicationContext applicationContext;
 
     // 업로드 경로 (Spring Boot의 정적 리소스로 활용, 현재 프로젝트 루트 경로에 uploads 폴더 생성)
-    private static final String UPLOAD_DIR = System.getProperty("user.dir") + "/uploads/clubs/";
-    @Value("${spring.cloud.gcp.storage.bucket}")
-    private String bucketName;
+//    private static final String UPLOAD_DIR = System.getProperty("user.dir") + "/uploads/clubs/";
+//    @Value("${spring.cloud.gcp.storage.bucket}")
+//    private String bucketName;
 
     public ClubServiceImpl(ClubRepository clubRepository, UserRepository userRepository,
                            CategoryRepository categoryRepository, UniversityRepository universityRepository,
