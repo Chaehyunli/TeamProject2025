@@ -59,7 +59,7 @@ const HeaderComponent = () => {
                     </>
                 ) : (
                     <>
-                        <Link to="/user/create" className="text-white hover:underline">회원가입</Link>
+                        <Link to="/register" className="text-white hover:underline">회원가입</Link>
                         <Link to="/login" className="text-white hover:underline">로그인</Link>
                     </>
                 )}
