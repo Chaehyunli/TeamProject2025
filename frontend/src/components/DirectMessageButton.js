@@ -2,14 +2,21 @@ import { useState } from "react";
 import { createPrivateChatRoom } from "../api/chatApi";
 import { useNavigate } from "react-router-dom";
 
-const DirectMessageButton = ({ presidentId, presidentName}) => {
+const DirectMessageButton = ({ presidentId, receiverName}) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const navigate = useNavigate();
+    const currentUserId = localStorage.getItem("userId");
 
     const handleStartChat = async () => {
         if (!presidentId) {
             setError("회장 정보를 불러올 수 없습니다.");
+            return;
+        }
+
+        if (String(presidentId) === String(currentUserId)) {
+            setError("자신과의 채팅은 불가능 합니다.");
+            console.log("Error: Trying to chat with self");
             return;
         }
 
@@ -24,7 +31,7 @@ const DirectMessageButton = ({ presidentId, presidentName}) => {
 
             // 채팅방으로 이동
             // window.location.href = `/chatpage/${roomId}`;
-            navigate(`/chatpage/${roomId}`, { state: { presidentName } });
+            navigate(`/chatpage/${roomId}`, { state: { receiverName } });
         } catch (err) {
             setError("채팅방을 개설하는 중 오류가 발생했습니다.");
         } finally {

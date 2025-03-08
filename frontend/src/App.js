@@ -31,8 +31,8 @@ function App() {
 
     return (
         <Router>
-            <HeaderComponent />
-            {/*<TopNavbar />*/}
+            {/*<HeaderComponent />*/}
+            <TopNavbar />
             <Routes>
                 <Route path="/" element={<Navigate to="/home" />} />
                 <Route path="/home" element={<HomePage />} />

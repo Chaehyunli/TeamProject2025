@@ -6,6 +6,7 @@ import { createPrivateChatRoom } from "../api/chatApi";
 const UserList = () => {
     const [userList, setUserList] = useState([]);
     const navigate = useNavigate();
+    const currentUserId = localStorage.getItem("userId");
 
     useEffect(() => {
         loadUsers();
@@ -15,7 +16,8 @@ const UserList = () => {
     const loadUsers = async () => {
         try {
             const users = await fetchUserList();
-            setUserList(users);
+            const filteredUsers = users.filter(user => String(user.userId) !== currentUserId);
+            setUserList(filteredUsers);
         } catch (error) {
             console.error("❌ 회원 목록 불러오기 실패", error);
         }

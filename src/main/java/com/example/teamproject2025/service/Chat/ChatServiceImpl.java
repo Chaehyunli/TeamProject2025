@@ -218,7 +218,7 @@ public class ChatServiceImpl implements ChatService {
             Long count = readStatusRepository.countByChatRoomAndUserAndIsReadFalse(p.getChatRoom(), user);
             MyChatListResDto dto = MyChatListResDto.builder()
                     .roomId(p.getChatRoom().getId())
-                    .roomName(p.getUser().getName()) // ChatRoom Name 을 Participant 의 User Name 으로 지정해버리면?
+                    .roomName(p.getChatRoom().getName()) // ChatRoom Name 을 Participant 의 User Name 으로 지정해버리면?
                     .isGroupChat(p.getChatRoom().getIsGroupChat())
                     .unReadCount(count)
                     .build();
