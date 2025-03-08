@@ -78,7 +78,7 @@ const ResetPasswordForm = () => {
 
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
-            <p className="text-sm text-gray-600">※ 영문, 숫자, 특문이 2종류 이상 조합된 8~20자</p>
+            <p className="text-sm text-extraText">※ 영문, 숫자, 특문이 2종류 이상 조합된 8~20자</p>
 
             {/* 새로운 비밀번호 입력 */}
             <InputField
@@ -103,13 +103,13 @@ const ResetPasswordForm = () => {
             {/* 비밀번호 변경 버튼 */}
             <button
                 type="submit"
-                className="w-full bg-[#65A3FF] text-white py-2 rounded-md font-medium hover:bg-blue-500 transition duration-300"
+                className="w-full bg-primary text-white py-2 rounded-md font-medium hover:text-hoverBlueColor transition duration-300"
             >
                 비밀번호 변경
             </button>
 
             {/* 오류 메시지 출력 */}
-            {message && <p className="text-red-500 text-center mt-3 text-sm">{message}</p>}
+            {message && <p className="text-warningText text-center mt-3 text-sm">{message}</p>}
         </form>
     );
 };

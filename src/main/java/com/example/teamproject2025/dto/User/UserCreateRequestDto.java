@@ -33,9 +33,9 @@ public class UserCreateRequestDto {
                 .name(this.name)
                 .email(this.email)
                 .universityId(universityId)
-                .studentId(studentId)
-                .profileImage(profileImage)
-                .isEmailVerified(isEmailVerified)
+                .studentId(this.studentId)
+                .profileImage(this.profileImage)
+                .isEmailVerified(this.isEmailVerified)
                 .isUniVerified(this.isUniVerified != null ? this.isUniVerified : false)
                 .build();
     }

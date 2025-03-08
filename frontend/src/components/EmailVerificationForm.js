@@ -2,13 +2,30 @@ import React, { useState, useEffect } from "react";
 import { requestVerificationCode, verifyCode } from "../api/authApi";
 import InputField from "./InputField";
 
-const EmailVerificationForm = ({ onVerificationSuccess }) => {
-    const [email, setEmail] = useState("");
+const EmailVerificationForm = ({ onVerificationSuccess, initialEmail, onEmailChange}) => {
+    const [email, setEmail] = useState(initialEmail || ""); // 초기값 설정
     const [verificationCode, setVerificationCode] = useState("");
     const [isCodeSent, setIsCodeSent] = useState(false);
     const [message, setMessage] = useState("");
     const [timer, setTimer] = useState(300);
     const [intervalId, setIntervalId] = useState(null);
+
+    // `initialEmail` 값이 변경되면 자동으로 `email` 상태에 반영
+    useEffect(() => {
+        if (initialEmail) {
+            setEmail(initialEmail);
+        }
+    }, [initialEmail]); // `initialEmail`이 변경될 때마다 업데이트
+
+    // 이메일 입력값 변경 시 부모 컴포넌트에 전달
+    const handleEmailChange = (e) => {
+        const newEmail = e.target.value;
+        setEmail(newEmail);
+        if (onEmailChange) {
+            onEmailChange(newEmail);
+        }
+    };
+
 
     // 이메일 인증 요청
     const handleRequestVerificationCode = async () => {
@@ -76,13 +93,13 @@ const EmailVerificationForm = ({ onVerificationSuccess }) => {
                     type="email"
                     placeholder="이메일"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={handleEmailChange}    
                     disabled={isCodeSent}
                 />
                 <button
                     type="button"
                     onClick={handleRequestVerificationCode}
-                    className="px-4 py-2 text-sm border border-gray-300 rounded-full hover:bg-gray-200 transition"
+                    className="px-4 py-2 text-sm border border-gray-300 rounded-full hover:bg-hoverWhiteColor transition"
                 >
                     인증번호 발송
                 </button>
@@ -97,25 +114,25 @@ const EmailVerificationForm = ({ onVerificationSuccess }) => {
                             value={verificationCode}
                             onChange={(e) => setVerificationCode(e.target.value)}
                         />
-                        <span className="text-sm font-bold text-gray-600 min-w-[50px] text-right">
+                        <span className="text-sm font-bold text-extraText min-w-[50px] text-right">
                             {formatTime(timer)}
                         </span>
                         <button
                             type="button"
                             onClick={handleVerifyCode}
-                            className="px-4 py-2 text-sm border border-gray-300 rounded-full hover:bg-gray-200 transition"
+                            className="px-4 py-2 text-sm border border-gray-300 rounded-full hover:bg-hoverWhiteColor transition"
                             disabled={timer === 0}
                         >
                             인증
                         </button>
                     </div>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-extraText">
                         *인증번호는 5분 이내에 입력해야 하며, 시간이 초과되면 다시 요청해야 합니다.
                     </p>
                 </>
             )}
 
-            {message && <p className="mt-3 text-sm text-gray-700">{message}</p>}
+            {message && <p className="mt-3 text-sm text-extraText">{message}</p>}
         </div>
     );
 };

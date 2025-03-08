@@ -1,46 +1,61 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {getClubList, getUserClubs} from "../api/clubApi";
+import ClubList from "../components/ClubList";
 
 const HomePage = () => {
-    const [username, setUsername] = useState(localStorage.getItem("name") || null); // 초기값을 null로 설정
     const navigate = useNavigate();
+    const [username, setUsername] = useState(localStorage.getItem("username"));
+    const [clubs, setClubs] = useState([]);
+    const [userClubs, setUserClubs] = useState([]);
+    //const [isLoading, setIsLoading] = useState(true);
+    // 아직 없는 API를 고려하여 userClubs 상태 제거
 
     useEffect(() => {
-        const checkLoginStatus = () => {
-            const storedUsername = localStorage.getItem("name");
-            if (storedUsername && storedUsername !== "undefined") {
-                setUsername(storedUsername);
-            } else {
-                setUsername(null); // 로그인되지 않았으면 상태를 null로 설정
-                navigate("/login"); // 로그인 페이지로 이동
+        if (!username) {
+            // 로그인 정보가 없으면 로그인 페이지로 이동
+            navigate("/login");
+            return;
+        }
+
+        const fetchClubs = async () => {
+            try {
+                const clubData = await getClubList();
+                setClubs(clubData);
+            } catch (error) {
+                console.error("동아리 목록 불러오기 실패:", error);
             }
         };
 
-        checkLoginStatus(); // 초기 실행
-
-        // storage 이벤트 감지하여 상태 변경 (로그아웃하면 로그인 페이지로 이동)
-        window.addEventListener("storage", checkLoginStatus);
-
-        return () => {
-            window.removeEventListener("storage", checkLoginStatus);
+        const fetchUserClubs = async () => {
+            try {
+                const userClubData = await getUserClubs(); // 사용자의 동아리 목록 요청
+                setUserClubs(userClubData); // userClubs 상태 업데이트
+            } catch (error) {
+                console.error("사용자의 동아리 목록 불러오기 실패:", error);
+                setUserClubs([]); // 오류 발생 시 빈 배열로 설정
+            }
         };
-    }, []);
 
-    // 로그인되지 않았으면 아무것도 렌더링하지 않음
-    if (username === null) return null;
+        fetchClubs();
+        fetchUserClubs();
+    }, [username, navigate]);
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-100">
-            <div className="bg-white p-8 rounded-lg shadow-lg w-96">
-                <h2 className="text-2xl font-bold text-center mb-6">Welcome, {username}님!</h2>
+        <div className="container mx-auto px-8 lg:px-16">
+            {/* 상단 배너, 나중에 고정 이미지나 swiper 사용해서 자동 슬라이드 등 다양하게 변경 가능 */}
+            <div className="w-full h-48 bg-cover bg-center rounded-lg shadow-md mb-6 mt-24"
+                 style={{ backgroundImage: "url('/banner.png')" }}>
+                <div className="flex items-center justify-center h-full rounded-lg">
+                    <h1 className="text-white text-3xl font-bold">동아리를 찾아보세요!</h1>
+                </div>
             </div>
+            {/* userClubs는 빈 배열로 설정 (API 추가 전),
+             userClubs를 통해 사용자가 가입한 동아리인지 확인하여
+             "지원하기" 버튼을 보이거나 숨기는 기능을 제공*/}
+            <ClubList clubs={clubs} userClubs={userClubs} />
         </div>
     );
 };
 
 export default HomePage;
-
-
-
-
-

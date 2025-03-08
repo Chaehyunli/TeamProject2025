@@ -28,8 +28,6 @@ public class AuthController {
     private final UserService userService;
     private final FindUserAuthService findUserAuthService;
 
-
-
     // 이메일 인증 요청
     @PostMapping("/email")
     public ResponseEntity<CommonResponseDto<Object>> requestEmailVerification(@RequestBody @Validated EmailRequestDto request) {

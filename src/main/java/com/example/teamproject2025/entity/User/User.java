@@ -1,15 +1,18 @@
 package com.example.teamproject2025.entity.User;
 
 import com.example.teamproject2025.dto.User.UserUpdateRequestDto;
+import com.example.teamproject2025.entity.Membership.UserClub;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -44,8 +47,8 @@ public class User {
     private Boolean isEmailVerified ; // 이메일 인증 여부
     private Boolean isUniVerified ; // 학교 인증 여부
 
-    @Column(nullable = false, length = 255)
-    private String profileImage ;
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String profileImage = "default-profileImage.png";
 
     @CreationTimestamp
     private LocalDateTime createdAt; // 계정 생성 시간 for users/register
@@ -53,31 +56,45 @@ public class User {
     @UpdateTimestamp
     private LocalDateTime updatedAt; // 계정 업데이트 시간 for users/update
 
-    // update 메서드
-    public User update(UserUpdateRequestDto dto) {
-        return User.builder()
-                .userId(this.userId)
-                .username(this.username)
-                .password(this.password)
-                .name(this.name)
-                .studentId(this.studentId)
-                .universityId(this.universityId)
-                .email(dto.getEmail() != null ? dto.getEmail() : this.email) // 이메일 업데이트
-                .isEmailVerified(dto.getIsEmailVerified() != null ? dto.getIsEmailVerified() : this.isEmailVerified) // 인증 여부 업데이트
-                .profileImage(dto.getProfileImage() != null ? dto.getProfileImage() : this.profileImage) // 프로필 이미지 업데이트
-                .isUniVerified(this.isUniVerified)
-                .createdAt(this.createdAt)
-                .updatedAt(LocalDateTime.now())
-                .build();
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<UserClub> userClubs; // 사용자가 가입한 동아리 리스트
 
-        /*
-        * ⚠️ Profile Update API 구현할 때 신경써야 할 부분이긴 한데,
-        * 안전성을 위해 Email 입력란이 비어있게 되면 부분을 업데이트 진행하지 않는 형식으로 했다.
-        * null 처리하면 Data Integrity 가 깨질거임
-        * 추후 인증방식이 아니라, 회원가입 API 처럼 인증을 해야만 등록이 가능하도록 설정해야함
-        * 지금 코드 비통합 단계라, 회원가입 API 에서 이 로직 처리 안되어있을건데, 처리 해야함
-        */
+    // 기존 객체 수정 방식만 유지
+    public void update(UserUpdateRequestDto dto) {
+        if (dto.getEmail() != null) this.email = dto.getEmail();
+        if (dto.getIsEmailVerified() != null) this.isEmailVerified = dto.getIsEmailVerified();
+        if (dto.getProfileImage() != null) this.profileImage = dto.getProfileImage();
+        if (dto.getName() != null) this.name = dto.getName();
+        if (dto.getStudentId() != null) this.studentId = dto.getStudentId();
+        if (dto.getDepartment() != null) this.department = dto.getDepartment();
+        this.updatedAt = LocalDateTime.now();
     }
+
+    // update 메서드
+//    public User update(UserUpdateRequestDto dto) {
+//        return User.builder()
+//                .userId(this.userId)
+//                .username(this.username)
+//                .password(this.password)
+//                .name(this.name)
+//                .studentId(this.studentId)
+//                .universityId(this.universityId)
+//                .email(dto.getEmail() != null ? dto.getEmail() : this.email) // 이메일 업데이트
+//                .isEmailVerified(dto.getIsEmailVerified() != null ? dto.getIsEmailVerified() : this.isEmailVerified) // 인증 여부 업데이트
+//                .profileImage(dto.getProfileImage() != null ? dto.getProfileImage() : this.profileImage) // 프로필 이미지 업데이트
+//                .isUniVerified(this.isUniVerified)
+//                .createdAt(this.createdAt)
+//                .updatedAt(LocalDateTime.now())
+//                .build();
+//
+//        /*
+//         * ⚠️ Profile Update API 구현할 때 신경써야 할 부분이긴 한데,
+//         * 안전성을 위해 Email 입력란이 비어있게 되면 부분을 업데이트 진행하지 않는 형식으로 했다.
+//         * null 처리하면 Data Integrity 가 깨질거임
+//         * 추후 인증방식이 아니라, 회원가입 API 처럼 인증을 해야만 등록이 가능하도록 설정해야함
+//         * 지금 코드 비통합 단계라, 회원가입 API 에서 이 로직 처리 안되어있을건데, 처리 해야함
+//         */
+//    }
 
 //    public User updatePassword(String newEncodedPassword) {
 //        return User.builder()

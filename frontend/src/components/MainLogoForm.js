@@ -1,6 +1,6 @@
 export default function MainLogoForm() {
     return (
-        <div className="flex items-center gap-x-1 space-x-2 mb-10 justify-center">
+        <div className="flex items-center gap-x-1 space-x-2 mb-10 justify-center mt-9">
             {/* 검은 원 */}
             <div className="w-6 h-6 bg-gray-800 rounded-full"></div>
 

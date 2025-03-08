@@ -2,19 +2,10 @@ import React, { useState, useEffect } from "react";
 import { logout } from "../api/authApi";
 import { deleteUser, getUserProfile } from "../api/userApi";
 import {useNavigate} from "react-router-dom";
+import { ProtectedImage } from "../api/uploadApi";
 
 const ProfilePage = () => {
-    // 초기 사용자 정보 (API 연결 전 기본값 설정)
-    // const [user, setUser] = useState({
-    //     profileImage: "default_profile_url", // 기본 프로필 이미지 URL
-    //     name: "홍길동",
-    //     username: "gildong123",
-    //     university: "명지대학교",
-    //     is_uni_verified: false, // 대학교 인증 여부
-    // });
-
     const navigate = useNavigate();
-
     const [user, setUser] = useState(null); // 초기값을 null로 설정
 
     useEffect(() => {
@@ -41,6 +32,11 @@ const ProfilePage = () => {
 
         try {
             await deleteUser();
+            localStorage.removeItem("userId");  // userId 삭제
+            localStorage.removeItem("username");  // username 삭제
+            localStorage.removeItem("profileImage");  // profileImage 삭제
+            localStorage.removeItem("name");  // 사용자 이름 삭제
+
             alert("회원 탈퇴가 완료되었습니다.");
             window.location.href = "/"; // 탈퇴 후 홈 화면 이동
         } catch (error) {
@@ -51,6 +47,11 @@ const ProfilePage = () => {
     const handleLogout = async () => {
         try {
             await logout();
+            localStorage.removeItem("userId");  // userId 삭제
+            localStorage.removeItem("username");  // username 삭제
+            localStorage.removeItem("profileImage");  // profileImage 삭제
+            localStorage.removeItem("name");  // 사용자 이름 삭제
+
             alert("로그아웃 되었습니다.");
             window.location.href = "/"
         } catch (error) {
@@ -63,11 +64,9 @@ const ProfilePage = () => {
             {/* 프로필 정보 */}
             <div className="flex justify-between items-start mt-8">
                 <div className="flex items-center gap-4">
-                    <img
-                        src={user.profileImage || "default_profile_url"}
-                        alt="프로필"
-                        className="w-20 h-20 rounded-full border"
-                    />
+                    <div className="w-28 h-28 rounded-full overflow-hidden border">
+                        <ProtectedImage objectName={user.profileImage} alt="User" className="w-full h-full object-cover"/>
+                    </div>
                     <div>
                         <h2 className="text-xl font-bold">{user.name}</h2>
                         <div className="flex items-center text-gray-500">
@@ -75,7 +74,7 @@ const ProfilePage = () => {
                                 {user.universityName || "대학교 미입력"} | {user.studentId || "학번 미입력"} | {user.department || "학과 미입력"} | {user.email || "이메일 미입력"}
                             </p>
                             <button
-                                className="ml-4 px-3 py-1 text-xs text-white bg-blue-500 rounded-lg hover:bg-blue-600"
+                                className="ml-4 px-3 py-1 text-xs text-white bg-primary rounded-lg hover:bg-hoverBlueColor"
                                 onClick={() => navigate("/updateProfile")}
                             >
                                 수정
@@ -92,7 +91,7 @@ const ProfilePage = () => {
                     <span>{user.username}</span>
                 </div>
 
-                <p className="text-lg font-semibold cursor-pointer text-[#65A3FF]">
+                <p className="text-lg font-semibold cursor-pointer text-primary">
                     비밀번호 변경
                 </p>
 

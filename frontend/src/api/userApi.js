@@ -25,9 +25,10 @@ export const getUserProfile = async () => {
     }
 };
 
+// 프로필 수정
 export const updateUserProfile = async (userData) => {
     try {
-        const response = await fetch("http://localhost:8080/api/v1/users/profile", {
+        const response = await fetch(`${API_BASE_URL}/profile`, {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
@@ -68,6 +69,59 @@ export const fetchUserList = async () => {
         return response.data;
     } catch (error) {
         console.error("❌ 회원 목록 불러오기 실패:", error);
+        throw error;
+    }
+};
+
+// 나의 지원서 목록 조회
+export const getMySubmissions = async () => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/submissions`, {
+            withCredentials: true,
+        });
+        return response.data;
+    } catch (error) {
+        console.error("나의 지원서 목록 조회 실패:", error);
+        throw error;
+    }
+};
+
+// 나의 지원서 상세 조회
+export const getMySubmissionDetail = async (applyId) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/submissions/${applyId}`, {
+            withCredentials: true,
+        });
+        return response.data;
+    } catch (error) {
+        console.error("나의 지원서 상세 조회 실패:", error);
+        throw error;
+    }
+};
+
+// 나의 지원서 수정
+export const updateMySubmission = async (applyId, data) => {
+    try {
+        const response = await axios.patch(`${API_BASE_URL}/submissions/${applyId}`, data, {
+            withCredentials: true,
+            headers: { "Content-Type": "application/json" }, // JSON 요청 명확히 지정
+        });
+        return response.data;
+    } catch (error) {
+        console.error("나의 지원서 수정 실패:", error);
+        throw error;
+    }
+};
+
+// 나의 지원서 삭제
+export const deleteMySubmission = async (applyId) => {
+    try {
+        const response = await axios.delete(`${API_BASE_URL}/submissions/${applyId}`, {
+            withCredentials: true,
+        });
+        return response.data;
+    } catch (error) {
+        console.error("나의 지원서 삭제 실패:", error);
         throw error;
     }
 };

@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../api/authApi";
+import { getUserProfile } from "../api/userApi";
 import InputField from "./InputField";
 
 const LoginForm = () => {
     const navigate = useNavigate(); // 페이지 이동을 위한 훅
+    const [storedUsername, setStoredUsername] = useState(localStorage.getItem("username") || null); // 초기값을 null로 설정
 
     const [formData, setFormData] = useState({ username: "", password: "" });
     const [message, setMessage] = useState("");
@@ -22,12 +24,16 @@ const LoginForm = () => {
             const result = await login(formData);
             setMessage(result.message);
 
-            localStorage.setItem("userId", result.userId);
-            localStorage.setItem("username", result.username);
-            localStorage.setItem("name", result.name);
+            localStorage.setItem("userId", result.data.userId);
+            localStorage.setItem("username", result.data.username);
+            localStorage.setItem("name", result.data.name);
+
+            // 사용자 정보 즉시 가져오기 (세션 반영 확인)
+            const userProfile = await getUserProfile();
+            localStorage.setItem("profileImage", userProfile.profileImage);
 
             // 로그인 성공 후 자동으로 홈 페이지로 이동
-            window.location.href = "/home";
+            navigate("/home");
         } catch (error) {
             setMessage("오류 발생: " + error.message);
         }
@@ -35,11 +41,10 @@ const LoginForm = () => {
 
     useEffect(() => {
         // 로그인 상태 확인 후 자동 이동
-        const storedUsername = localStorage.getItem("username");
         if (storedUsername) {
             navigate("/home");
         }
-    }, [navigate]);
+    }, [storedUsername]);
 
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
