@@ -41,6 +41,7 @@ export const login = async (formData) => {
         localStorage.setItem("userId", result.userId);
         localStorage.setItem("username", result.username);
         localStorage.setItem("name", result.name);
+        localStorage.setItem("email", result.email);
 
         return result;
     } catch (error) {

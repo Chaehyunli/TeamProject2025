@@ -169,7 +169,7 @@ public class ChatServiceImpl implements ChatService {
         if(!check)throw new IllegalArgumentException("본인이 속하지 않은 채팅방입니다.");
 
         // 특정 room에 대한 message조회
-        List<ChatMessage> chatMessages = chatMessageRepository.findByChatRoomOrderByCreatedTimeAsc(chatRoom);
+        List<ChatMessage> chatMessages = chatMessageRepository.findByChatRoomOrderByCreatedAtAsc(chatRoom);
         List<ChatMessageReqDto> chatMessageDtos = new ArrayList<>();
         for(ChatMessage c : chatMessages){
             ChatMessageReqDto chatMessageDto = ChatMessageReqDto.builder()

@@ -1,10 +1,7 @@
 package com.example.teamproject2025.service.User;
 
 import com.example.teamproject2025.dto.Common.CommonResponseDto;
-import com.example.teamproject2025.dto.User.UserCreateRequestDto;
-import com.example.teamproject2025.dto.User.UserDetailResponseDto;
-import com.example.teamproject2025.dto.User.UserResponseDto;
-import com.example.teamproject2025.dto.User.UserUpdateRequestDto;
+import com.example.teamproject2025.dto.User.*;
 import com.example.teamproject2025.entity.User.User;
 import com.example.teamproject2025.repository.User.UniversityRepository;
 import com.example.teamproject2025.repository.User.UserRepository;
@@ -16,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,17 +46,6 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.save(dto.toEntity(universityId, encodedPassword));
 
         // 5. Client 에게 응답할 DTO Build
-//        return UserResponseDto.builder()
-//                .username(user.getUsername())
-//                .studentId(Integer.parseInt(user.getStudentId()))
-//                .university(dto.getUniversityName())
-//                .email(user.getEmail())
-//                .profileImage(user.getProfileImage())
-//                .joinedClubs(List.of())
-//                .managedClubs(List.of())
-//                .build(); -> 나중에 업데이트 부 구현할 때 그대로 써먹으려고 남김
-
-        // 5. Client 에게 응답할 DTO Build
         return UserResponseDto.builder()
                 .userId(user.getUserId())
                 .username(user.getUsername())
@@ -73,24 +60,6 @@ public class UserServiceImpl implements UserService {
                 .createdAt(user.getCreatedAt())
                 .build();
     }
-
-//    @Override
-//    public UserResponseDto update(Long userId, UserUpdateRequestDto dto){
-//        User user = userRepository.findById(userId)
-//                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-//
-//        User updatedUser = user.update(dto);
-//
-//        userRepository.save(updatedUser);
-//
-//        return UserResponseDto.builder()
-//                .username(updatedUser.getUsername())
-//                .studentId(updatedUser.getStudentId())
-//                .universityName(null) // 추가 로직 필요 시 처리
-//                .email(updatedUser.getEmail())
-//                .profileImage(updatedUser.getProfileImage())
-//                .build();
-//    }
 
     @Override
     public ResponseEntity<CommonResponseDto<Void>> deleteUser(HttpSession session) {
@@ -119,7 +88,25 @@ public class UserServiceImpl implements UserService {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(CommonResponseDto.success(HttpStatus.OK.value(), "User deleted successfully"));
     }
+
+    @Override
+    public List<UserListResDto> findAll(){
+        List<User> users = userRepository.findAll();
+        List<UserListResDto> userListResDtos = new ArrayList<>();
+        for (User m : users){
+            UserListResDto userListResDto = UserListResDto.builder()
+                    .userId(m.getUserId())
+                    .email(m.getEmail())
+                    .name(m.getName())
+                    .build();
+
+            userListResDtos.add(userListResDto);
+        }
+        return userListResDtos;
+    }
 }
+
+
 
 /* 💡Descriptions @dev_taehyun
 *
