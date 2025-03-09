@@ -59,4 +59,7 @@ public class Club {
                 .filter(uc -> uc.getRole().getRoleName().equals(RoleType.PRESIDENT) || uc.getRole().getRoleName().equals(RoleType.VICE_PRESIDENT))
                 .collect(Collectors.toList());
     }
+
+    @OneToMany(mappedBy = "club", cascade = CascadeType.ALL)
+    private List<Article> articles;
 }

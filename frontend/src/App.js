@@ -17,8 +17,7 @@ import TestPage from "./pages/TestPage";
 import HeaderComponent from "./components/HeaderComponents";
 import ClubRegisterPage from "./pages/ClubRegisterPage";
 import ClubDetailPage from "./pages/ClubDetailPage";
-import ClubArticles from "./components/ClubArticles";
-import ClubNotices from "./components/ClubNotices";
+import ClubArticlesList from "./components/ClubArticlesList";
 import ClubSubmissions from "./components/ClubSubmissions";
 import ClubMembers from "./components/ClubMembers";
 import ClubApply from "./components/ClubApply";
@@ -27,6 +26,10 @@ import MySubmissionsPage from "./pages/MySubmissionsPage";
 import MySubmissionsDetailPage from "./pages/MySubmissionsDetailPage";
 import MySubmissionsUpdatePage from "./pages/MySubmissionsUpdatePage";
 import MyClubsPage from "./pages/MyClubPage";
+import CreateArticle from "./components/CreateArticle";
+import ArticleDetail from "./components/ArticleDetail";
+import DeleteArticle from "./components/DeleteArticle";
+import UpdateArticle from "./components/UpdateArticle";
 
 function App() {
 
@@ -67,12 +70,16 @@ function App() {
                 {/* Club */}
                 <Route path="/clubs/:clubId" element={<ClubDetailPage />}> {/* ClubDetailNavbar에서 누른 것에 따라 Outlet되어 렌더링*/}
                     <Route index element={<Navigate to="articles" replace />} />  {/* 기본 경로는 게시물 */}
-                    <Route path="articles" element={<ClubArticles />} /> {/* 게시물 */}
-                    <Route path="notices" element={<ClubNotices />} /> {/* 공지사항 */}
+                    <Route path="articles" element={<ClubArticlesList />} /> {/* 게시물 */}
                     <Route path="submissions" element={<ClubSubmissions />} /> {/* 지원자 관리 */}
                     <Route path="submissions/:applyId" element={<ClubSubmissionDetail />} /> {/* 지원서 상세 페이지 관리 */}
                     <Route path="members" element={<ClubMembers />} /> {/* 권한 */}
                     <Route path="apply" element={<ClubApply />} />  {/* 동아리 지원하기 */}
+                    <Route path="/clubs/:clubId/articles/create" element={<CreateArticle />} /> {/* 게시글 작성 */}
+                    <Route path="articles/:articleId" element={<ArticleDetail />} />
+                    <Route path="/clubs/:clubId/articles/:articleId/delete" element={<DeleteArticle />} />
+                    <Route path="/clubs/:clubId/articles/:articleId/edit" element={<UpdateArticle />} />
+
                 </Route>
 
             </Routes>

@@ -33,19 +33,28 @@ const ClubDetailNavbar = ({ clubId, userRole }) => {
     }
 
     return (
-        <div className="flex space-x-4 border-b pb-2">
-            {menuItems.map((item) => (
-                <button
-                    key={item.name}
-                    className={`px-4 py-2 ${getActiveTab() === item.name ? "text-black font-bold" : "text-gray-500"}`}
-                    onClick={() => {
-                        setSelected(item.name);
-                        navigate(item.path);
-                    }}
-                >
-                    {item.name}
-                </button>
-            ))}
+        <div className="flex justify-between items-center border-b pb-2">
+            <div className="flex space-x-4">
+                {menuItems.map((item) => (
+                    <button
+                        key={item.name}
+                        className={`px-4 py-2 ${getActiveTab() === item.name ? "text-black font-bold" : "text-gray-500"}`}
+                        onClick={() => {
+                            setSelected(item.name);
+                            navigate(item.path);
+                        }}
+                    >
+                        {item.name}
+                    </button>
+                ))}
+            </div>
+
+            {/*<button*/}
+            {/*    className="px-4 py-2 bg-blue-500 text-white rounded"*/}
+            {/*    onClick={() => navigate("/write")}*/}
+            {/*>*/}
+            {/*    글쓰기*/}
+            {/*</button>*/}
         </div>
     );
 };

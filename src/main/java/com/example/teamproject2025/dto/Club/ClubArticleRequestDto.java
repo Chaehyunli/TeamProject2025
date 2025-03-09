@@ -13,22 +13,19 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class ClubArticleRequestDto {
-
     private String title;
     private String contents;
-    @Builder.Default
-    private String thumbUrl = "https://www.mju.ac.kr/sites/mjukr/images/sub01/symbol01.png";
+    private String thumbUrl;
     private boolean is_notice;
 
-
-    public Article toEntity(Club club, User user) {
+    public Article toEntity(Club club, User user, boolean is_notice) {
         return Article.builder()
                 .club(club)
                 .user(user)
                 .title(this.title)
                 .contents(this.contents)
                 .thumbUrl(this.thumbUrl)
-                .is_notice(this.is_notice)
+                .is_notice(is_notice)
                 .build();
     }
 }

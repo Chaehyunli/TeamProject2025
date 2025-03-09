@@ -24,10 +24,9 @@ public interface ClubService {
 
     boolean deleteArticle(Long clubId, Long articleId, Long userId);
 
-    ArticleListResponseDto getArticles(Long clubId, int limit, int offset);
-
     ClubArticleResponseDto updateArticle(Long userId, Long clubId, Long articleId, ArticleModificationRequestDto requestDto);
 
-    SpecificArticleResponseDto getUserArticle(Long userId, String userName, Long clubId, Long articleId);
+    SpecificArticleResponseDto getUserArticle(Long userId, Long clubId, Long articleId);
 
+    ArticleListResponseDto getArticlesList(Long clubId, int limit, int offset);
 }
