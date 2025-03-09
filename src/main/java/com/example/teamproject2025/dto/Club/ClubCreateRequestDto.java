@@ -19,7 +19,7 @@ public class ClubCreateRequestDto {
     private String description;
     private Long universityId;
     @Builder.Default
-    private String thumbUrl = "default-thumbnail.png";
+    private String thumbUrl;
     private Long presidentId;
 
     // DTO → Entity 변환 메서드

@@ -1,15 +1,13 @@
 package com.example.teamproject2025.dto.Club;
 
-import com.example.teamproject2025.dto.Auth.authorDto;
+import com.example.teamproject2025.dto.Auth.AuthorDto;
 import com.example.teamproject2025.entity.Club.Article;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -17,15 +15,15 @@ import java.util.List;
 @Builder
 public class SpecificArticleResponseDto {
     private Long article_id;
-    private authorDto author;
+    private AuthorDto author;
     private boolean is_notice;
     private String title;
     private String contents;
     private LocalDateTime created_at;
     private LocalDateTime updated_at;
-    private String thumbUrl = "default-thumbnail.png";
+    private String thumbUrl;
 
-    public static SpecificArticleResponseDto fromEntity(Article article, authorDto author) {
+    public static SpecificArticleResponseDto fromEntity(Article article, AuthorDto author) {
         return SpecificArticleResponseDto.builder()
                 .article_id(article.getArticleId())
                 .author(author)

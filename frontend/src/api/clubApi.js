@@ -167,3 +167,81 @@ export const getClubMembers = async (clubId) => {
         throw error;
     }
 };
+
+// 동아리 게시물 작성
+export const createArticle = async (clubId, articleData) => {
+    try {
+        const response = await axios.post(
+            `${API_BASE_URL}/${clubId}/articles`,
+            articleData,
+            { withCredentials: true }
+        );
+        return response.data;
+    } catch (error) {
+        console.error("동아리 게시물 작성 실패:", error);
+        throw error;
+    }
+};
+
+// 동아리 게시물 리스트
+export const getClubArticles = async (clubId, limit = 10, offset = 0) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/${clubId}/articles`, {
+            params: {
+                limit,
+                offset
+            },
+            withCredentials: true,
+        });
+        return response.data.data;
+    } catch (error){
+        console.error("동아리 게시글 목록 조회 실패: ", error);
+        throw error;
+    }
+}
+
+// 동아리 특정 게시물
+export const getArticleDetail = async (clubId, articleId) => {
+    try {
+        const response = await axios.get(
+            `${API_BASE_URL}/${clubId}/articles/${articleId}`,
+            { withCredentials: true }
+        );
+        console.log(response.data.data.author.authorId);
+        return response.data.data;
+    } catch (error) {
+        console.error('게시글 상세 조회 실패:', error);
+        throw error;
+    }
+};
+
+// 동아리 게시물 삭제
+export const deleteArticle = async (clubId, articleId) => {
+    try {
+        const response = await axios.delete(
+            `${API_BASE_URL}/${clubId}/articles/${articleId}`,
+            { withCredentials: true }
+        );
+        return response.data;
+    } catch (error) {
+        console.error('게시글 삭제 실패:', error);
+        throw error;
+    }
+};
+
+// 동아리 게시물 수정
+export const updateArticle = async (clubId, articleId, articleData) => {
+    try {
+        const response = await axios.put(
+            `${API_BASE_URL}/${clubId}/articles/${articleId}`,
+            articleData,
+            { withCredentials: true }
+        );
+        return response.data;
+    } catch (error) {
+        console.error('게시글 수정 실패:', error);
+        throw error;
+    }
+};
+
+

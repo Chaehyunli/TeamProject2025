@@ -101,6 +101,7 @@ public class ClubController {
         );
     }
 
+    // 동아리 게시물 작성
     @PostMapping("/{clubId}/articles")
     public ResponseEntity<CommonResponseDto<ClubArticleResponseDto>> createArticle(
             @PathVariable Long clubId,
@@ -118,19 +119,21 @@ public class ClubController {
         );
     }
 
+    // 동아리 게시물 목록 조회
     @GetMapping("/{clubId}/articles")
-    public ResponseEntity<CommonResponseDto<ArticleListResponseDto>> getClubArticles(
+    public ResponseEntity<CommonResponseDto<ArticleListResponseDto>> getClubArticlesList(
             @PathVariable Long clubId,
             @RequestParam(defaultValue = "10") int limit,
             @RequestParam(defaultValue = "0") int offset
     ){
-        ArticleListResponseDto articleList = clubService.getArticles(clubId, limit, offset);
+        ArticleListResponseDto articleList = clubService.getArticlesList(clubId, limit, offset);
 
         return ResponseEntity.ok(
                 CommonResponseDto.success(200, "Article list retrieved successfully", articleList)
         );
     }
 
+    // 동아리 게시물 삭제
     @DeleteMapping("/{clubId}/articles/{articleId}")
     public CommonResponseDto<String> deleteArticle(
             @PathVariable Long clubId,
@@ -150,6 +153,7 @@ public class ClubController {
         return CommonResponseDto.success(200, "게시물이 성공적으로 삭제되었습니다.", null);
     }
 
+    // 동아리 게시물 수정
     @PutMapping("/{clubId}/articles/{articleId}")
     public ResponseEntity<CommonResponseDto<ClubArticleResponseDto>> updateArticle(
             HttpSession session,
@@ -182,9 +186,8 @@ public class ClubController {
             throw new NoSuchElementException("가입되지 않은 회원입니다.");
         }
 
-        String userName = (String) session.getAttribute("userName");
 
-        SpecificArticleResponseDto article = clubService.getUserArticle(userId, userName, clubId, articleId);
+        SpecificArticleResponseDto article = clubService.getUserArticle(userId, clubId, articleId);
 
         return ResponseEntity.ok(
                 CommonResponseDto.success(200, "특정 게시물을 성공적으로 조회습니다.", article)

@@ -16,18 +16,18 @@ public class ClubArticleRequestDto {
 
     private String title;
     private String contents;
-    private String thumbUrl = "default-thumbnail.png";
+    private String thumbUrl;
     private boolean is_notice;
 
 
-    public Article toEntity(Club club, User user) {
+    public Article toEntity(Club club, User user, boolean is_notice) {
         return Article.builder()
                 .club(club)
                 .user(user)
                 .title(this.title)
                 .contents(this.contents)
                 .thumbUrl(this.thumbUrl)
-                .is_notice(this.is_notice)
+                .is_notice(is_notice)
                 .build();
     }
 }

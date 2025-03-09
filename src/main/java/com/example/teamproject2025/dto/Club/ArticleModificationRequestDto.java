@@ -12,5 +12,5 @@ import lombok.NoArgsConstructor;
 public class ArticleModificationRequestDto {
     private String title;
     private String contents;
-    private String thumbUrl = "default-thumbnail.png";
+    private String thumbUrl;
 }

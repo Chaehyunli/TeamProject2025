@@ -1,6 +1,6 @@
 package com.example.teamproject2025.service.Club;
 
-import com.example.teamproject2025.dto.Auth.authorDto;
+import com.example.teamproject2025.dto.Auth.AuthorDto;
 import com.example.teamproject2025.dto.Club.*;
 import com.example.teamproject2025.dto.Membership.ClubMemberResponseDto;
 import com.example.teamproject2025.dto.Membership.UserClubResponseDto;
@@ -20,7 +20,7 @@ import com.example.teamproject2025.repository.Membership.UserClubRepository;
 import com.example.teamproject2025.repository.Membership.UserRoleRepository;
 import com.example.teamproject2025.repository.University.UniversityRepository;
 import com.example.teamproject2025.repository.User.UserRepository;
-import com.google.api.gax.rpc.NotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.google.cloud.storage.Storage;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,7 +31,6 @@ import org.springframework.context.ApplicationContext;
 import java.io.IOException;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -214,10 +213,6 @@ public class ClubServiceImpl implements ClubService {
     @Override
     public ClubArticleResponseDto createArticle(Long clubId, Long userId, String title, String content,
                                                 String uploadedFileName, boolean is_notice) {
-        boolean check = userClubRepository.existsByUser_UserIdAndClub_ClubId(userId, clubId);
-        if (!check) {
-            throw new IllegalStateException("해당 동아리에 속한 사람이 아닙니다. userId: " + userId + ", clubId: " + clubId);
-        }
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다. userId: " + userId));
@@ -232,20 +227,14 @@ public class ClubServiceImpl implements ClubService {
         ClubArticleRequestDto requestDto = new ClubArticleRequestDto(title,
                 content, storageThumbUrl, is_notice);
 
-        Article newArticle = requestDto.toEntity(club, user);
+        Article newArticle = requestDto.toEntity(club, user, is_notice);
         clubArticleRepository.save(newArticle);
 
         return ClubArticleResponseDto.fromEntity(newArticle);
     }
 
     @Override
-    public ArticleListResponseDto getArticles(Long clubId, int limit, int offset) {
-
-        boolean check = clubArticleRepository.existsByClub_ClubId(clubId);
-        if(!check) {
-            throw new NoSuchElementException("존재 하지 않는 동아리입니다.");
-        }
-
+    public ArticleListResponseDto getArticlesList(Long clubId, int limit, int offset) {
         List<Article> articleList = clubArticleRepository.findByClub_ClubId(clubId);
 
         int total = articleList.size();
@@ -278,13 +267,18 @@ public class ClubServiceImpl implements ClubService {
     }
 
     @Override
-    public SpecificArticleResponseDto getUserArticle(Long userId, String username, Long clubId, Long articleId) {
-        authorDto author = new authorDto(userId, username);
+    public SpecificArticleResponseDto getUserArticle(Long userId, Long clubId, Long articleId) {
+//        authorDto author = new authorDto(userId, username);
 
         boolean check = clubArticleRepository.existsByClub_ClubId(clubId);
         if(!check) {
             throw new NoSuchElementException("존재 하지 않는 동아리입니다.");
         }
+
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
+
+        AuthorDto author = new AuthorDto(user.getUserId(), user.getUsername());
 
         Article article = clubArticleRepository.findByArticleId(articleId)
                 .orElseThrow(() -> new NoSuchElementException("해당 ID의 게시물이 존재하지 않습니다."));
@@ -306,5 +300,4 @@ public class ClubServiceImpl implements ClubService {
         clubArticleRepository.delete(article);
         return true;
     }
-
 }
