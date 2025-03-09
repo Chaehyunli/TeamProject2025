@@ -125,3 +125,16 @@ export const deleteMySubmission = async (applyId) => {
         throw error;
     }
 };
+
+// 특정 사용자 프로필 조회
+export const getParticularUserProfile = async (userId) => {
+    try {
+        const response = await axios.delete(`${API_BASE_URL}/${userId}/profile`, {
+            withCredentials: true,
+        });
+        return response.data;
+    } catch (error) {
+        console.error("특정 사용자 프로필 조회 실패:", error);
+        throw error;
+    }
+};
