@@ -14,4 +14,5 @@ public class MyChatListResDto {
     private String roomName;
     private Boolean isGroupChat;
     private Long unReadCount;
+    private String updatedAt;
 }

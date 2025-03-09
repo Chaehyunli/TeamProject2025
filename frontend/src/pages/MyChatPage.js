@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchMyChatRooms, leaveChatRoom } from "../api/chatApi";
+import backIcon from "../assets/backIcon.png";
 
 const MyChatPage = () => {
     const [chatList, setChatList] = useState([]);
@@ -36,42 +37,52 @@ const MyChatPage = () => {
         }
     };
 
+    function formatTimeFromISO(isoString) {
+        return new Date(isoString).toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" });
+    }
+
     return (
-        <div className="p-6 py-[100px]">
-            <h1 className="text-center text-2xl font-bold">내 채팅 목록</h1>
-            <table className="w-full mt-4 border-collapse border border-gray-300">
-                <thead>
-                <tr className="bg-gray-200">
-                    <th className="border p-2">채팅방 이름</th>
-                    <th className="border p-2">읽지 않은 메시지</th>
-                    <th className="border p-2">액션</th>
-                </tr>
-                </thead>
-                <tbody>
-                {chatList.map((chat) => (
-                    <tr key={chat.roomId} className="border">
-                        <td className="border p-2">{chat.roomName}</td>
-                        <td className="border p-2">{chat.unReadCount}</td>
-                        <td className="border p-2">
-                            <button
-                                onClick={() => enterChatRoom(chat.roomId, chat.roomName)}
-                                className="bg-blue-500 text-white px-4 py-1 rounded mr-2"
-                            >
-                                입장
-                            </button>
-                            <button
-                                onClick={() => handleLeaveChatRoom(chat.roomId)}
-                                className="bg-red-500 text-white px-4 py-1 rounded"
-                            >
-                                나가기
-                            </button>
-                        </td>
-                    </tr>
-                ))}
-                </tbody>
-            </table>
+        <div className="flex flex-col items-center justify-center py-40">
+            <div className="w-full max-w-lg bg-white rounded-2xl shadow-lg flex flex-col overflow-hidden">
+                <div
+                    className="p-4 border-blue-500 border-b border-b-white flex relative justify-center items-center bg-blue-900 text-white font-semibold text-lg rounded-t-2xl">
+                    <button onClick={() => window.history.back()} className="absolute left-4">
+                        <img src={String(backIcon)} alt="뒤로가기" className="w-5 h-5"/>
+                    </button>
+                    My Chatting Room
+                </div>
+
+                <div className="h-[600px] overflow-y-auto p-4 space-y-3">
+                    {chatList.map((chat) => (
+                        <div key={chat.roomId}
+                             className="flex items-center justify-between bg-white rounded-lg border p-3 shadow-sm">
+                            <div className="flex flex-col">
+                                <span className="text-md font-semibold">{chat.roomName}</span>
+                                <span className="text-sm text-gray-500">{formatTimeFromISO(chat.updatedAt)}</span>
+                            </div>
+                            <div className="flex items-center space-x-3">
+                                <span
+                                    className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">{chat.unReadCount}</span>
+                                <button
+                                    onClick={() => enterChatRoom(chat.roomId, chat.roomName)}
+                                    className="bg-blue-500 text-white px-4 py-1 rounded"
+                                >
+                                    입장
+                                </button>
+                                <button
+                                    onClick={() => leaveChatRoom(chat.roomId)}
+                                    className="bg-red-500 text-white px-4 py-1 rounded"
+                                >
+                                    나가기
+                                </button>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
         </div>
     );
+
 };
 
 export default MyChatPage;

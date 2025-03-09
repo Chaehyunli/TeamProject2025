@@ -221,6 +221,7 @@ public class ChatServiceImpl implements ChatService {
                     .roomName(p.getChatRoom().getName()) // ChatRoom Name 을 Participant 의 User Name 으로 지정해버리면?
                     .isGroupChat(p.getChatRoom().getIsGroupChat())
                     .unReadCount(count)
+                    .updatedAt(p.getChatRoom().getUpdatedAt().toString())
                     .build();
             chatListResDtos.add(dto);
         }

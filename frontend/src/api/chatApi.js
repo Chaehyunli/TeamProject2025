@@ -95,7 +95,7 @@ export const leaveChatRoom = async (roomId) => {
 export const fetchMyChatRooms = async () => {
     try {
         const response = await axios.get(`${API_BASE_URL}/my/rooms`, {
-            withCredentials: true // ✅ 세션 방식 적용
+            withCredentials: true
         });
         return response.data.data;
     } catch (error) {
