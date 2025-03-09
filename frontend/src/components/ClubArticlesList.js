@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import {getClubArticles, getClubMembers} from "../api/clubApi";
-import {getUserProfile} from "../api/userApi";
+import { getClub, getClubArticles, getClubMembers } from "../api/clubApi";
+import { getUserProfile } from "../api/userApi";
+import { ProtectedImage } from "../api/uploadApi";
 
 const ClubArticlesList = () => {
     const { clubId } = useParams();
     const navigate = useNavigate();
+    const [club, setClub] = useState(null);
     const [articles, setArticles] = useState([]);
     const [error, setError] = useState(null);
     const [name, setName] = useState(null);
@@ -16,9 +18,20 @@ const ClubArticlesList = () => {
     const currentUserId = Number(localStorage.getItem('userId'));
 
     useEffect(() => {
+        fetchClubInfo();
         fetchArticles();
         checkClubMembership();
     }, [clubId, currentPage]);
+
+    const fetchClubInfo = async () => {
+        try{
+            const clubData = await getClub(clubId);
+            console.log("club Info: ", clubData);
+            setClub(clubData);
+        } catch (error) {
+            console.log("club Info Get Failure:", error)
+        }
+    }
 
     const fetchArticles = async () => {
         try {
@@ -26,9 +39,7 @@ const ClubArticlesList = () => {
             const response = await getClubArticles(clubId, limit, offset);
             const user = await getUserProfile();
 
-            // 응답 구조 확인
-            console.log('게시글 목록 응답:', response);
-            console.log('첫 번째 게시글 데이터:', response.articles?.[0]);
+            console.log("게시글 목록 응답:", response);
 
             setName(user.data.name);
             setArticles(response.articles);
@@ -43,19 +54,13 @@ const ClubArticlesList = () => {
     const checkClubMembership = async () => {
         try {
             const response = await getClubMembers(clubId);
-            console.log('클럽 멤버 목록:', response); // 디버깅용
+            console.log("클럽 멤버 목록:", response);
 
-            // 현재 사용자가 멤버 목록에 있는지 확인
             const isMember = response.some(member => member.userId === currentUserId);
-            if(isMember){
-                setIsClubMember(true);
-            }else {
-                setIsClubMember(false);
-            }
-            // setIsClubMember(isMember);
+            setIsClubMember(isMember);
 
-            console.log('현재 사용자 ID:', currentUserId); // 디버깅용
-            console.log('클럽 멤버 여부:', isMember); // 디버깅용
+            console.log("현재 사용자 ID:", currentUserId);
+            console.log("클럽 멤버 여부:", isMember);
         } catch (error) {
             console.error("클럽 멤버 확인 실패:", error);
             setIsClubMember(false);
@@ -95,18 +100,26 @@ const ClubArticlesList = () => {
                             <div
                                 key={article.articleId}
                                 onClick={() => navigate(`/clubs/${clubId}/articles/${article.articleId}`)}
-                                className="p-4 hover:bg-gray-50 cursor-pointer"
+                                className="p-4 hover:bg-gray-50 cursor-pointer flex items-center space-x-4"
                             >
-                                <div className="flex items-center justify-between mb-2">
-                                    <h3 className="text-lg font-semibold">
-                                        {article.title}
-                                    </h3>
-                                    <span className="text-sm text-gray-500">
-                                        {new Date(article.createdAt).toLocaleDateString()}
-                                    </span>
+                                {/* 썸네일 이미지 */}
+                                <div className="flex-shrink-0">
+                                    <ProtectedImage objectName={article.thumbUrl} alt={club.clubName} />
                                 </div>
-                                <div className="flex items-center text-sm text-gray-600">
-                                    <span>작성자: {name}({article.author.authorName})</span>
+
+                                {/* 게시글 정보 */}
+                                <div className="flex-1">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <h3 className="text-lg font-semibold">
+                                            {article.title}
+                                        </h3>
+                                        <span className="text-sm text-gray-500">
+                                            {new Date(article.createdAt).toLocaleDateString()}
+                                        </span>
+                                    </div>
+                                    <div className="text-sm text-gray-600">
+                                        <span>작성자: {article.author.authorName}</span>
+                                    </div>
                                 </div>
                             </div>
                         ))}

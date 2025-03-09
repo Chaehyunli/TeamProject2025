@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {getArticleDetail, deleteArticle, getClub, downloadFile} from '../api/clubApi';
 import axios from "axios";
+import {ProtectedImage} from "../api/uploadApi";
 
 const ArticleDetail = () => {
     const { clubId, articleId } = useParams();
     const navigate = useNavigate();
     const [article, setArticle] = useState(null);
+    const [club, setClub] = useState(null);
     const [errorMessage, setErrorMessage] = useState('');
     const [userRole, setUserRole] = useState(null);
     const currentUserId = Number(localStorage.getItem('userId')); // 현재 로그인한 사용자 ID
@@ -27,7 +29,18 @@ const ArticleDetail = () => {
             }
         };
 
+        const fetchClubInfo = async () => {
+            try{
+                const clubData = await getClub(clubId);
+                console.log("club Info: ", clubData);
+                setClub(clubData);
+            } catch (error) {
+                console.log("club Info Get Failure:", error)
+            }
+        }
+
         fetchArticleDetail();
+        fetchClubInfo()
     }, [clubId, articleId]);
 
     const handleDelete = async () => {
@@ -46,8 +59,8 @@ const ArticleDetail = () => {
     // 현재 사용자가 게시글 작성자인지 확인
     const isAuthor = article?.authorId === currentUserId;
 
-    // 현재 사용자가 회장 또는 부회장인지 확인
-    const isLeadership = userRole === 'PRESIDENT' || userRole === 'VICE_PRESIDENT';
+    // 현재 사용자가 회장 또는 부회장 또는 임원인지 확인
+    const isLeadership = userRole === 'PRESIDENT' || userRole === 'VICE_PRESIDENT' || userRole === 'STAFF';
 
     if (errorMessage) {
         return (
@@ -77,26 +90,8 @@ const ArticleDetail = () => {
 
                 {/* 본문 섹션 */}
                 <div className="p-6">
-                    {/* 썸네일 이미지가 있는 경우에만 표시 */}
-                    {article.thumbUrl ? (
-                        <div className="mb-6">
-                            <img
-                                src={article.thumbUrl.startsWith('http') ? article.thumbUrl : `http://localhost:3000${article.thumbUrl}`}
-                                alt="게시글 이미지"
-                                className="max-w-full h-auto rounded-lg"
-                                onError={(e) => e.target.src = '/default-image.png'} // 이미지 로딩 실패 시 기본 이미지 표시
-                            />
-                        </div>
-                    ) : (
-                        <div className="mb-6">
-                            <img
-                                src="/default-image.png"
-                                alt="기본 이미지"
-                                className="max-w-full h-auto rounded-lg"
-                            />
-                        </div>
-                    )}
-
+                    {/* 썸네일 이미지 */}
+                    <ProtectedImage objectName={article.thumbUrl} alt={club.clubName} />
 
                     {/* 본문 내용 */}
                     <div className="prose max-w-none">

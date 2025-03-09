@@ -18,4 +18,7 @@ public interface ClubRepository extends JpaRepository<Club, Long> {
     // 현재 로그인한 사용자의 대학교에 속한 동아리 목록만 조회
     @Query("SELECT c FROM Club c WHERE c.university.universityId = :universityId")
     List<Club> findByUniversity_UniversityId(@Param("universityId") Long universityId);
+    // 동아리 썸네일 가져오기
+    @Query("SELECT c FROM Club c WHERE c.clubId = :clubId")
+    Optional<Club> findByIdWithThumbUrl(@Param("clubId") Long clubId);
 }

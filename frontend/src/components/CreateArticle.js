@@ -12,7 +12,7 @@ const CreateArticle = () => {
         title: '',
         contents: '',
         // is_notice: false,
-        thumbUrl: ''
+        thumbUrl: null
     });
 
     const handleChange = (e) => {
@@ -116,10 +116,10 @@ const CreateArticle = () => {
                         />
                     </div>
 
-                    {/* 썸네일 URL 입력 */}
+                    {/* 썸네일 업로드 */}
                     <div>
                         <FileUpload
-                            label="(선택사항)"
+                            label="이미지 (선택사항)"
                             name="thumbUrl"
                             onFileSelect={handleFileChange}
                         />

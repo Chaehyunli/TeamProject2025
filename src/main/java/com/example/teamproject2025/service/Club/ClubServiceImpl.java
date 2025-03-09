@@ -43,7 +43,6 @@ public class ClubServiceImpl implements ClubService {
     private final UserClubRepository userClubRepository;
     private final ClubArticleRepository clubArticleRepository;
 
-
     @Autowired
     private ApplicationContext applicationContext;
 
@@ -210,6 +209,7 @@ public class ClubServiceImpl implements ClubService {
                 .collect(Collectors.toList());
     }
 
+    // 동아리 게시물 작성
     @Override
     public ClubArticleResponseDto createArticle(Long clubId, Long userId, String title, String contents,
                                                 String uploadedFileName, boolean is_notice) {
@@ -217,12 +217,12 @@ public class ClubServiceImpl implements ClubService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다. userId: " + userId));
 
-        Club club = clubRepository.findById(clubId)
+        Club club = clubRepository.findByIdWithThumbUrl(clubId)
                 .orElseThrow(() -> new IllegalArgumentException("동아리를 찾을 수 없습니다."));
 
         String storageThumbUrl = (uploadedFileName != null && !uploadedFileName.isEmpty())
                 ? uploadedFileName
-                : "default-thumbnail.png"; // 기본 이미지
+                : club.getThumbUrl(); // Club thumbnail 사용 -> 기본이미지는 어차피 개설할 때 설정됨
 
         ClubArticleRequestDto requestDto = new ClubArticleRequestDto(title,
                 contents, storageThumbUrl, is_notice);
@@ -233,6 +233,7 @@ public class ClubServiceImpl implements ClubService {
         return ClubArticleResponseDto.fromEntity(newArticle);
     }
 
+    // 동아리 게시물 조회
     @Override
     public ArticleListResponseDto getArticlesList(Long clubId, int limit, int offset) {
         List<Article> articleList = clubArticleRepository.findByClub_ClubId(clubId);
@@ -247,6 +248,7 @@ public class ClubServiceImpl implements ClubService {
         return ArticleListResponseDto.fromEntity(paginatedArticles, total, limit, offset);
     }
 
+    // 동아리 게시물 수정
     @Override
     public ClubArticleResponseDto updateArticle(Long userId, Long clubId, Long articleId, ArticleModificationRequestDto requestDto) {
 
@@ -287,6 +289,7 @@ public class ClubServiceImpl implements ClubService {
         return SpecificArticleResponseDto.fromEntity(article, author);
     }
 
+    // 동아리 게시물 삭제
     @Override
     public boolean deleteArticle(Long clubId, Long articleId, Long userId) {
 
