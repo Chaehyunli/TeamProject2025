@@ -23,6 +23,8 @@ public class SpecificArticleResponseDto {
     private String contents;
     private LocalDateTime created_at;
     private LocalDateTime updated_at;
+
+    @Builder.Default
     private String thumbUrl = "default-thumbnail.png";
 
     public static SpecificArticleResponseDto fromEntity(Article article, authorDto author) {
