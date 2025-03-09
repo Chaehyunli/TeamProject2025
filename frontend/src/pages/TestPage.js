@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { fetchUserList } from "../api/userApi";
 import DirectMessageButton from "../components/DirectMessageButton";
+import UserChatList from "./UserChatList";
 
 const TestPage = () => {
     const [president, setPresident] = useState(null);
@@ -43,16 +44,18 @@ const TestPage = () => {
     }
 
     return (
-        <div className="p-10">
+        <div className="p-6 py-[120px]">
             <h1 className="text-2xl font-bold">1:1 문의하기 테스트</h1>
             {president ? (
                 <>
                     <p>테스트 계정: {president.name} </p>
-                    <DirectMessageButton presidentId={president.userId} receiverName={president.name} />
+                    <DirectMessageButton presidentId={president.userId} receiverName={president.name}/>
                 </>
             ) : (
                 <p className="text-red-500">❌ 해당 ID를 가진 사용자를 찾을 수 없습니다.</p>
             )}
+
+            <UserChatList />
         </div>
     );
 };

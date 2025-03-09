@@ -37,7 +37,7 @@ const MyChatPage = () => {
     };
 
     return (
-        <div className="p-6">
+        <div className="p-6 py-[100px]">
             <h1 className="text-center text-2xl font-bold">내 채팅 목록</h1>
             <table className="w-full mt-4 border-collapse border border-gray-300">
                 <thead>

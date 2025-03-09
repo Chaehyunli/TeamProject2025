@@ -44,8 +44,6 @@ export const login = async (formData) => {
         localStorage.setItem("email", result.data.email);
         localStorage.setItem("profileImage", result.data.profileImage);
 
-        console.log(result.data.email);
-
         return result;
     } catch (error) {
         console.error("로그인 오류: ", error);

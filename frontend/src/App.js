@@ -9,7 +9,7 @@ import RegisterPage from "./pages/RegisterPage";
 import UpdateProfilePage from "./pages/UpdateProfilePage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import FindAccountPage from "./pages/FindAccountPage";
-import UserList from "./pages/UserList";
+import UserChatList from "./pages/UserChatList";
 import MyChatPage from "./pages/MyChatPage";
 import ChatLayout from "./layouts/ChatLayout";
 import StompChatPage from "./pages/StompChatPage";
@@ -51,8 +51,8 @@ function App() {
                 <Route path="/account/reset-pw" element={<ResetPasswordPage />} />
 
                 {/*Chatting*/}
-                <Route path="/user/list" element={<UserList />} />
-                <Route path="/my/chat/page" element={<MyChatPage />} />
+                <Route path="/chat/userlist" element={<UserChatList />} />
+                <Route path="/my-chatpage" element={<MyChatPage />} />
 
                 {/* ✅ 채팅 관련 페이지는 ChatLayout을 통해 감싼다 */}
                 <Route path="/chatpage" element={<ChatLayout />}>
@@ -60,7 +60,7 @@ function App() {
                 </Route>
 
                 {/* ✅ 테스트 페이지 라우트 설정 */}
-                <Route path="/test" element={<TestPage />} />
+                <Route path="/chat/test" element={<TestPage />} />
 
                 {/* Club */}
                 <Route path="/clubs/:clubId" element={<ClubDetailPage />}> {/* ClubDetailNavbar에서 누른 것에 따라 Outlet되어 렌더링*/}

@@ -45,7 +45,7 @@ const HeaderComponent = () => {
     return (
         <div className="bg-gray-800 text-white p-4 flex justify-between">
             <div className="flex gap-4">
-                <Link to="/user/list" className="text-white hover:underline">회원목록</Link>
+                <Link to="/chat/userlist" className="text-white hover:underline">회원목록</Link>
                 <Link to="/groupchatting/list" className="text-white hover:underline">채팅방목록</Link>
             </div>
             <div className="text-center">
@@ -54,7 +54,7 @@ const HeaderComponent = () => {
             <div className="flex gap-4">
                 {isLoggedIn ? (
                     <>
-                        <Link to="/my/chat/page" className="text-white hover:underline">MyChatPage</Link>
+                        <Link to="/my-chatpage" className="text-white hover:underline">MyChatPage</Link>
                         <button onClick={handleLogout} className="text-white hover:underline">로그아웃</button>
                     </>
                 ) : (

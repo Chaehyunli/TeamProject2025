@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { fetchUserList } from "../api/userApi";
 import { createPrivateChatRoom } from "../api/chatApi";
 
-const UserList = () => {
+const UserChatList = () => {
     const [userList, setUserList] = useState([]);
     const navigate = useNavigate();
     const currentUserId = localStorage.getItem("userId");
@@ -34,8 +34,8 @@ const UserList = () => {
     };
 
     return (
-        <div className="p-6">
-            <h1 className="text-center text-2xl font-bold">회원 목록</h1>
+        <div className="py-20">
+            <h1 className="text-2xl font-bold">테스트 채팅할 회원 목록</h1>
             <table className="w-full mt-4 border-collapse border border-gray-300">
                 <thead>
                 <tr className="bg-gray-200">
@@ -52,7 +52,8 @@ const UserList = () => {
                         <td className="border p-2">{user.name}</td>
                         <td className="border p-2">{user.email}</td>
                         <td className="border p-2">
-                            <button onClick={() => startChat(user.userId, user.name)} className="bg-blue-500 text-white px-4 py-1 rounded">
+                            <button onClick={() => startChat(user.userId, user.name)}
+                                    className="bg-blue-500 text-white px-4 py-1 rounded">
                                 채팅하기
                             </button>
                         </td>
@@ -64,4 +65,4 @@ const UserList = () => {
     );
 };
 
-export default UserList;
+export default UserChatList;

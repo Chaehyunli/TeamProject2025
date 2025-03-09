@@ -21,7 +21,7 @@ const TopNavbar = () => {
     // 현재 경로(location.pathname)를 기준으로 초기 선택된 메뉴 설정
     useEffect(() => {
         if (location.pathname.includes("/club-register")) setSelectedMenu("/club-register");
-        else if (location.pathname.includes("/chatrooms")) setSelectedMenu("/chatrooms");
+        else if (location.pathname.includes("/my-chatpage")) setSelectedMenu("/my-chatpage");
         else setSelectedMenu("/home");
     }, [location.pathname]);
 
@@ -128,11 +128,11 @@ const TopNavbar = () => {
                 </button>
                 <button
                     onClick={() => {
-                        navigate("/chatrooms");
-                        setSelectedMenu("/chatrooms");
+                        navigate("/my-chatpage");
+                        setSelectedMenu("/my-chatpage");
                     }}
                     className={`text-base font-bold ${
-                        selectedMenu === "/chatrooms" ? "text-black" : "text-[#727272] hover:text-gray-700"
+                        selectedMenu === "/my-chatpage" ? "text-black" : "text-[#727272] hover:text-gray-700"
                     }`}
                 >
                     채팅
