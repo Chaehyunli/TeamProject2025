@@ -8,9 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.Optional;
 
 public interface ClubArticleRepository extends JpaRepository<Article, Long> {
-
 //    Optional<Article> findByClubIdAndArticleId(Long clubId, Long articleId);
-@Query("SELECT a FROM Article a WHERE a.club.clubId = :clubId AND a.articleId = :articleId")
-Optional<Article> findByClubIdAndArticleId(@Param("clubId") Long clubId, @Param("articleId") Long articleId);
-
+    @Query("SELECT a FROM Article a WHERE a.club.clubId = :clubId AND a.articleId = :articleId")
+    Optional<Article> findByClubIdAndArticleId(@Param("clubId") Long clubId, @Param("articleId") Long articleId);
 }

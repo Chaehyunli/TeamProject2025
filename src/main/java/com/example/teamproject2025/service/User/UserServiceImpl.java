@@ -30,10 +30,10 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UniversityRepository universityRepository;
     private final PasswordEncoder passwordEncoder;
-//    private final Storage storage;
+    private final Storage storage;
 
-//    @Value("${spring.cloud.gcp.storage.bucket}")
-//    private String bucketName;
+    @Value("${spring.cloud.gcp.storage.bucket}")
+    private String bucketName;
 
     @Override
     public UserResponseDto register(UserCreateRequestDto dto) {
@@ -70,53 +70,53 @@ public class UserServiceImpl implements UserService {
                 .build();
     }
 
-//    @Override
-//    public UserResponseDto updateUserProfile(Long userId, UserUpdateRequestDto dto) {
-//        User user = userRepository.findById(userId)
-//                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-//
-//        // 기존 이미지 삭제 로직 추가(Google Cloud)
-//        if (dto.getProfileImage() != null
-//                && !dto.getProfileImage().equals(user.getProfileImage())
-//                && !dto.getProfileImage().equals("default-profileImage.png")) {
-//            deleteImageFromGCS(user.getProfileImage()); // 기존 이미지 삭제 (기본 이미지 제외)
-//        }
-//
-//        // PATCH 방식이므로 값이 존재하는 경우에만 업데이트
-//        if (dto.getEmail() != null) user.setEmail(dto.getEmail());
-//        if (dto.getProfileImage() != null) user.setProfileImage(dto.getProfileImage());
-//        if (dto.getName() != null) user.setName(dto.getName());
-//        if (dto.getStudentId() != null) user.setStudentId(dto.getStudentId());
-//        if (dto.getDepartment() != null) user.setDepartment(dto.getDepartment());
-//
-//        user.setUpdatedAt(LocalDateTime.now());
-//
-//        return UserResponseDto.builder()
-//                .userId(user.getUserId())
-//                .username(user.getUsername())
-//                .email(user.getEmail())
-//                .name(user.getName())
-//                .studentId(user.getStudentId())
-//                .department(user.getDepartment()) // 학과 정보 반환
-//                .profileImage(user.getProfileImage())
-//                .isEmailVerified(user.getIsEmailVerified())
-//                .isUniVerified(user.getIsUniVerified())
-//                .createdAt(user.getCreatedAt())
-//                .build();
-//    }
+    @Override
+    public UserResponseDto updateUserProfile(Long userId, UserUpdateRequestDto dto) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        // 기존 이미지 삭제 로직 추가(Google Cloud)
+        if (dto.getProfileImage() != null
+                && !dto.getProfileImage().equals(user.getProfileImage())
+                && !dto.getProfileImage().equals("default-profileImage.png")) {
+            deleteImageFromGCS(user.getProfileImage()); // 기존 이미지 삭제 (기본 이미지 제외)
+        }
+
+        // PATCH 방식이므로 값이 존재하는 경우에만 업데이트
+        if (dto.getEmail() != null) user.setEmail(dto.getEmail());
+        if (dto.getProfileImage() != null) user.setProfileImage(dto.getProfileImage());
+        if (dto.getName() != null) user.setName(dto.getName());
+        if (dto.getStudentId() != null) user.setStudentId(dto.getStudentId());
+        if (dto.getDepartment() != null) user.setDepartment(dto.getDepartment());
+
+        user.setUpdatedAt(LocalDateTime.now());
+
+        return UserResponseDto.builder()
+                .userId(user.getUserId())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .name(user.getName())
+                .studentId(user.getStudentId())
+                .department(user.getDepartment()) // 학과 정보 반환
+                .profileImage(user.getProfileImage())
+                .isEmailVerified(user.getIsEmailVerified())
+                .isUniVerified(user.getIsUniVerified())
+                .createdAt(user.getCreatedAt())
+                .build();
+    }
 
     // Google Cloud Storage에서 기존 이미지 삭제
-//    private void deleteImageFromGCS(String objectName) {
-//        if (objectName == null || objectName.trim().isEmpty()) return; // null 또는 빈 값 방지
-//        if ("default-profileImage.png".equals(objectName)) return; // 기본 프로필 이미지는 삭제하지 않음
-//
-//        boolean deleted = storage.delete(bucketName, objectName); // GCS에서 객체 삭제
-//        if (deleted) {
-//            System.out.println("✅ 기존 프로필 이미지 삭제 완료: " + objectName);
-//        } else {
-//            System.err.println("❌ 기존 프로필 이미지 삭제 실패 (이미 삭제되었거나 존재하지 않음): " + objectName);
-//        }
-//    }
+    private void deleteImageFromGCS(String objectName) {
+        if (objectName == null || objectName.trim().isEmpty()) return; // null 또는 빈 값 방지
+        if ("default-profileImage.png".equals(objectName)) return; // 기본 프로필 이미지는 삭제하지 않음
+
+        boolean deleted = storage.delete(bucketName, objectName); // GCS에서 객체 삭제
+        if (deleted) {
+            System.out.println("✅ 기존 프로필 이미지 삭제 완료: " + objectName);
+        } else {
+            System.err.println("❌ 기존 프로필 이미지 삭제 실패 (이미 삭제되었거나 존재하지 않음): " + objectName);
+        }
+    }
 
 //    @Override
 //    public UserResponseDto update(Long userId, UserUpdateRequestDto dto){
@@ -136,38 +136,38 @@ public class UserServiceImpl implements UserService {
 //                .build();
 //    }
 
-//    @Override
-//    public ResponseEntity<CommonResponseDto<Void>> deleteUser(HttpSession session) {
-//        // 현재 로그인한 사용자 확인
-//        Long sessionUserId = (Long) session.getAttribute("userId");
-//        Boolean deletedMailVerified = (Boolean) session.getAttribute("deleted_mail_verified"); // Ref4
-//
-//        if (sessionUserId == null) {
-//            throw new IllegalStateException("Invalid user session or unauthorized request");
-//        }
-//
-//        if (deletedMailVerified == null || !deletedMailVerified) {
-//            throw new IllegalStateException("Email verification required before account deletion");
-//        }
-//
-//        // 유저 존재 여부 확인
-//        User user = userRepository.findById(sessionUserId)
-//                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-//
-//        // 기존 프로필 이미지 삭제 (기본 프로필 제외)
-//        if (user.getProfileImage() != null && !user.getProfileImage().equals("default-profileImage.png")) {
-//            deleteImageFromGCS(user.getProfileImage());
-//        }
-//
-//        // 유저 삭제
-//        userRepository.delete(user);
-//
-//        // 세션 무효화
-//        session.invalidate();
-//
-//        return ResponseEntity.status(HttpStatus.OK)
-//                .body(CommonResponseDto.success(HttpStatus.OK.value(), "User deleted successfully"));
-//    }
+    @Override
+    public ResponseEntity<CommonResponseDto<Void>> deleteUser(HttpSession session) {
+        // 현재 로그인한 사용자 확인
+        Long sessionUserId = (Long) session.getAttribute("userId");
+        Boolean deletedMailVerified = (Boolean) session.getAttribute("deleted_mail_verified"); // Ref4
+
+        if (sessionUserId == null) {
+            throw new IllegalStateException("Invalid user session or unauthorized request");
+        }
+
+        if (deletedMailVerified == null || !deletedMailVerified) {
+            throw new IllegalStateException("Email verification required before account deletion");
+        }
+
+        // 유저 존재 여부 확인
+        User user = userRepository.findById(sessionUserId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        // 기존 프로필 이미지 삭제 (기본 프로필 제외)
+        if (user.getProfileImage() != null && !user.getProfileImage().equals("default-profileImage.png")) {
+            deleteImageFromGCS(user.getProfileImage());
+        }
+
+        // 유저 삭제
+        userRepository.delete(user);
+
+        // 세션 무효화
+        session.invalidate();
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CommonResponseDto.success(HttpStatus.OK.value(), "User deleted successfully"));
+    }
 
     @Override
     public List<UserListResDto> findAll(){

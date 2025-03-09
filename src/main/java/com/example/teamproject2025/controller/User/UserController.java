@@ -30,11 +30,11 @@ public class UserController {
     }
 
     // 사용자 탈퇴 (이메일 인증 필수)
-//    @DeleteMapping()
-//    public ResponseEntity<CommonResponseDto<Void>> deleteUser(HttpSession session) {
-//        session.setAttribute("deleted_mail_verified",true);
-//        return userService.deleteUser(session);
-//    }
+    @DeleteMapping()
+    public ResponseEntity<CommonResponseDto<Void>> deleteUser(HttpSession session) {
+        session.setAttribute("deleted_mail_verified",true);
+        return userService.deleteUser(session);
+    }
 
     @GetMapping("/list")
     public ResponseEntity<?> userList(){
@@ -60,18 +60,18 @@ public class UserController {
         );
     }
 
-//    @PatchMapping("/profile")
-//    public ResponseEntity<UserResponseDto> updateUserProfile(
-//            HttpSession session, @RequestBody UserUpdateRequestDto dto) {
-//
-//        Long userId = (Long) session.getAttribute("userId"); // 세션에서 유저 ID 가져오기
-//        if (userId == null) {
-//            return ResponseEntity.status(401).build(); // 로그인되지 않은 경우
-//        }
-//
-//        UserResponseDto updatedUser = userService.updateUserProfile(userId, dto);
-//        return ResponseEntity.ok(updatedUser);
-//    }
+    @PatchMapping("/profile")
+    public ResponseEntity<UserResponseDto> updateUserProfile(
+            HttpSession session, @RequestBody UserUpdateRequestDto dto) {
+
+        Long userId = (Long) session.getAttribute("userId"); // 세션에서 유저 ID 가져오기
+        if (userId == null) {
+            return ResponseEntity.status(401).build(); // 로그인되지 않은 경우
+        }
+
+        UserResponseDto updatedUser = userService.updateUserProfile(userId, dto);
+        return ResponseEntity.ok(updatedUser);
+    }
 
     @GetMapping("/{userId}/profile")
     public ResponseEntity<CommonResponseDto<UserResponseDto>> getUserProfile(@PathVariable Long userId) {
