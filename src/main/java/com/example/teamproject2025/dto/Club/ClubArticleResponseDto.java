@@ -17,16 +17,18 @@ public class ClubArticleResponseDto {
     private Long articleId;
     private Long clubId;
     private Long userId;
+    private boolean is_notice;
     private String title;
     private String contents;
     private String thumbUrl;
     private LocalDateTime createdAt;
 
-    public static ClubArticleResponseDto formEntity(Article article) {
+    public static ClubArticleResponseDto fromEntity(Article article) {
         return ClubArticleResponseDto.builder()
                 .articleId(article.getArticleId())
                 .clubId(article.getClub().getClubId())
                 .userId(article.getUser().getUserId())
+                .is_notice(article.is_notice())
                 .title(article.getTitle())
                 .contents(article.getContents())
                 .thumbUrl(article.getThumbUrl())
