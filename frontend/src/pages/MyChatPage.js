@@ -15,8 +15,13 @@ const MyChatPage = () => {
     const loadMyChatRooms = async () => {
         try {
             const chatRooms = await fetchMyChatRooms();
-            setChatList(chatRooms);
-            console.log(chatRooms);
+
+            const sortedChatRooms = chatRooms.sort(
+                (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
+            );
+
+            setChatList(sortedChatRooms);
+            console.log(sortedChatRooms);
         } catch (error) {
             console.error("❌ 내 채팅방 목록 불러오기 실패", error);
         }
@@ -53,31 +58,37 @@ const MyChatPage = () => {
                 </div>
 
                 <div className="h-[600px] overflow-y-auto p-4 space-y-3">
-                    {chatList.map((chat) => (
-                        <div key={chat.roomId}
-                             className="flex items-center justify-between bg-white rounded-lg border p-3 shadow-sm">
-                            <div className="flex flex-col">
-                                <span className="text-md font-semibold">{chat.roomName}</span>
-                                <span className="text-sm text-gray-500">{formatTimeFromISO(chat.updatedAt)}</span>
-                            </div>
-                            <div className="flex items-center space-x-3">
-                                <span
-                                    className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">{chat.unReadCount}</span>
-                                <button
-                                    onClick={() => enterChatRoom(chat.roomId, chat.roomName)}
-                                    className="bg-blue-500 text-white px-4 py-1 rounded"
-                                >
-                                    입장
-                                </button>
-                                <button
-                                    onClick={() => leaveChatRoom(chat.roomId)}
-                                    className="bg-red-500 text-white px-4 py-1 rounded"
-                                >
-                                    나가기
-                                </button>
-                            </div>
+                    {chatList.length === 0 ? (
+                        <div className="grid place-items-center h-[500px]">
+                            <span className="font-bold text-gray-500 text-3xl">Empty Room</span>
                         </div>
-                    ))}
+                    ) : (
+                        chatList.map((chat) => (
+                            <div key={chat.roomId}
+                                 className="flex items-center justify-between bg-white rounded-lg border p-3 shadow-sm">
+                                <div className="flex flex-col">
+                                    <span className="text-md font-semibold">{chat.roomName}</span>
+                                    <span className="text-sm text-gray-500">{formatTimeFromISO(chat.updatedAt)}</span>
+                                </div>
+                                <div className="flex items-center space-x-3">
+                                    <span
+                                        className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">{chat.unReadCount}</span>
+                                    <button
+                                        onClick={() => enterChatRoom(chat.roomId, chat.roomName)}
+                                        className="bg-blue-500 text-white px-4 py-1 rounded"
+                                    >
+                                        입장
+                                    </button>
+                                    <button
+                                        onClick={() => handleLeaveChatRoom(chat.roomId)}
+                                        className="bg-red-500 text-white px-4 py-1 rounded"
+                                    >
+                                        나가기
+                                    </button>
+                                </div>
+                            </div>
+                        ))
+                    )}
                 </div>
             </div>
         </div>
