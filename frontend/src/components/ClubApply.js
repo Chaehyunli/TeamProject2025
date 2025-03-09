@@ -78,7 +78,17 @@ const ClubApply = () => {
                         <InputField label="전화번호" type="text" name="contact" value={formData.contact} onChange={handleChange} required />
 
                         {/* 학과 - 자동 입력, 수정 불가 */}
-                        <InputField label="학과" type="text" name="department" value={formData.department} disabled={true} />
+                        <InputField
+                            label="학과"
+                            type="text"
+                            name="department"
+                            value={formData.department ? formData.department : "학과 미입력"}
+                            disabled={true}
+                        />
+
+                        {!formData.department && (
+                            <p className="text-sm text-gray-500 mt-1">내 정보에서 학과를 입력해주세요</p>
+                        )}
 
                         {/* 지원동기 */}
                         <div>
