@@ -45,6 +45,7 @@ const MySubmissionsUpdatePage = () => {
         // 변경 사항이 없는 경우 업데이트 방지
         if (contact === originalContact && contents === originalContents) {
             alert("변경 사항이 없습니다.");
+            navigate(`/users/submissions/${applyId}`);
             return;
         }
 
