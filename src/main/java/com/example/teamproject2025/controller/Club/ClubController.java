@@ -1,9 +1,6 @@
 package com.example.teamproject2025.controller.Club;
 
-import com.example.teamproject2025.dto.Club.ClubArticleRequestDto;
-import com.example.teamproject2025.dto.Club.ClubArticleResponseDto;
-import com.example.teamproject2025.dto.Club.ClubListResponseDto;
-import com.example.teamproject2025.dto.Club.ClubResponseDto;
+import com.example.teamproject2025.dto.Club.*;
 import com.example.teamproject2025.dto.Common.CommonResponseDto;
 import com.example.teamproject2025.dto.Membership.UserClubResponseDto;
 import com.example.teamproject2025.service.Club.ClubService;
