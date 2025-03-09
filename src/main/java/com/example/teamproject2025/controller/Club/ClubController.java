@@ -1,9 +1,6 @@
 package com.example.teamproject2025.controller.Club;
 
-import com.example.teamproject2025.dto.Club.ClubArticleRequestDto;
-import com.example.teamproject2025.dto.Club.ClubArticleResponseDto;
-import com.example.teamproject2025.dto.Club.ClubListResponseDto;
-import com.example.teamproject2025.dto.Club.ClubResponseDto;
+import com.example.teamproject2025.dto.Club.*;
 import com.example.teamproject2025.dto.Common.CommonResponseDto;
 import com.example.teamproject2025.dto.Membership.UserClubResponseDto;
 import com.example.teamproject2025.service.Club.ClubService;
@@ -16,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/api/v1/clubs")
@@ -120,16 +118,18 @@ public class ClubController {
         );
     }
 
+    @GetMapping("/{clubId}/articles")
+    public ResponseEntity<CommonResponseDto<ArticleListResponseDto>> getClubArticles(
+            @PathVariable Long clubId,
+            @RequestParam(defaultValue = "10") int limit,
+            @RequestParam(defaultValue = "0") int offset
+    ){
+        ArticleListResponseDto articleList = clubService.getArticles(clubId, limit, offset);
 
-//    @GetMapping('/{clubId}/articles')
-//    public ResponseEntity<CommonResponseDto<ArticleListResponseDto>> getClubArticles(
-//            @PathVariable Long clubId,
-//            @RequestParam(defaultValue = "10") int limit,
-//            @RequestParam(defaultValue = "0") int offset
-//
-//    ){
-//
-//    }
+        return ResponseEntity.ok(
+                CommonResponseDto.success(200, "Article list retrieved successfully", articleList)
+        );
+    }
 
     @DeleteMapping("/{clubId}/articles/{articleId}")
     public CommonResponseDto<String> deleteArticle(
@@ -147,8 +147,49 @@ public class ClubController {
             return CommonResponseDto.error(403, "해당 게시물 삭제할 권한이 없습니다.");
         }
 
-        return CommonResponseDto.success(200, "지원서가 성공적으로 삭제되었습니다.", null);
+        return CommonResponseDto.success(200, "게시물이 성공적으로 삭제되었습니다.", null);
     }
 
+    @PutMapping("/{clubId}/articles/{articleId}")
+    public ResponseEntity<CommonResponseDto<ClubArticleResponseDto>> updateArticle(
+            HttpSession session,
+            @PathVariable Long clubId,
+            @PathVariable Long articleId,
+            @RequestBody ArticleModificationRequestDto requestDto
+    ){
+
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            throw new NoSuchElementException("가입되지 않은 회원입니다.");
+        }
+
+        ClubArticleResponseDto modification = clubService.updateArticle(userId, clubId, articleId, requestDto);
+
+        return ResponseEntity.ok(
+                CommonResponseDto.success(200, "게시물 수정을 성공적으로 했습니다.", modification)
+        );
+    }
+
+    @GetMapping("/{clubId}/articles/{articleId}")
+    public ResponseEntity<CommonResponseDto<SpecificArticleResponseDto>> getUserArticle(
+            HttpSession session,
+            @PathVariable Long clubId,
+            @PathVariable Long articleId
+    ){
+
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            throw new NoSuchElementException("가입되지 않은 회원입니다.");
+        }
+
+        String userName = (String) session.getAttribute("userName");
+
+        SpecificArticleResponseDto article = clubService.getUserArticle(userId, userName, clubId, articleId);
+
+        return ResponseEntity.ok(
+                CommonResponseDto.success(200, "특정 게시물을 성공적으로 조회습니다.", article)
+        );
+
+    }
 
 }
