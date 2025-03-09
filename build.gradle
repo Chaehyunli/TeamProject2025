@@ -62,7 +62,8 @@ dependencies {
 	testCompileOnly 'org.projectlombok:lombok'// Test 를 위한 Lombok
 	testAnnotationProcessor 'org.projectlombok:lombok'
 
-
+	// Session
+	implementation 'org.springframework.session:spring-session-core:3.2.0'
 }
 
 tasks.named('test') {

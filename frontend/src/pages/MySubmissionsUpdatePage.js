@@ -13,13 +13,21 @@ const MySubmissionsUpdatePage = () => {
     const [contents, setContents] = useState("");
     const [updating, setUpdating] = useState(false);
 
+    // 기존 값 저장 (비교용)
+    const [originalContact, setOriginalContact] = useState("");
+    const [originalContents, setOriginalContents] = useState("");
+
     useEffect(() => {
         const fetchSubmissionDetail = async () => {
             try {
                 const response = await getMySubmissionDetail(applyId);
                 setSubmission(response.data);
-                setContact(response.data.contact || ""); // 기존 값 불러오기
-                setContents(response.data.contents || ""); // 기존 값 불러오기
+                setContact(response.data.contact || "");
+                setContents(response.data.contents || "");
+
+                // 기존 데이터 저장
+                setOriginalContact(response.data.contact || "");
+                setOriginalContents(response.data.contents || "");
             } catch (error) {
                 console.error("내 지원서 상세 정보를 불러오지 못했습니다.", error);
             } finally {
@@ -33,12 +41,20 @@ const MySubmissionsUpdatePage = () => {
     // 🔹 PATCH 요청 함수
     const handleUpdate = async (e) => {
         e.preventDefault();
+
+        // 변경 사항이 없는 경우 업데이트 방지
+        if (contact === originalContact && contents === originalContents) {
+            alert("변경 사항이 없습니다.");
+            navigate(`/users/submissions/${applyId}`);
+            return;
+        }
+
         setUpdating(true);
 
         try {
-            await updateMySubmission(applyId, { contact, contents }); // PATCH 요청
+            await updateMySubmission(applyId, { contact, contents });
             alert("지원서가 성공적으로 수정되었습니다.");
-            navigate(`/users/submissions/${applyId}`); // 수정 후 상세 페이지로 이동
+            navigate(`/users/submissions/${applyId}`);
         } catch (error) {
             console.error("지원서 수정 중 오류 발생:", error);
             alert("지원서 수정에 실패했습니다.");
@@ -114,7 +130,7 @@ const MySubmissionsUpdatePage = () => {
                     <button
                         type="submit"
                         className="mt-4 w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-200"
-                        disabled={updating} // 요청 중이면 버튼 비활성화
+                        disabled={updating}
                     >
                         {updating ? "수정 중..." : "수정 완료"}
                     </button>
@@ -125,5 +141,6 @@ const MySubmissionsUpdatePage = () => {
 };
 
 export default MySubmissionsUpdatePage;
+
 
 
