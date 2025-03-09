@@ -8,8 +8,6 @@ const HomePage = () => {
     const [username, setUsername] = useState(localStorage.getItem("username"));
     const [clubs, setClubs] = useState([]);
     const [userClubs, setUserClubs] = useState([]);
-    //const [isLoading, setIsLoading] = useState(true);
-    // 아직 없는 API를 고려하여 userClubs 상태 제거
 
     useEffect(() => {
         if (!username) {
@@ -50,9 +48,6 @@ const HomePage = () => {
                     <h1 className="text-white text-3xl font-bold">동아리를 찾아보세요!</h1>
                 </div>
             </div>
-            {/* userClubs는 빈 배열로 설정 (API 추가 전),
-             userClubs를 통해 사용자가 가입한 동아리인지 확인하여
-             "지원하기" 버튼을 보이거나 숨기는 기능을 제공*/}
             <ClubList clubs={clubs} userClubs={userClubs} />
         </div>
     );
