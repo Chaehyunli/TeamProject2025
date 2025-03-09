@@ -2,9 +2,18 @@ import React from "react";
 import InputField from "./InputField";
 import EmailVerificationForm from "./EmailVerificationForm";
 import { useNavigate } from "react-router-dom";
+import FileUpload from "./FileUpload";
 
-const ProfileForm = ({ formData, setFormData, handleEmailChange, handleEmailVerificationSuccess, handleSave }) => {
+
+const UpdateProfileForm = ({ formData, setFormData, handleEmailChange, handleEmailVerificationSuccess, handleSave }) => {
     const navigate = useNavigate();
+
+    const handleProfileImageUpload = (file) => {
+        setFormData((prevData) => ({
+            ...prevData,
+            profileImage: file, // 업로드된 파일을 formData에 반영
+        }));
+    };
 
     return (
         <div className="w-96">
@@ -49,12 +58,10 @@ const ProfileForm = ({ formData, setFormData, handleEmailChange, handleEmailVeri
                     )}
                 </div>
 
-                <InputField
-                    label="프로필 이미지 URL"
-                    type="text"
+                <FileUpload
+                    label="프로필 사진 업로드"
                     name="profileImage"
-                    value={formData.profileImage}
-                    onChange={(e) => setFormData({...formData, profileImage: e.target.value})}
+                    onFileSelect={handleProfileImageUpload}
                 />
             </div>
 
@@ -77,4 +84,4 @@ const ProfileForm = ({ formData, setFormData, handleEmailChange, handleEmailVeri
     );
 };
 
-export default ProfileForm;
+export default UpdateProfileForm;

@@ -1,12 +1,14 @@
 package com.example.teamproject2025.entity.User;
 
 import com.example.teamproject2025.dto.User.UserUpdateRequestDto;
+import com.example.teamproject2025.entity.Membership.UserClub;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -45,14 +47,17 @@ public class User {
     private Boolean isEmailVerified ; // 이메일 인증 여부
     private Boolean isUniVerified ; // 학교 인증 여부
 
-    @Column(nullable = false, length = 255)
-    private String profileImage ;
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String profileImage;
 
     @CreationTimestamp
     private LocalDateTime createdAt; // 계정 생성 시간 for users/register
 
     @UpdateTimestamp
     private LocalDateTime updatedAt; // 계정 업데이트 시간 for users/update
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<UserClub> userClubs; // 사용자가 가입한 동아리 리스트
 
     // 기존 객체 수정 방식만 유지
     public void update(UserUpdateRequestDto dto) {

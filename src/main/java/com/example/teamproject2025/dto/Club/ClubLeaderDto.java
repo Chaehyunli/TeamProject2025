@@ -8,15 +8,15 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class ClubLeaderDto {
-    private Long user_id;
-    private String user_name;
-    private String role_name;
+    private Long userId;
+    private String userName;
+    private String roleName;
 
     public static ClubLeaderDto fromEntity(UserClub userClub) {
         return ClubLeaderDto.builder()
-                .user_id(userClub.getUser() != null ? userClub.getUser().getUserId() : null)
-                .user_name(userClub.getUser() != null ? userClub.getUser().getName() : null)
-                .role_name(userClub.getRole().getRoleName().name())
+                .userId(userClub.getUser() != null ? userClub.getUser().getUserId() : null)
+                .userName(userClub.getUser() != null ? userClub.getUser().getName() : null)
+                .roleName(userClub.getRole().getRoleName().name())
                 .build();
     }
 }

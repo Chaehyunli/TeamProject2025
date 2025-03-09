@@ -1,30 +1,39 @@
 package com.example.teamproject2025.service.User;
 
+import com.example.teamproject2025.dto.Club.ClubSummaryDto;
 import com.example.teamproject2025.dto.Common.CommonResponseDto;
+import com.example.teamproject2025.dto.User.*;
 import com.example.teamproject2025.dto.User.UserCreateRequestDto;
 import com.example.teamproject2025.dto.User.UserResponseDto;
 import com.example.teamproject2025.dto.User.UserUpdateRequestDto;
 import com.example.teamproject2025.entity.User.User;
 import com.example.teamproject2025.repository.University.UniversityRepository;
 import com.example.teamproject2025.repository.User.UserRepository;
+import com.google.cloud.storage.Storage;
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-
     private final UserRepository userRepository;
     private final UniversityRepository universityRepository;
     private final PasswordEncoder passwordEncoder;
+    private final Storage storage;
+
+    @Value("${spring.cloud.gcp.storage.bucket}")
+    private String bucketName;
 
     @Override
     public UserResponseDto register(UserCreateRequestDto dto) {
@@ -44,17 +53,6 @@ public class UserServiceImpl implements UserService {
 
         // 4. DTO → Entity 변환 및 저장
         User user = userRepository.save(dto.toEntity(universityId, encodedPassword));
-
-        // 5. Client 에게 응답할 DTO Build
-//        return UserResponseDto.builder()
-//                .username(user.getUsername())
-//                .studentId(Integer.parseInt(user.getStudentId()))
-//                .university(dto.getUniversityName())
-//                .email(user.getEmail())
-//                .profileImage(user.getProfileImage())
-//                .joinedClubs(List.of())
-//                .managedClubs(List.of())
-//                .build(); -> 나중에 업데이트 부 구현할 때 그대로 써먹으려고 남김
 
         // 5. Client 에게 응답할 DTO Build
         return UserResponseDto.builder()
@@ -77,6 +75,13 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
+        // 기존 이미지 삭제 로직 추가(Google Cloud)
+        if (dto.getProfileImage() != null
+                && !dto.getProfileImage().equals(user.getProfileImage())
+                && !dto.getProfileImage().equals("default-profileImage.png")) {
+            deleteImageFromGCS(user.getProfileImage()); // 기존 이미지 삭제 (기본 이미지 제외)
+        }
+
         // PATCH 방식이므로 값이 존재하는 경우에만 업데이트
         if (dto.getEmail() != null) user.setEmail(dto.getEmail());
         if (dto.getProfileImage() != null) user.setProfileImage(dto.getProfileImage());
@@ -98,6 +103,19 @@ public class UserServiceImpl implements UserService {
                 .isUniVerified(user.getIsUniVerified())
                 .createdAt(user.getCreatedAt())
                 .build();
+    }
+
+    // Google Cloud Storage에서 기존 이미지 삭제
+    private void deleteImageFromGCS(String objectName) {
+        if (objectName == null || objectName.trim().isEmpty()) return; // null 또는 빈 값 방지
+        if ("default-profileImage.png".equals(objectName)) return; // 기본 프로필 이미지는 삭제하지 않음
+
+        boolean deleted = storage.delete(bucketName, objectName); // GCS에서 객체 삭제
+        if (deleted) {
+            System.out.println("✅ 기존 프로필 이미지 삭제 완료: " + objectName);
+        } else {
+            System.err.println("❌ 기존 프로필 이미지 삭제 실패 (이미 삭제되었거나 존재하지 않음): " + objectName);
+        }
     }
 
 //    @Override
@@ -136,6 +154,11 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(sessionUserId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
+        // 기존 프로필 이미지 삭제 (기본 프로필 제외)
+        if (user.getProfileImage() != null && !user.getProfileImage().equals("default-profileImage.png")) {
+            deleteImageFromGCS(user.getProfileImage());
+        }
+
         // 유저 삭제
         userRepository.delete(user);
 
@@ -146,8 +169,23 @@ public class UserServiceImpl implements UserService {
                 .body(CommonResponseDto.success(HttpStatus.OK.value(), "User deleted successfully"));
     }
 
-    @Transactional
     @Override
+    public List<UserListResDto> findAll(){
+        List<User> users = userRepository.findAll();
+        List<UserListResDto> userListResDtos = new ArrayList<>();
+        for (User m : users){
+            UserListResDto userListResDto = UserListResDto.builder()
+                    .userId(m.getUserId())
+                    .email(m.getEmail())
+                    .name(m.getName())
+                    .build();
+
+            userListResDtos.add(userListResDto);
+        }
+        return userListResDtos;
+    }
+
+    @Transactional
     public UserResponseDto getUserProfile(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
@@ -157,22 +195,38 @@ public class UserServiceImpl implements UserService {
                 .map(university -> university.getUniversityName())
                 .orElse(null); // 대학이 없을 경우 null 반환
 
+        // 사용자가 가입한 동아리 목록 조회
+        List<ClubSummaryDto> joinedClubs = user.getUserClubs().stream()
+                .map(userClub -> ClubSummaryDto.fromEntity(userClub.getClub()))
+                .toList();
+
+        // 사용자가 운영하는 동아리 목록 조회 (회장 또는 부회장인 경우만)
+        List<ClubSummaryDto> managedClubs = user.getUserClubs().stream()
+                .filter(userClub -> userClub.getRole().getRoleName().name().equals("PRESIDENT") ||
+                        userClub.getRole().getRoleName().name().equals("VICE_PRESIDENT"))
+                .map(userClub -> ClubSummaryDto.fromEntity(userClub.getClub()))
+                .toList();
+
         return UserResponseDto.builder()
                 .userId(user.getUserId())
                 .username(user.getUsername())
                 .name(user.getName())
                 .email(user.getEmail())
-                .studentId(user.getStudentId()) // 학번 추가
-                .department(user.getDepartment()) // 학과 추가
-                .profileImage(user.getProfileImage()) // 프로필 이미지 추가
-                .universityId(user.getUniversityId()) // 대학 ID 가져오기
-                .universityName(universityName) // 대학 이름 가져오기 (조회한 값)
-                .isEmailVerified(user.getIsEmailVerified()) // 이메일 인증 여부
-                .isUniVerified(user.getIsUniVerified()) // 대학 인증 여부 (getter 메서드 필요)
-                .createdAt(user.getCreatedAt()) // 계정 생성 날짜 추가
+                .studentId(user.getStudentId())
+                .department(user.getDepartment())
+                .profileImage(user.getProfileImage())
+                .universityId(user.getUniversityId())
+                .universityName(universityName)
+                .isEmailVerified(user.getIsEmailVerified())
+                .isUniVerified(user.getIsUniVerified())
+                .createdAt(user.getCreatedAt())
+                .joinedClubs(joinedClubs)   // 가입한 동아리 목록 추가
+                .managedClubs(managedClubs) // 운영하는 동아리 목록 추가
                 .build();
     }
 }
+
+
 
 /* 💡Descriptions @dev_taehyun
 *

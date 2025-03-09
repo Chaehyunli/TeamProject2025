@@ -59,3 +59,69 @@ export const deleteUser = async () => {
         throw error;
     }
 };
+
+// 회원 목록 가져오기
+export const fetchUserList = async () => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/list`, {
+            withCredentials: true
+        });
+        return response.data.data;
+    } catch (error) {
+        console.error("❌ 회원 목록 불러오기 실패:", error);
+        throw error;
+    }
+};
+
+// 나의 지원서 목록 조회
+export const getMySubmissions = async () => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/submissions`, {
+            withCredentials: true,
+        });
+        return response.data;
+    } catch (error) {
+        console.error("나의 지원서 목록 조회 실패:", error);
+        throw error;
+    }
+};
+
+// 나의 지원서 상세 조회
+export const getMySubmissionDetail = async (applyId) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/submissions/${applyId}`, {
+            withCredentials: true,
+        });
+        return response.data;
+    } catch (error) {
+        console.error("나의 지원서 상세 조회 실패:", error);
+        throw error;
+    }
+};
+
+// 나의 지원서 수정
+export const updateMySubmission = async (applyId, data) => {
+    try {
+        const response = await axios.patch(`${API_BASE_URL}/submissions/${applyId}`, data, {
+            withCredentials: true,
+            headers: { "Content-Type": "application/json" }, // JSON 요청 명확히 지정
+        });
+        return response.data;
+    } catch (error) {
+        console.error("나의 지원서 수정 실패:", error);
+        throw error;
+    }
+};
+
+// 나의 지원서 삭제
+export const deleteMySubmission = async (applyId) => {
+    try {
+        const response = await axios.delete(`${API_BASE_URL}/submissions/${applyId}`, {
+            withCredentials: true,
+        });
+        return response.data;
+    } catch (error) {
+        console.error("나의 지원서 삭제 실패:", error);
+        throw error;
+    }
+};

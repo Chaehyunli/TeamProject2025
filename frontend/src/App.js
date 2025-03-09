@@ -9,11 +9,29 @@ import RegisterPage from "./pages/RegisterPage";
 import UpdateProfilePage from "./pages/UpdateProfilePage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import FindAccountPage from "./pages/FindAccountPage";
+import UserChatList from "./pages/UserChatList";
+import MyChatPage from "./pages/MyChatPage";
+import ChatLayout from "./layouts/ChatLayout";
+import StompChatPage from "./pages/StompChatPage";
+import TestPage from "./pages/TestPage";
+import HeaderComponent from "./components/HeaderComponents";
 import ClubRegisterPage from "./pages/ClubRegisterPage";
+import ClubDetailPage from "./pages/ClubDetailPage";
+import ClubArticles from "./components/ClubArticles";
+import ClubNotices from "./components/ClubNotices";
+import ClubSubmissions from "./components/ClubSubmissions";
+import ClubMembers from "./components/ClubMembers";
+import ClubApply from "./components/ClubApply";
+import ClubSubmissionDetail from "./components/ClubSubmissionDetail";
+import MySubmissionsPage from "./pages/MySubmissionsPage";
+import MySubmissionsDetailPage from "./pages/MySubmissionsDetailPage";
+import MySubmissionsUpdatePage from "./pages/MySubmissionsUpdatePage";
 
 function App() {
+
     return (
         <Router>
+            {/*<HeaderComponent />*/}
             <TopNavbar />
             <Routes>
                 <Route path="/" element={<Navigate to="/home" />} />
@@ -22,6 +40,9 @@ function App() {
                 <Route path="/chatrooms" element={<UnderConstruction />} />
                 <Route path="/profile" element={<ProfilePage />} />
                 <Route path="/updateProfile" element={<UpdateProfilePage />} />
+                <Route path="/users/submissions" element={<MySubmissionsPage />} />
+                <Route path="/users/submissions/:applyId" element={<MySubmissionsDetailPage />} />
+                <Route path="/users/submissions/:applyId/edit" element={<MySubmissionsUpdatePage />} />
 
                 {/* Auth */}
                 <Route path="/login" element={<LoginPage />} />
@@ -29,8 +50,29 @@ function App() {
                 <Route path="/account/find" element={<FindAccountPage />} />
                 <Route path="/account/reset-pw" element={<ResetPasswordPage />} />
 
+                {/*Chatting*/}
+                <Route path="/chat/userlist" element={<UserChatList />} />
+                <Route path="/my-chatpage" element={<MyChatPage />} />
+
+                {/* ✅ 채팅 관련 페이지는 ChatLayout을 통해 감싼다 */}
+                <Route path="/chatpage" element={<ChatLayout />}>
+                    <Route path=":roomId" element={<StompChatPage />} />
+                </Route>
+
+                {/* ✅ 테스트 페이지 라우트 설정 */}
+                <Route path="/chat/test" element={<TestPage />} />
+
                 {/* Club */}
-                <Route path="/clubs/:clubId" element={<UnderConstruction />} />
+                <Route path="/clubs/:clubId" element={<ClubDetailPage />}> {/* ClubDetailNavbar에서 누른 것에 따라 Outlet되어 렌더링*/}
+                    <Route index element={<Navigate to="articles" replace />} />  {/* 기본 경로는 게시물 */}
+                    <Route path="articles" element={<ClubArticles />} /> {/* 게시물 */}
+                    <Route path="notices" element={<ClubNotices />} /> {/* 공지사항 */}
+                    <Route path="submissions" element={<ClubSubmissions />} /> {/* 지원자 관리 */}
+                    <Route path="submissions/:applyId" element={<ClubSubmissionDetail />} /> {/* 지원서 상세 페이지 관리 */}
+                    <Route path="members" element={<ClubMembers />} /> {/* 권한 */}
+                    <Route path="apply" element={<ClubApply />} />  {/* 동아리 지원하기 */}
+                </Route>
+
             </Routes>
         </Router>
     );

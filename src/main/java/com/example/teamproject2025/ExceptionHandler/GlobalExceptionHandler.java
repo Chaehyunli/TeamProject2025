@@ -45,3 +45,5 @@ public class GlobalExceptionHandler {
                 .body(CommonResponseDto.error(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
     }
 }
+
+// 누락된 예외들이 있을거임. 추후 리팩터링 해야할 때 이것도 꼼꼼히 챙겨야 할 듯

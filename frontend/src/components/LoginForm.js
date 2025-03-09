@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../api/authApi";
-import { getUserProfile } from "../api/userApi";
 import InputField from "./InputField";
 
 const LoginForm = () => {
@@ -24,13 +23,7 @@ const LoginForm = () => {
             const result = await login(formData);
             setMessage(result.message);
 
-            localStorage.setItem("userId", result.data.userId);
-            localStorage.setItem("username", result.data.username);
-            localStorage.setItem("name", result.data.name);
-
-            // 사용자 정보 즉시 가져오기 (세션 반영 확인)
-            const userProfile = await getUserProfile();
-            localStorage.setItem("profileImage", userProfile.profileImage);
+            // authApi 에서 이미 localStorage 저장하는 로직있는데 굳이 여기서 또 저장할 필요 없어서 지움
 
             // 로그인 성공 후 자동으로 홈 페이지로 이동
             navigate("/home");
@@ -39,12 +32,13 @@ const LoginForm = () => {
         }
     };
 
-    useEffect(() => {
-        // 로그인 상태 확인 후 자동 이동
-        if (storedUsername) {
-            navigate("/home");
-        }
-    }, [storedUsername]);
+    // ⚠️ 이 코드 때문에 자꾸 로그인으로 안넘어가고 home 으로 계속 리디렉션되버림
+    // useEffect(() => {
+    //     // 로그인 상태 확인 후 자동 이동
+    //     if (storedUsername) {
+    //         navigate("/home");
+    //     }
+    // }, [storedUsername]);
 
     return (
         <form onSubmit={handleSubmit} className="space-y-4">

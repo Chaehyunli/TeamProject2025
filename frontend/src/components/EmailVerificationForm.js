@@ -17,6 +17,7 @@ const EmailVerificationForm = ({ onVerificationSuccess, initialEmail, onEmailCha
         }
     }, [initialEmail]); // `initialEmail`이 변경될 때마다 업데이트
 
+    // 이메일 입력값 변경 시 부모 컴포넌트에 전달
     const handleEmailChange = (e) => {
         const newEmail = e.target.value;
         setEmail(newEmail);

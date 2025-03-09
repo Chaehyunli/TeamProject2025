@@ -2,6 +2,7 @@ package com.example.teamproject2025.controller.User;
 
 import com.example.teamproject2025.dto.Common.CommonResponseDto;
 import com.example.teamproject2025.dto.User.UserCreateRequestDto;
+import com.example.teamproject2025.dto.User.UserListResDto;
 import com.example.teamproject2025.dto.User.UserResponseDto;
 import com.example.teamproject2025.dto.User.UserUpdateRequestDto;
 import com.example.teamproject2025.service.User.UserService;
@@ -10,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -31,6 +34,13 @@ public class UserController {
     public ResponseEntity<CommonResponseDto<Void>> deleteUser(HttpSession session) {
         session.setAttribute("deleted_mail_verified",true);
         return userService.deleteUser(session);
+    }
+
+    @GetMapping("/list")
+    public ResponseEntity<?> userList(){
+        List<UserListResDto> dtos = userService.findAll();
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CommonResponseDto.success(HttpStatus.OK.value(), "User List", dtos));
     }
 
     // 현재 로그인된 사용자 정보 조회 API
@@ -61,5 +71,13 @@ public class UserController {
 
         UserResponseDto updatedUser = userService.updateUserProfile(userId, dto);
         return ResponseEntity.ok(updatedUser);
+    }
+
+    @GetMapping("/{userId}/profile")
+    public ResponseEntity<CommonResponseDto<UserResponseDto>> getUserProfile(@PathVariable Long userId) {
+        UserResponseDto userProfile = userService.getUserProfile(userId);
+        return ResponseEntity.ok(
+                CommonResponseDto.success(200, "User profile retrieved successfully", userProfile)
+        );
     }
 }

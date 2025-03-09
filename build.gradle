@@ -51,6 +51,9 @@ dependencies {
 	implementation 'org.hibernate.validator:hibernate-validator:8.0.0.Final'
 	implementation 'org.glassfish.expressly:expressly:5.0.0'
 
+	// Spring Cloud GCP Storage
+	implementation 'com.google.cloud:google-cloud-storage:2.28.0'
+
 	// 테스트 관련
 	testImplementation 'org.springframework.boot:spring-boot-starter-test' // Spring Boot 테스트 관련 Starter
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher' // JUnit 플랫폼 런처
@@ -58,6 +61,8 @@ dependencies {
 	testImplementation 'org.testcontainers:junit-jupiter:1.18.0' // JUnit 5와 Testcontainers 통합
 	testCompileOnly 'org.projectlombok:lombok'// Test 를 위한 Lombok
 	testAnnotationProcessor 'org.projectlombok:lombok'
+
+
 }
 
 tasks.named('test') {
