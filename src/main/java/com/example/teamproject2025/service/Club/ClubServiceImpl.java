@@ -42,6 +42,7 @@ public class ClubServiceImpl implements ClubService {
     private final UserRoleRepository userRoleRepository;
     private final UserClubRepository userClubRepository;
     private final ClubArticleRepository clubArticleRepository;
+    private final Storage storage;
 
     @Autowired
     private ApplicationContext applicationContext;
@@ -62,6 +63,7 @@ public class ClubServiceImpl implements ClubService {
         this.userRoleRepository = userRoleRepository;
         this.userClubRepository = userClubRepository;
         this.clubArticleRepository = clubArticleRepository;
+        this.storage = storage;
     }
 
     @Override
@@ -293,14 +295,33 @@ public class ClubServiceImpl implements ClubService {
     @Override
     public boolean deleteArticle(Long clubId, Long articleId, Long userId) {
 
-        Article article = clubArticleRepository.findByClubIdAndArticleId(clubId, articleId)
+        Article article = clubArticleRepository.findByClubIdAndArticleIdAndThumbUrl(clubId, articleId)
                 .orElseThrow(() -> new NoSuchElementException("해당 클럽에 게시글이 존재하지 않습니다."));
-
 
         if(!article.getUser().getUserId().equals(userId)&& !checkUserPermission(userId, articleId)) {
             return false;
         }
+
+        // 기존 이미지 삭제 로직 추가(Google Cloud)
+        if (article.getThumbUrl() != null
+                && !article.getThumbUrl().equals("default-thumbnail.png")) {
+            deleteImageFromGCS(article.getThumbUrl()); // 기존 이미지 삭제 (기본 이미지 제외)
+        }
+
         clubArticleRepository.delete(article);
         return true;
+    }
+
+    // Google Cloud Storage에서 기존 이미지 삭제
+    private void deleteImageFromGCS(String objectName) {
+        if (objectName == null || objectName.trim().isEmpty()) return; // null 또는 빈 값 방지
+        if ("default-thumbnail.png".equals(objectName)) return; // 기본 프로필 이미지는 삭제하지 않음
+
+        boolean deleted = storage.delete(bucketName, objectName); // GCS에서 객체 삭제
+        if (deleted) {
+            System.out.println("✅ 기존 동아리 이미지 삭제 완료: " + objectName);
+        } else {
+            System.err.println("❌ 기존 동아리 이미지 삭제 실패 (이미 삭제되었거나 존재하지 않음): " + objectName);
+        }
     }
 }
