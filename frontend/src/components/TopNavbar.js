@@ -68,11 +68,12 @@ const TopNavbar = () => {
         };
     }, [location.pathname]);
 
-    useEffect(() => {
-        if (!isLoggedIn && location.pathname === "/profile") {
-            navigate("/login");
-        }
-    }, [isLoggedIn, location.pathname, navigate]);
+    // 프로필 페이지에서 새로고침시에 TopNavbar도 다시 렌더링 isLoggedIn이 초기값 false로 초기화됨(새션은 유지되어 로그인 상태임에도 불구) -> 강제 /login으로 이동
+    // useEffect(() => {
+    //     if (!isLoggedIn && location.pathname === "/profile") {
+    //         navigate("/login");
+    //     }
+    // }, [isLoggedIn, location.pathname, navigate]);
 
     const handleLogout = async () => {
         try {

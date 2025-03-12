@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { logout } from "../api/authApi";
 import { deleteUser, getUserProfile } from "../api/userApi";
 import {useNavigate} from "react-router-dom";
@@ -7,6 +7,9 @@ import { ProtectedImage } from "../api/uploadApi";
 const ProfilePage = () => {
     const navigate = useNavigate();
     const [user, setUser] = useState(null); // 초기값을 null로 설정
+
+    const hasFetched = useRef(false);
+
 
     useEffect(() => {
         // 현재 로그인된 사용자 정보 가져오기
@@ -20,7 +23,10 @@ const ProfilePage = () => {
             }
         };
 
-        fetchUserInfo(); // 컴포넌트가 마운트되면 실행
+        if (!hasFetched.current) {
+            hasFetched.current = true;
+            fetchUserInfo();
+        } // useEffect 중복 실행 방지
     }, []);
 
     if (!user) {
