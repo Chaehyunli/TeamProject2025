@@ -27,8 +27,13 @@ const TopNavbar = () => {
 
     // 로그인된 사용자 정보 가져오기
     const fetchProfile = async () => {
-        if (!localStorage.getItem("name")) {
+        if (!localStorage.getItem("username")) {
             setIsLoggedIn(false);
+            navigate("/login");
+
+            localStorage.removeItem("name");
+            localStorage.removeItem("profileImage");
+
             return;
         }
 
@@ -36,11 +41,11 @@ const TopNavbar = () => {
             const response = await getUserProfile();
             if (response.data) {
                 setIsLoggedIn(true);
-                setUsername(response.data.name || "사용자");
-                setUserImage(response.data.profileImage || "https://via.placeholder.com/50");
+                setUsername(response.data.name);
+                setUserImage(response.data.profileImage);
 
                 localStorage.setItem("name", response.data.name);
-                localStorage.setItem("profileImage", response.data.profileImage || "https://via.placeholder.com/50");
+                localStorage.setItem("profileImage", response.data.profileImage);
             }
         } catch (error) {
             console.error(`사용자 정보를 불러오지 못했습니다: ${error}`);
@@ -51,10 +56,10 @@ const TopNavbar = () => {
     };
 
     useEffect(() => {
-        if (location.pathname === "/login") {
-            setIsLoggedIn(false);
-            return;
-        }
+        // if (location.pathname === "/login") {
+        //     setIsLoggedIn(false);
+        //     return;
+        // }
 
         fetchProfile();
 
@@ -68,11 +73,11 @@ const TopNavbar = () => {
         };
     }, [location.pathname]);
 
-    useEffect(() => {
-        if (!isLoggedIn && location.pathname === "/profile") {
-            navigate("/login");
-        }
-    }, [isLoggedIn, location.pathname, navigate]);
+    // useEffect(() => {
+    //     if (!isLoggedIn && location.pathname === "/profile") {
+    //         navigate("/login");
+    //     }
+    // }, [isLoggedIn, location.pathname, navigate]);
 
     const handleLogout = async () => {
         try {
