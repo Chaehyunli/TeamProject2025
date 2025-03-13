@@ -3,7 +3,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { getArticleDetail, updateArticle } from '../api/clubApi';
 import { uploadImageToGCP } from '../api/uploadApi';
 import FileUpload from "./FileUpload";
-import axios from "axios";
 
 const UpdateArticle = () => {
     const navigate = useNavigate();
@@ -75,24 +74,6 @@ const UpdateArticle = () => {
             setErrorMessage('게시글 수정에 실패했습니다. 다시 시도해주세요.');
         }
     };
-
-    // const handleFileChange = (file) => {
-    //     if (file) {
-    //         if (!["image/png", "image/jpeg"].includes(file.type)) {
-    //             setErrorMessage("PNG 또는 JPEG 파일만 업로드할 수 있습니다.");
-    //             return;
-    //         }
-    //         if (file.size > 10 * 1024 * 1024) {
-    //             setErrorMessage("파일 크기는 최대 10MB까지 업로드 가능합니다.");
-    //             return;
-    //         }
-    //         setErrorMessage("");
-    //         setFormData(prev => ({
-    //             ...prev,
-    //             thumbUrl: file
-    //         }));
-    //     }
-    // };
 
     const handleFileChange = (fileOrEmptyString) => {
         if (fileOrEmptyString === '') {

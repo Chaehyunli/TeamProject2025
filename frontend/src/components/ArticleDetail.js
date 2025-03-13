@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import {getArticleDetail, deleteArticle, getClub, downloadFile, getUserRoleInClub, getClubList} from '../api/clubApi';
+import {
+    getArticleDetail,
+    deleteArticle,
+    getUserClubRole
+} from '../api/clubApi';
 import axios from "axios";
 
 const ArticleDetail = () => {
@@ -29,7 +33,7 @@ const ArticleDetail = () => {
 
         const checkUserRole = async () => {
             try {
-                const role = await getUserRoleInClub(clubId);
+                const role = await getUserClubRole(clubId);
                 setUserRole(String(role));
                 console.log('현재 사용자 역할: ', role);
 

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import {getClubArticles, getClubList, getClubMembers, getUserRoleInClub} from "../api/clubApi";
-import {getUserProfile} from "../api/userApi";
+import {getClubArticles, getUserRoleInClub} from "../api/clubApi";
 
 const ClubArticlesList = () => {
     const { clubId } = useParams();
