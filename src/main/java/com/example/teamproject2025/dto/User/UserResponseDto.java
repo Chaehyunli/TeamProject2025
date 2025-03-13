@@ -1,6 +1,7 @@
 package com.example.teamproject2025.dto.User;
 
 import com.example.teamproject2025.dto.Club.ClubSummaryDto;
+import com.example.teamproject2025.entity.User.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,6 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserResponseDto {
+
     private Long userId;
     private String username;
     private String email;
@@ -29,4 +31,20 @@ public class UserResponseDto {
 
     private List<ClubSummaryDto> joinedClubs;
     private List<ClubSummaryDto> managedClubs;
+
+    public static UserResponseDto toDTO(User user, UserCreateRequestDto dto) {
+        return UserResponseDto.builder()
+                .userId(user.getUserId())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .name(user.getName())
+                .studentId(user.getStudentId())
+                .universityId(user.getUniversityId())
+                .universityName(dto.getUniversityName())
+                .isEmailVerified(user.getIsEmailVerified())
+                .isUniVerified(user.getIsUniVerified())
+                .profileImage(user.getProfileImage())
+                .createdAt(user.getCreatedAt())
+                .build();
+    }
 }

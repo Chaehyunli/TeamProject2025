@@ -55,19 +55,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.save(dto.toEntity(universityId, encodedPassword));
 
         // 5. Client 에게 응답할 DTO Build
-        return UserResponseDto.builder()
-                .userId(user.getUserId())
-                .username(user.getUsername())
-                .email(user.getEmail())
-                .name(user.getName())
-                .studentId(user.getStudentId())
-                .universityId(user.getUniversityId())
-                .universityName(dto.getUniversityName())
-                .isEmailVerified(user.getIsEmailVerified())
-                .isUniVerified(user.getIsUniVerified())
-                .profileImage(user.getProfileImage())
-                .createdAt(user.getCreatedAt())
-                .build();
+        return UserResponseDto.toDTO(user, dto);
     }
 
     @Override

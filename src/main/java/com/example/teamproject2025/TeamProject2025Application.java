@@ -1,18 +1,13 @@
 package com.example.teamproject2025;
 
-import lombok.Value;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.stereotype.Component;
 
 @SpringBootApplication
 public class TeamProject2025Application {
-
 	public static void main(String[] args) {
 		SpringApplication.run(TeamProject2025Application.class, args);
 	}
-
 }
 
 /* 💡 Descriptions -> MainApplication.java 제거 : @dev_taehyun
