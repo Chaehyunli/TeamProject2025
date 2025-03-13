@@ -24,4 +24,5 @@ public interface ClubArticleRepository extends JpaRepository<Article, Long> {
 
     @EntityGraph(attributePaths = "user")
     Optional<Article> findByArticleId(Long articleId);
+
 }

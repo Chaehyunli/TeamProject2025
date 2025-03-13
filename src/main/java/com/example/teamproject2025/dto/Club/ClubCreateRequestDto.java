@@ -18,7 +18,6 @@ public class ClubCreateRequestDto {
     private String category;
     private String description;
     private Long universityId;
-    @Builder.Default
     private String thumbUrl;
     private Long presidentId;
 

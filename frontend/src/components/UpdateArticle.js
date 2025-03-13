@@ -41,7 +41,6 @@ const UpdateArticle = () => {
             [name]: value
         }));
     };
-
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -59,16 +58,13 @@ const UpdateArticle = () => {
                 } else {
                     throw new Error('이미지 업로드 실패');
                 }
-            } else if (imageUrl === '') {
-                // 사용자가 이미지를 삭제한 경우
-                imageUrl = null;
             }
 
             // 게시글 수정 요청
             const updateData = {
                 title: formData.title,
                 contents: formData.contents,
-                thumbUrl: imageUrl,
+                thumbUrl: imageUrl || null, // 이미지가 없으면 null로 설정
             };
 
             await updateArticle(clubId, articleId, updateData);
@@ -109,15 +105,20 @@ const UpdateArticle = () => {
         }
 
         if (fileOrEmptyString instanceof File) {
+            // 파일 유형 검사
             if (!["image/png", "image/jpeg"].includes(fileOrEmptyString.type)) {
                 setErrorMessage("PNG 또는 JPEG 파일만 업로드할 수 있습니다.");
                 return;
             }
+
+            // 파일 크기 검사
             if (fileOrEmptyString.size > 10 * 1024 * 1024) {
                 setErrorMessage("파일 크기는 최대 10MB까지 업로드 가능합니다.");
                 return;
             }
-            setErrorMessage("");
+
+            // 에러 메시지 초기화 및 폼 데이터 업데이트
+            setErrorMessage('');
             setFormData(prev => ({
                 ...prev,
                 thumbUrl: fileOrEmptyString

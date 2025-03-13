@@ -23,10 +23,10 @@ public class SpecificArticleResponseDto {
     private LocalDateTime updated_at;
     private String thumbUrl;
 
-    public static SpecificArticleResponseDto fromEntity(Article article, AuthorDto author) {
+    public static SpecificArticleResponseDto fromEntity(Article article) {
         return SpecificArticleResponseDto.builder()
                 .article_id(article.getArticleId())
-                .author(author)
+                .author(new AuthorDto(article.getUser().getUserId(), article.getUser().getUsername()))
                 .is_notice(article.is_notice())
                 .title(article.getTitle())
                 .contents(article.getContents())

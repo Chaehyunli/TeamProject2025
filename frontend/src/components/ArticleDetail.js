@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import {getArticleDetail, deleteArticle, getClub, downloadFile} from '../api/clubApi';
+import {getArticleDetail, deleteArticle, getClub, downloadFile, getUserRoleInClub, getClubList} from '../api/clubApi';
 import axios from "axios";
 
 const ArticleDetail = () => {
@@ -8,8 +8,11 @@ const ArticleDetail = () => {
     const navigate = useNavigate();
     const [article, setArticle] = useState(null);
     const [errorMessage, setErrorMessage] = useState('');
-    const [userRole, setUserRole] = useState(null);
-    const currentUserId = Number(localStorage.getItem('userId')); // 현재 로그인한 사용자 ID
+    const [userRole, setUserRole] = useState('');
+    const [isLeadership, setIsLeadership] = useState(false);
+    const [articleUserId, setArticleUserId] = useState();
+    const currentUserId = localStorage.getItem('userId'); // 현재 로그인한 사용자 ID
+
 
     useEffect(() => {
         const fetchArticleDetail = async () => {
@@ -18,17 +21,30 @@ const ArticleDetail = () => {
                 console.log('서버 응답:', response); // 서버 응답 확인용 로그
                 setArticle(response);
 
-                // 클럽 멤버 정보에서 현재 사용자의 역할 가져오기
-                const currentUserRole = localStorage.getItem('userRole');
-                setUserRole(currentUserRole);
             } catch (error) {
                 console.error('게시글 상세 정보 조회 실패:', error);
                 setErrorMessage('게시글을 불러오는데 실패했습니다.');
             }
         };
 
+        const checkUserRole = async () => {
+            try {
+                const role = await getUserRoleInClub(clubId);
+                setUserRole(String(role));
+                console.log('현재 사용자 역할: ', role);
+
+                setIsLeadership(role === 'PRESIDENT' || role === 'VICE_PRESIDENT');
+                console.log('isLeadership: ', isLeadership);
+            } catch (error){
+                console.error('역할 확인 실패');
+            }
+        }
+
         fetchArticleDetail();
+        checkUserRole();
     }, [clubId, articleId]);
+
+
 
     const handleDelete = async () => {
         if (window.confirm('정말로 이 게시글을 삭제하시겠습니까?')) {
@@ -42,12 +58,6 @@ const ArticleDetail = () => {
             }
         }
     };
-
-    // 현재 사용자가 게시글 작성자인지 확인
-    const isAuthor = article?.authorId === currentUserId;
-
-    // 현재 사용자가 회장 또는 부회장인지 확인
-    const isLeadership = userRole === 'PRESIDENT' || userRole === 'VICE_PRESIDENT';
 
     if (errorMessage) {
         return (
@@ -117,8 +127,9 @@ const ArticleDetail = () => {
                         </button>
                         <div className="flex space-x-4">
                             {/* 작성자인 경우 수정/삭제 버튼 표시 */}
-                            {!isAuthor && (
-                                <>
+                            {String(article.author.authorId) === currentUserId
+                                ? (
+                                <div className="justify-center">
                                     <button
                                         onClick={() => navigate(`/clubs/${clubId}/articles/${articleId}/edit`)}
                                         className="px-4 py-2 text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 rounded-md"
@@ -131,18 +142,16 @@ const ArticleDetail = () => {
                                     >
                                         삭제
                                     </button>
-                                </>
-                            )}
-
-                            {/* 회장/부회장이면서 작성자가 아닌 경우 삭제 버튼만 표시 */}
-                            {isLeadership && !isAuthor && (
+                                </div>
+                            ) : isLeadership ? (
                                 <button
                                     onClick={handleDelete}
                                     className="px-4 py-2 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-md"
                                 >
                                     삭제
                                 </button>
-                            )}
+                            ) : null}
+
                         </div>
                     </div>
                 </div>

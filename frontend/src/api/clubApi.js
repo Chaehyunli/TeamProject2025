@@ -9,6 +9,7 @@ export const getClubList = async() => {
             withCredentials: true // 세션 인증 유지 위해 추가
         });
 
+        console.log('clubs: ', response);
         return response.data.data.clubs;
     } catch (error) {
         console.error("동아리 목록 불러오기 실패: ", error);
@@ -176,7 +177,7 @@ export const createArticle = async (clubId, articleData) => {
             articleData,
             { withCredentials: true }
         );
-        return response.data;
+        return response.data.data;
     } catch (error) {
         console.error("동아리 게시물 작성 실패:", error);
         throw error;
@@ -207,7 +208,7 @@ export const getArticleDetail = async (clubId, articleId) => {
             `${API_BASE_URL}/${clubId}/articles/${articleId}`,
             { withCredentials: true }
         );
-        console.log(response.data.data.author.authorId);
+        console.log('clubApi authorId', response.data.data);
         return response.data.data;
     } catch (error) {
         console.error('게시글 상세 조회 실패:', error);
@@ -240,6 +241,20 @@ export const updateArticle = async (clubId, articleId, articleData) => {
         return response.data;
     } catch (error) {
         console.error('게시글 수정 실패:', error);
+        throw error;
+    }
+};
+
+export const getUserRoleInClub = async (clubId) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/${clubId}/role`, {
+           withCredentials: true
+        });
+
+        console.log('사용자 역할 확인 응답: ', response.data);
+        return response.data.data.role;
+    } catch (error) {
+        console.error('동아리 멤버 조회 실패: ', error);
         throw error;
     }
 };

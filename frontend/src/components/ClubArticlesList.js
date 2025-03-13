@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import {getClubArticles, getClubMembers} from "../api/clubApi";
+import {getClubArticles, getClubList, getClubMembers, getUserRoleInClub} from "../api/clubApi";
 import {getUserProfile} from "../api/userApi";
 
 const ClubArticlesList = () => {
@@ -13,52 +13,35 @@ const ClubArticlesList = () => {
     const [totalPages, setTotalPages] = useState(0);
     const [isClubMember, setIsClubMember] = useState(false);
     const limit = 10; // 한 페이지당 게시글 수
-    const currentUserId = Number(localStorage.getItem('userId'));
 
     useEffect(() => {
         fetchArticles();
-        checkClubMembership();
     }, [clubId, currentPage]);
 
     const fetchArticles = async () => {
         try {
             const offset = currentPage * limit;
             const response = await getClubArticles(clubId, limit, offset);
-            const user = await getUserProfile();
+            const role = await getUserRoleInClub(clubId);
+
+            console.log('사용자 role', role);
+            if (role === "NO_ROLE"){
+                setIsClubMember(false);
+            }else{
+                setIsClubMember(true);
+            }
+            console.log('role boolean', isClubMember);
 
             // 응답 구조 확인
             console.log('게시글 목록 응답:', response);
-            console.log('첫 번째 게시글 데이터:', response.articles?.[0]);
-
-            setName(user.data.name);
             setArticles(response.articles);
+
             setTotalPages(Math.ceil(response.pagination.total / limit));
             setError(null);
+
         } catch (error) {
             console.error("게시글 목록 조회 실패:", error);
             setError("게시글을 불러오는데 실패했습니다.");
-        }
-    };
-
-    const checkClubMembership = async () => {
-        try {
-            const response = await getClubMembers(clubId);
-            console.log('클럽 멤버 목록:', response); // 디버깅용
-
-            // 현재 사용자가 멤버 목록에 있는지 확인
-            const isMember = response.some(member => member.userId === currentUserId);
-            if(isMember){
-                setIsClubMember(true);
-            }else {
-                setIsClubMember(false);
-            }
-            // setIsClubMember(isMember);
-
-            console.log('현재 사용자 ID:', currentUserId); // 디버깅용
-            console.log('클럽 멤버 여부:', isMember); // 디버깅용
-        } catch (error) {
-            console.error("클럽 멤버 확인 실패:", error);
-            setIsClubMember(false);
         }
     };
 
@@ -72,7 +55,7 @@ const ClubArticlesList = () => {
 
     return (
         <div className="container mx-auto px-4 py-8">
-            {!isClubMember && (
+            {isClubMember && (
                 <div className="flex justify-end mb-4">
                     <button
                         onClick={() => navigate(`/clubs/${clubId}/articles/create`)}

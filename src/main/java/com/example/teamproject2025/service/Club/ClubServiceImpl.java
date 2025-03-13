@@ -267,7 +267,7 @@ public class ClubServiceImpl implements ClubService {
     }
 
     @Override
-    public SpecificArticleResponseDto getUserArticle(Long userId, Long clubId, Long articleId) {
+    public SpecificArticleResponseDto getArticleDetail(Long clubId, Long articleId) {
 //        authorDto author = new authorDto(userId, username);
 
         boolean check = clubArticleRepository.existsByClub_ClubId(clubId);
@@ -275,16 +275,10 @@ public class ClubServiceImpl implements ClubService {
             throw new NoSuchElementException("존재 하지 않는 동아리입니다.");
         }
 
-        User user = userRepository.findByUserId(userId)
-                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
-
-        AuthorDto author = new AuthorDto(user.getUserId(), user.getUsername());
-
         Article article = clubArticleRepository.findByArticleId(articleId)
                 .orElseThrow(() -> new NoSuchElementException("해당 ID의 게시물이 존재하지 않습니다."));
 
-
-        return SpecificArticleResponseDto.fromEntity(article, author);
+        return SpecificArticleResponseDto.fromEntity(article);
     }
 
     @Override

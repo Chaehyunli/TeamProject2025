@@ -11,7 +11,7 @@ const CreateArticle = () => {
     const [formData, setFormData] = useState({
         title: '',
         contents: '',
-        // is_notice: false,
+        is_notice: false,
         thumbUrl: ''
     });
 
@@ -28,19 +28,19 @@ const CreateArticle = () => {
         try {
             let imageUrl = null;
 
-            // formData.thumbUrl이 파일 객체인지 확인 후 업로드
-            if (formData.thumbUrl instanceof File) {
-                const objectName = await uploadImageToGCP(formData.thumbUrl);
-                imageUrl = objectName;  // 업로드된 파일의 GCP 경로 (presigned URL이 필요할 수도 있음)
+            if(formData.thumbUrl){
+                imageUrl = await uploadImageToGCP(formData.thumbUrl);
             }
 
             const articleData = {
                 title: formData.title,
                 contents: formData.contents,
-                thumbUrl: imageUrl  // GCP에 저장된 이미지 URL 사용
+                is_notice: false,
+                thumbUrl: imageUrl
             };
 
             await createArticle(clubId, articleData);
+
             navigate(`/clubs/${clubId}/articles`);
         } catch (error) {
             console.error("게시글 작성 실패:", error);
