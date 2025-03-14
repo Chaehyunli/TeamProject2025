@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
-import {useNavigate, useParams} from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { getClubSubmissions, approveSubmission, rejectSubmission, getUserClubRole } from "../api/clubApi";
+import { ProtectedImage } from "../api/uploadApi";
+import {getParticularUserProfile} from "../api/userApi";
 
 const ClubSubmissions = () => {
     const { clubId } = useParams(); // URL에서 동아리 ID 가져오기
@@ -19,7 +21,30 @@ const ClubSubmissions = () => {
                 if (role === "PRESIDENT" || role === "VICE_PRESIDENT") {
                     // 지원자 목록 가져오기
                     const response = await getClubSubmissions(clubId);
-                    setSubmissions(response.data || []);
+                    const submissionsData = response.data || [];
+
+                    // 지원자의 프로필 정보를 가져와서 profileImage ㄱ밧 설정
+                    const submissionsWithProfile = await Promise.all(
+                        submissionsData.map(async (applicant) => {
+                            try {
+                                const userProfile = await getParticularUserProfile(applicant.userId);
+                                return {
+                                    ...applicant,
+                                    username: userProfile.data.username,
+                                    name: userProfile.data.name,
+                                    profileImage: userProfile.data.profileImage
+                                };
+                            } catch (error) {
+                                console.error(`사용자 ${applicant.userId} 프로필 불러오기 실패:`, error);
+                                return {
+                                    ...applicant,
+                                    name: `사용자 ${applicant.userId}`,
+                                };
+                            }
+                        })
+                    );
+
+                    setSubmissions(submissionsWithProfile);
                 }
             } catch (error) {
                 console.error("데이터 불러오기 실패:", error);
@@ -75,16 +100,16 @@ const ClubSubmissions = () => {
                         <div key={applicant.applyId} className="flex items-center justify-between py-4">
                             {/* 프로필 사진과 이름 */}
                             <div className="flex items-center gap-4">
-                                <img
-                                    src={applicant.profileImage || "/default-profile.png"}
-                                    alt="프로필"
-                                    className="w-12 h-12 rounded-full border"
-                                />
+                                <div className="w-12 h-12 rounded-full overflow-hidden border">
+                                    <ProtectedImage objectName={applicant.profileImage} alt="User"
+                                                    className="w-full h-full object-cover"/>
+                                </div>
+
+
+
+
                                 <span className="text-lg font-medium">
-                                    사용자 ID : {applicant.userId} {/* 사용자 ID 표시, 이후에 userid로 특정 사용자의 프로필 조회 api 추가시 이름으로 대체 */}
-                                </span>
-                                <span className="text-lg font-medium">
-                                    지원서 ID : {applicant.applyId} {/* 지원서 ID 표시 */}
+                                    {applicant.name}(ID: {applicant.username}) {/* 사용자 ID 표시, 이후에 userid로 특정 사용자의 프로필 조회 api 추가시 이름으로 대체 */}
                                 </span>
                             </div>
 
