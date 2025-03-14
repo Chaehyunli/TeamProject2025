@@ -40,9 +40,9 @@ const ClubDetailPage = () => {
             {/* 동아리 기본 정보 (배경 이미지 포함) */}
             <div className="relative bg-white shadow-md rounded-lg my-6 overflow-hidden">
                 {/* ProtectedImage를 사용하여 Presigned URL로 로드 */}
-                {club.imageUrl && (
+                {club.thumbUrl && (
                     <div className="relative w-full h-60">
-                        <ProtectedImage objectName={club.imageUrl} alt="Club Thumbnail"
+                        <ProtectedImage objectName={club.thumbUrl} alt="Club Thumbnail"
                                         className="w-full h-full object-cover opacity-90" />
 
                         {/* 오버레이 및 텍스트 */}
@@ -52,16 +52,16 @@ const ClubDetailPage = () => {
                             {/* 회장 및 부회장 정보 */}
                             <div className="flex gap-2 mt-1">
                                 <p className="text-lg text-gray-200">
-                                    <strong>회장:</strong> {president ? president.userName : "미정"}
+                                    <strong>회장:</strong> {president ? president.name : "미정"}
                                 </p>
                                 {vicePresident && (
                                     <p className="text-lg text-gray-300">
-                                        <strong>부회장:</strong> {vicePresident.userName}
+                                        <strong>부회장:</strong> {vicePresident.name}
                                     </p>
                                 )}
                             </div>
 
-                            <DirectMessageButton presidentId={president.userId} receiverName={president.userName} />
+                            <DirectMessageButton presidentId={president.userId} receiverName={president.name} />
 
                             <p className="text-lg mt-2 backdrop-blur-md">{club.description}</p>
                         </div>

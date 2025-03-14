@@ -20,7 +20,7 @@ public class ClubResponseDto {
     private String description;
     private List<ClubLeaderDto> leaders;
     private int membersCount;
-    private String imageUrl;
+    private String thumbUrl;
     private LocalDateTime createdAt;
 
     public static ClubResponseDto fromEntity(Club club, List<ClubLeaderDto> leaders, int membersCount) {
@@ -31,7 +31,7 @@ public class ClubResponseDto {
                 .description(club.getDescription())
                 .leaders(leaders)
                 .membersCount(membersCount)
-                .imageUrl(club.getThumbUrl())
+                .thumbUrl(club.getThumbUrl())
                 .createdAt(club.getCreatedAt())
                 .build();
     }
