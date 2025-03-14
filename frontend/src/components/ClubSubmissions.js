@@ -56,28 +56,30 @@ const ClubSubmissions = () => {
         fetchData();
     }, [clubId]);
 
-    const handleApprove = async (userId, applyId) => {
-        const isConfirmed = window.confirm(`${userId} 님을 합격시키겠습니까?`);
+    const handleApprove = async (applicant) => {
+        const { name, username, applyId } = applicant;
+        const isConfirmed = window.confirm(`${name}(ID: ${username}) 님을 합격시키겠습니까?`);
         if (!isConfirmed) return;
 
         try {
             await approveSubmission(clubId, applyId);
-            alert("승인 완료되었습니다.");
-            navigate(`/clubs/${clubId}/articles`)
+            alert(`${name}(ID: ${username}) 님의 승인 완료되었습니다.`);
+            navigate(`/clubs/${clubId}/articles`);
         } catch (error) {
             alert("승인 처리 중 오류가 발생했습니다.");
             console.error("승인 오류:", error);
         }
     };
 
-    const handleReject = async (userId, applyId) => {
-        const isConfirmed = window.confirm(`${userId} 님을 불합격시키겠습니까?`);
+    const handleReject = async (applicant) => {
+        const { name, username, applyId } = applicant;
+        const isConfirmed = window.confirm(`${name}(ID: ${username}) 님을 불합격시키겠습니까?`);
         if (!isConfirmed) return;
 
         try {
             await rejectSubmission(clubId, applyId);
-            alert("거절 완료되었습니다.");
-            navigate(`/clubs/${clubId}/articles`)
+            alert(`${name}(ID: ${username}) 님의 거절이 완료되었습니다.`);
+            navigate(`/clubs/${clubId}/articles`);
         } catch (error) {
             alert("거절 처리 중 오류가 발생했습니다.");
             console.error("거절 오류:", error);
@@ -93,7 +95,6 @@ const ClubSubmissions = () => {
     return (
         <div className="w-full max-w-5xl mx-auto mt-10 p-6 bg-white shadow-md rounded-lg">
             <h2 className="text-xl font-semibold mb-4">지원자 관리</h2>
-            <p className="text-sm text-gray-500">동아리 ID: {clubId}</p>
             <div className="divide-y divide-gray-300">
                 {submissions.length > 0 ? (
                     submissions.map((applicant) => (
@@ -104,12 +105,8 @@ const ClubSubmissions = () => {
                                     <ProtectedImage objectName={applicant.profileImage} alt="User"
                                                     className="w-full h-full object-cover"/>
                                 </div>
-
-
-
-
                                 <span className="text-lg font-medium">
-                                    {applicant.name}(ID: {applicant.username}) {/* 사용자 ID 표시, 이후에 userid로 특정 사용자의 프로필 조회 api 추가시 이름으로 대체 */}
+                                    {applicant.name}(ID: {applicant.username})
                                 </span>
                             </div>
 
@@ -124,14 +121,14 @@ const ClubSubmissions = () => {
 
                                 <button
                                     className="px-3 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-                                    onClick={() => handleApprove(applicant.userId, applicant.applyId)}
+                                    onClick={() => handleApprove(applicant)}
                                 >
                                     합격
                                 </button>
                                 {/* 이후에 userid 이름 가져오는 api 추가 후에 이름으로 변경 */}
                                 <button
                                     className="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600"
-                                    onClick={() => handleReject(applicant.userId, applicant.applyId)}
+                                    onClick={() => handleReject(applicant)}
                                 >
                                     불합격
                                 </button>
