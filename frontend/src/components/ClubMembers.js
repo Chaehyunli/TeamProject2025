@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getClubMembers } from "../api/clubApi";
+import { ProtectedImage } from "../api/uploadApi";
+import { getParticularUserProfile } from "../api/userApi";
 
 const ClubMembers = () => {
     const { clubId } = useParams();
@@ -11,7 +13,26 @@ const ClubMembers = () => {
         const fetchMembers = async () => {
             try {
                 const response = await getClubMembers(clubId);
-                setMembers(response.data || []);
+                const membersData = response.data || [];
+
+                // 각 멤버의 프로필 정보 가져오기
+                const membersWithProfile = await Promise.all(
+                    membersData.map(async (member) => {
+                        try {
+                            const userProfile = await getParticularUserProfile(member.userId);
+                            return {
+                                ...member,
+                                profileImage: userProfile.data.profileImage,
+                                username: userProfile.data.username // API에서 name 필드 사용
+                            };
+                        } catch (error) {
+                            console.error(`사용자 ${member.userId} 프로필 불러오기 실패:`, error);
+                            return { ...member, profileImage: "/default-profile.png", username: "알 수 없음" };
+                        }
+                    })
+                );
+
+                setMembers(membersWithProfile);
             } catch (error) {
                 console.error("멤버 목록을 불러오지 못했습니다.", error);
             } finally {
@@ -32,12 +53,13 @@ const ClubMembers = () => {
                     <div key={member.userId} className="flex items-center justify-between py-4">
                         {/* 프로필 사진과 이름 */}
                         <div className="flex items-center gap-4">
-                            <img
-                                src={member.profileImage || "/default-profile.png"}
-                                alt="프로필"
-                                className="w-12 h-12 rounded-full border"
-                            />
-                            <span className="text-lg font-medium">{member.name}</span>
+                            <div className="w-12 h-12 rounded-full overflow-hidden border">
+                                <ProtectedImage objectName={member.profileImage} alt="User"
+                                                className="w-full h-full object-cover"/>
+                            </div>
+                            <span className="text-lg font-medium">
+                                    {member.name}(ID: {member.username})
+                            </span>
                         </div>
 
                         {/* 역할 선택 버튼 */}
