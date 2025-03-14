@@ -102,7 +102,7 @@ const ClubApply = () => {
                         />
 
                         {!formData.department && (
-                            <p className="text-sm text-gray-500 mt-1">내 정보에서 학과를 입력해주세요</p>
+                            <p className="text-sm text-gray-500">내 정보에서 학과를 입력해주세요</p>
                         )}
 
                         {/* 지원동기 입력 */}
