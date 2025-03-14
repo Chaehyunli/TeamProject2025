@@ -116,6 +116,7 @@ export const getClub = async (clubId) => {
         throw error;
     }
 };
+
 // 특정 지원서 상세정보 조회
 export const getClubSubmissionDetail = async (clubId, applyId) => {
     try {
