@@ -9,13 +9,13 @@ import lombok.*;
 @Builder
 public class ClubLeaderDto {
     private Long userId;
-    private String userName;
+    private String name;
     private String roleName;
 
     public static ClubLeaderDto fromEntity(UserClub userClub) {
         return ClubLeaderDto.builder()
                 .userId(userClub.getUser() != null ? userClub.getUser().getUserId() : null)
-                .userName(userClub.getUser() != null ? userClub.getUser().getName() : null)
+                .name(userClub.getUser() != null ? userClub.getUser().getName() : null)
                 .roleName(userClub.getRole().getRoleName().name())
                 .build();
     }
