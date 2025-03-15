@@ -21,7 +21,7 @@ public class UserCreateRequestDto {
     @Size(min = 8, max = 20, message = "비밀번호는 8~20자여야 합니다.")
     @Pattern(
             regexp = "^(?=.*[!@#$%^&*(),.?\":{}|<>_])[A-Za-z\\d!@#$%^&*(),.?\":{}|<>_]{8,20}$",
-            message = "비밀번호는 특수문자 1개 이상 포함해야 합니다."
+            message = "비밀번호는 8자 이상 20자 이하로 특수문자 1개 이상 포함해야 합니다."
     )
     private String password;
 
