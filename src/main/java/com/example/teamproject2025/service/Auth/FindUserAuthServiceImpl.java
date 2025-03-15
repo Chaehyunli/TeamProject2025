@@ -37,11 +37,7 @@ public class FindUserAuthServiceImpl implements FindUserAuthService {
         // System Log
         System.out.println("DB에서 찾은 사용자: " + user.getUsername());
 
-        return FindUserIdResponseDto.builder()
-                .userId(user.getUserId())
-                .username(user.getUsername())
-                .email(email)
-                .build();
+        return FindUserIdResponseDto.toDTO(user);
     }
 
     @Override
