@@ -2,6 +2,9 @@ package com.example.teamproject2025.dto.User;
 
 
 import com.example.teamproject2025.entity.User.User;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,7 +16,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UserCreateRequestDto {
     private String username;
+
+    @NotBlank
+    @Size(min = 8, max = 20, message = "비밀번호는 8~20자여야 합니다.")
+    @Pattern(
+            regexp = "^(?=.*[!@#$%^&*(),.?\":{}|<>])[A-Za-z\\d!@#$%^&*(),.?\":{}|<>]{8,20}$",
+            message = "비밀번호는 특수문자 1개 이상 포함해야 합니다."
+    )
     private String password;
+
     private String name;
     private String email;
     private String universityName;
