@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getMySubmissionDetail } from "../api/userApi";
+import { getMySubmissionDetail, getParticularUserProfile } from "../api/userApi";
 import InputField from "../components/InputField";
 import dayjs from "dayjs";
 
@@ -9,6 +9,7 @@ const MySubmissionsDetailPage = () => {
     const navigate = useNavigate();
     const [submission, setSubmission] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [name, setName] = useState("");
 
     useEffect(() => {
         const fetchSubmissionDetail = async () => {
@@ -25,6 +26,24 @@ const MySubmissionsDetailPage = () => {
         fetchSubmissionDetail();
     }, [applyId]);
 
+    // submission이 설정된 후 userId로 이름 가져오기
+    useEffect(() => {
+        if (submission && submission.userId) {
+            const fetchUserName = async () => {
+                try {
+                    const userResponse = await getParticularUserProfile(submission.userId);
+                    if (userResponse && userResponse.data) {
+                        setName(userResponse.data.name || `사용자 ${submission.userId}`);
+                    }
+                } catch (error) {
+                    console.error(`사용자 ${submission.userId}의 정보를 불러오지 못했습니다.`, error);
+                }
+            };
+
+            fetchUserName();
+        }
+    }, [submission]);
+
     if (loading) {
         return <p className="text-gray-500 mt-4 text-center">로딩 중...</p>;
     }
@@ -35,13 +54,15 @@ const MySubmissionsDetailPage = () => {
 
     return (
         <div className="flex justify-center items-start">
-            <div className="w-[500px] p-6 bg-white shadow-lg rounded-lg mt-20">
-                <h2 className="text-2xl font-semibold text-center">나의 지원서 상세 정보</h2>
-                <p className="text-sm text-gray-500">지원서 ID: {applyId}</p>
+            <div className="w-[500px] p-6 bg-white shadow-lg rounded-lg mt-28">
+                <h2 className="text-2xl font-semibold text-center mb-6">나의 지원서 상세 정보</h2>
 
                 <form className="flex flex-col space-y-4">
                     {/* 동아리 이름 */}
                     <InputField label="동아리 이름" type="text" value={submission.clubName} disabled={true}/>
+
+                    {/* 지원자 이름 */}
+                    <InputField label="이름" type="text" value={name} disabled={true} />
 
                     {/* 학번 */}
                     <InputField label="학번" type="text" value={submission.studentId} disabled={true}/>
