@@ -1,5 +1,6 @@
 package com.example.teamproject2025.service.User;
 
+import com.example.teamproject2025.dto.Chat.MyChatListResDto;
 import com.example.teamproject2025.dto.Club.ClubSummaryDto;
 import com.example.teamproject2025.dto.Common.CommonResponseDto;
 import com.example.teamproject2025.dto.User.*;
@@ -9,6 +10,7 @@ import com.example.teamproject2025.dto.User.UserUpdateRequestDto;
 import com.example.teamproject2025.entity.User.User;
 import com.example.teamproject2025.repository.University.UniversityRepository;
 import com.example.teamproject2025.repository.User.UserRepository;
+import com.example.teamproject2025.service.Chat.ChatService;
 import com.google.cloud.storage.Storage;
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
@@ -31,6 +33,7 @@ public class UserServiceImpl implements UserService {
     private final UniversityRepository universityRepository;
     private final PasswordEncoder passwordEncoder;
     private final Storage storage;
+    private final ChatService chatService;
 
     @Value("${spring.cloud.gcp.storage.bucket}")
     private String bucketName;
@@ -112,6 +115,8 @@ public class UserServiceImpl implements UserService {
         // 유저 존재 여부 확인
         User user = userRepository.findById(sessionUserId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        
 
         // 기존 프로필 이미지 삭제 (기본 프로필 제외)
         if (user.getProfileImage() != null && !user.getProfileImage().equals("default-profileImage.png")) {
