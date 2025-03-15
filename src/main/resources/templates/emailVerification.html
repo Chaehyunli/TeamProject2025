@@ -6,16 +6,18 @@
   <title>동아리 모아 - 이메일 인증</title>
   <script>
     function copyToClipboard() {
-      // 인증번호 가져오기
       const verificationCode = document.getElementById("verificationCode").innerText.trim();
-
-      // 클립보드 복사
-      navigator.clipboard.writeText(verificationCode);
+      navigator.clipboard.writeText(verificationCode).then(() => {
+        alert("인증번호가 복사되었습니다!");
+      }).catch(err => {
+        console.error("복사 실패: ", err);
+      });
     }
   </script>
 </head>
 <body style="font-family: Arial, sans-serif; background-color: #f9f9f9; margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh;">
 <div style="background-color: white; border: 2px solid #000; border-radius: 15px; padding: 40px; width: 90%; max-width: 500px; text-align: center; box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);">
+
   <!-- 타이틀 -->
   <div style="display: flex; gap: 10px; margin-bottom: 20px;">
     <div style="width: 29px; height: 29px; background-color: black; border-radius: 50%;"></div>
@@ -29,13 +31,12 @@
 
   <!-- 인증 코드 -->
   <div style="display: flex; justify-content: center; align-items: center; gap: 10px; font-size: 20px; font-weight: bold; border: 2px solid #000; border-radius: 10px; padding: 10px; width: 200px; margin: 0 auto;">
-    <span id="verificationCode">{{verificationCode}}</span>
-    <img src="https://cdn-icons-png.flaticon.com/512/60/60993.png" alt="복사 아이콘" width="20" height="20" style="cursor: pointer;" onclick="copyToClipboard()">
+    <span id="verificationCode" th:text="${verificationCode}"></span>
   </div>
 
   <!-- 유효 기간 알림 -->
   <div style="font-size: 14px; color: #000; margin-top: 15px;">
-    ⚠ 인증번호는 <b>5분간 유효</b>합니다.
+    ⚠ 인증번호는 <b>5분간</b> 유효 합니다.
   </div>
 </div>
 </body>
