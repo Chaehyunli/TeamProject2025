@@ -16,7 +16,7 @@ const RegisterForm = ({ onSubmit }) => {
         universityName: "",
         studentId: "",
         isEmailVerified: false,
-        profileImage: "default-profileImage.png"
+        profileImage: "https://www.mju.ac.kr/sites/mjukr/images/sub01/symbol01.png"
     });
     const [message, setMessage] = useState("");
 

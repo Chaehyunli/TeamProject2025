@@ -60,6 +60,19 @@ export const deleteUser = async () => {
     }
 };
 
+// 회원 목록 가져오기
+export const fetchUserList = async () => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/list`, {
+            withCredentials: true
+        });
+        return response.data.data;
+    } catch (error) {
+        console.error("❌ 회원 목록 불러오기 실패:", error);
+        throw error;
+    }
+};
+
 // 나의 지원서 목록 조회
 export const getMySubmissions = async () => {
     try {

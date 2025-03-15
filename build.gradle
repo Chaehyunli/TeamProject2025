@@ -61,6 +61,9 @@ dependencies {
 	testImplementation 'org.testcontainers:junit-jupiter:1.18.0' // JUnit 5와 Testcontainers 통합
 	testCompileOnly 'org.projectlombok:lombok'// Test 를 위한 Lombok
 	testAnnotationProcessor 'org.projectlombok:lombok'
+
+	// Session
+	implementation 'org.springframework.session:spring-session-core:3.2.0'
 }
 
 tasks.named('test') {

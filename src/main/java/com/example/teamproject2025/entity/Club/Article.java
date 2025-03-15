@@ -40,8 +40,9 @@ public class Article {
     @Column(nullable = false)
     private boolean is_notice;  // 게시물인가 공지사항인가 구분
 
+    @Builder.Default
     @Column(nullable = false, columnDefinition = "TEXT")
-    private String thumbUrl = "default-thumbnail.png";  // 게시불 사진 URL
+    private String thumbUrl = "https://www.mju.ac.kr/sites/mjukr/images/sub01/symbol02.png";  // 게시불 사진 URL
 
 //    @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, orphanRemoval = true)
 //    private List<Article> articles;

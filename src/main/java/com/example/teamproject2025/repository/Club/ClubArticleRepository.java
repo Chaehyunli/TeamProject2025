@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ClubArticleRepository extends JpaRepository<Article, Long> {
-
     @Query("SELECT a FROM Article a WHERE a.club.clubId = :clubId AND a.articleId = :articleId")
     Optional<Article> findByClubIdAndArticleId(@Param("clubId") Long clubId, @Param("articleId") Long articleId);
 
@@ -24,5 +23,4 @@ public interface ClubArticleRepository extends JpaRepository<Article, Long> {
 
     @EntityGraph(attributePaths = "user")
     Optional<Article> findByArticleId(Long articleId);
-
 }

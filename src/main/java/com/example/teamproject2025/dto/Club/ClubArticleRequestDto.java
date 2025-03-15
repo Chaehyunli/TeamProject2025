@@ -16,7 +16,7 @@ public class ClubArticleRequestDto {
 
     private String title;
     private String contents;
-    private String thumbUrl;
+    private String thumbUrl = "default-thumbnail.png";
     private boolean is_notice;
 
 

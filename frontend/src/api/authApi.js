@@ -38,6 +38,12 @@ export const login = async (formData) => {
 
         const result = await response.json();
 
+        localStorage.setItem("userId", result.data.userId);
+        localStorage.setItem("username", result.data.username);
+        localStorage.setItem("name", result.data.name);
+        localStorage.setItem("email", result.data.email);
+        localStorage.setItem("profileImage", result.data.profileImage);
+
         return result;
     } catch (error) {
         console.error("로그인 오류: ", error);

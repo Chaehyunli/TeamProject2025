@@ -19,7 +19,7 @@ public class UserCreateRequestDto {
     private String universityName;
     private String studentId;
     @Builder.Default
-    private String profileImage = "default-profileImage.png";
+    private String profileImage = "https://www.mju.ac.kr/sites/mjukr/images/sub01/symbol01.png";
     @Builder.Default
     private Boolean isEmailVerified = false; // Ref1
     @Builder.Default

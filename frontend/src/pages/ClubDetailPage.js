@@ -3,6 +3,7 @@ import { useParams, Outlet } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getUserClubRole, getClub } from "../api/clubApi";
 import { ProtectedImage } from "../api/uploadApi";
+import DirectMessageButton from "../components/DirectMessageButton";
 
 const ClubDetailPage = () => {
     const { clubId } = useParams();
@@ -59,6 +60,8 @@ const ClubDetailPage = () => {
                                     </p>
                                 )}
                             </div>
+
+                            <DirectMessageButton presidentId={president.userId} receiverName={president.userName} />
 
                             <p className="text-lg mt-2 backdrop-blur-md">{club.description}</p>
                         </div>

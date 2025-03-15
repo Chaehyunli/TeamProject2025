@@ -2,6 +2,7 @@ package com.example.teamproject2025.service.User;
 
 import com.example.teamproject2025.dto.Club.ClubSummaryDto;
 import com.example.teamproject2025.dto.Common.CommonResponseDto;
+import com.example.teamproject2025.dto.User.*;
 import com.example.teamproject2025.dto.User.UserCreateRequestDto;
 import com.example.teamproject2025.dto.User.UserResponseDto;
 import com.example.teamproject2025.dto.User.UserUpdateRequestDto;
@@ -18,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -51,17 +53,6 @@ public class UserServiceImpl implements UserService {
 
         // 4. DTO → Entity 변환 및 저장
         User user = userRepository.save(dto.toEntity(universityId, encodedPassword));
-
-        // 5. Client 에게 응답할 DTO Build
-//        return UserResponseDto.builder()
-//                .username(user.getUsername())
-//                .studentId(Integer.parseInt(user.getStudentId()))
-//                .university(dto.getUniversityName())
-//                .email(user.getEmail())
-//                .profileImage(user.getProfileImage())
-//                .joinedClubs(List.of())
-//                .managedClubs(List.of())
-//                .build(); -> 나중에 업데이트 부 구현할 때 그대로 써먹으려고 남김
 
         // 5. Client 에게 응답할 DTO Build
         return UserResponseDto.builder()
@@ -179,6 +170,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<UserListResDto> findAll(){
+        List<User> users = userRepository.findAll();
+        List<UserListResDto> userListResDtos = new ArrayList<>();
+        for (User m : users){
+            UserListResDto userListResDto = UserListResDto.builder()
+                    .userId(m.getUserId())
+                    .email(m.getEmail())
+                    .name(m.getName())
+                    .build();
+
+            userListResDtos.add(userListResDto);
+        }
+        return userListResDtos;
+    }
+
     @Transactional
     public UserResponseDto getUserProfile(Long userId) {
         User user = userRepository.findById(userId)
@@ -218,8 +224,9 @@ public class UserServiceImpl implements UserService {
                 .managedClubs(managedClubs) // 운영하는 동아리 목록 추가
                 .build();
     }
-
 }
+
+
 
 /* 💡Descriptions @dev_taehyun
 *

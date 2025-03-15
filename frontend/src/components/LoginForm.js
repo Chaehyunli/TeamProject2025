@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+// import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../api/authApi";
 import { getUserProfile } from "../api/userApi";
@@ -6,7 +7,7 @@ import InputField from "./InputField";
 
 const LoginForm = () => {
     const navigate = useNavigate(); // 페이지 이동을 위한 훅
-    const [storedUsername, setStoredUsername] = useState(localStorage.getItem("username") || null); // 초기값을 null로 설정
+    // const [storedUsername, setStoredUsername] = useState(localStorage.getItem("username") || null); // 초기값을 null로 설정
 
     const [formData, setFormData] = useState({ username: "", password: "" });
     const [message, setMessage] = useState("");
@@ -39,12 +40,12 @@ const LoginForm = () => {
         }
     };
 
-    useEffect(() => {
-        // 로그인 상태 확인 후 자동 이동
-        if (storedUsername) {
-            navigate("/home");
-        }
-    }, [storedUsername]);
+    // useEffect(() => {
+    //     // 로그인 상태 확인 후 자동 이동
+    //     if (storedUsername) {
+    //         navigate("/home");
+    //     }
+    // }, [storedUsername]);
 
     return (
         <form onSubmit={handleSubmit} className="space-y-4">

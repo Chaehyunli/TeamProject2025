@@ -42,6 +42,7 @@ public class ClubSubmission {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String contents; // 지원 동기
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, columnDefinition = "ENUM('PENDING', 'APPROVED', 'REJECTED') DEFAULT 'PENDING'")
     private SubmissionStatus status = SubmissionStatus.PENDING; // 지원 상태 (기본값: PENDING)

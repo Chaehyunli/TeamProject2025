@@ -1,6 +1,5 @@
 package com.example.teamproject2025.service.Club;
 
-import com.example.teamproject2025.dto.Auth.AuthorDto;
 import com.example.teamproject2025.dto.Club.*;
 import com.example.teamproject2025.dto.Membership.ClubMemberResponseDto;
 import com.example.teamproject2025.dto.Membership.UserClubResponseDto;
@@ -23,14 +22,16 @@ import com.example.teamproject2025.repository.User.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.google.cloud.storage.Storage;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.context.ApplicationContext;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -294,4 +295,5 @@ public class ClubServiceImpl implements ClubService {
         clubArticleRepository.delete(article);
         return true;
     }
+
 }

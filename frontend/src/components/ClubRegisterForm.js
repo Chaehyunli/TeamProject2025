@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import FileUpload from "./FileUpload";
 import InputField from "./InputField";
+import { getCategory } from "../api/categoryApi";
 
 const ClubRegistrationForm = ({ presidentName, onSubmit }) => {
     const [clubName, setClubName] = useState("");
@@ -8,13 +9,26 @@ const ClubRegistrationForm = ({ presidentName, onSubmit }) => {
     const [category, setCategory] = useState("");
     const [thumbUrl, setThumbUrl] = useState(null);
     const [errorMessage, setErrorMessage] = useState("");
-
-    // 카테고리 목록 (추후 DB에서 가져올 수 있음)
-    const categories = ["IT/프로그래밍", "예술/공연", "봉사활동", "운동/스포츠", "학술/스터디", "창업", "기타"];
+    const [categories, setCategories] = useState([]);
 
     // 허용되는 파일 형식
     const allowedFileTypes = ["image/png", "image/jpeg"];
     const maxFileSize = 10 * 1024 * 1024; // 10MB 제한
+
+    useEffect(() => {
+        // 카테고리 가져오는 핸들러
+        const fetchCategory = async() => {
+            try {
+                const categoriesData = await getCategory();
+                setCategories(categoriesData);
+            } catch (error) {
+                console.error("카테고리 정보 불러오기 실패: ", error);
+                setCategories([]);
+            }
+        };
+
+        fetchCategory();
+    }, []);
 
     // 파일 업로드 핸들러 (유효성 검사 포함)
     const handleFileChange = (file) => {
@@ -87,8 +101,10 @@ const ClubRegistrationForm = ({ presidentName, onSubmit }) => {
                 className="w-full px-4 py-2 border rounded-md shadow-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
             >
                 <option value="">카테고리를 선택하세요</option>
-                {categories.map((cat) => (
-                    <option key={cat} value={cat}>{cat}</option>
+                {categories.map(category => (
+                    <option key={category.categoryName} value={category.categoryName}>
+                        {category.categoryName}
+                    </option>
                 ))}
             </select>
 
