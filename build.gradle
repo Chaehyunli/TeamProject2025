@@ -64,6 +64,9 @@ dependencies {
 
 	// Session
 	implementation 'org.springframework.session:spring-session-core:3.2.0'
+
+	// Swagger
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
 }
 
 tasks.named('test') {
