@@ -24,4 +24,5 @@ public interface ChatService {
     void leavePrivateChatRoom(Long roomId, HttpServletRequest request);
     Long getOrCreatePrivateRoom(Long otherUserId, HttpServletRequest request);
     List<ChatRoomParticipantsReqDto> getRoomUsers(Long roomId);
+    List<MyChatListResDto> getMyChatRoomsByUser(User user);
 }
