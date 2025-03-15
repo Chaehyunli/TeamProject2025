@@ -277,22 +277,6 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public void leavePrivateChatRoomByUser(Long roomId, User user){
-        ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(()-> new EntityNotFoundException("room cannot be found"));
-
-        if(chatRoom.getIsGroupChat().equals(true)){
-            throw new IllegalArgumentException("개인 채팅방이 아닙니다.");
-        }
-        ChatParticipant c = chatParticipantRepository.findByChatRoomAndUser(chatRoom, user).orElseThrow(()->new EntityNotFoundException("참여자를 찾을 수 없습니다."));
-        chatParticipantRepository.delete(c);
-
-        List<ChatParticipant> chatParticipants = chatParticipantRepository.findByChatRoom(chatRoom);
-        if(chatParticipants.isEmpty()){
-            chatRoomRepository.delete(chatRoom);
-        }
-    }
-
-    @Override
     public Long getOrCreatePrivateRoom(Long otherUserId, HttpServletRequest request){
         User user = getSessionUser(request);
 
