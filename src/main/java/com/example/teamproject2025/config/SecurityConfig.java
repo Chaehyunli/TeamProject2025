@@ -142,7 +142,10 @@ public class SecurityConfig {
                                 "/api/v1/auth/email/verify",
                                 "/api/v1/auth/find-id",
                                 "/api/v1/auth/password-reset",
-                                "/connect/**"
+                                "/connect/**",
+                                "/swagger-ui/**",      // Swagger UI 관련 경로
+                                "/v3/api-docs/**",     // API 문서 JSON
+                                "/swagger-resources/**"
                         ).permitAll() // 인증 없이 접근 가능
 
                         .requestMatchers("/api/v1/users/delete").authenticated() // 회원탈퇴는 인증 필요
