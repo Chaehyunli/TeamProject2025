@@ -53,7 +53,7 @@ const RegisterForm = ({ onSubmit }) => {
             alert("회원가입 완료!"); // 알림창 표시
             navigate("/login"); // 로그인 페이지로 이동
         } catch (error) {
-            setMessage("오류 발생: " + error.message);
+            setMessage("오류 발생: " + error.response.data.message);
         }
     };
 

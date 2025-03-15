@@ -13,7 +13,6 @@ import java.util.List;
 public interface UserService {
     UserResponseDto register(UserCreateRequestDto userCreateRequestDto);
     UserResponseDto updateUserProfile(Long userId, UserUpdateRequestDto dto);
-//    UserResponseDto update(Long userId, UserUpdateRequestDto userUpdatedRequestDto);
     void deleteUser(HttpSession session);
     List<UserListResDto> findAll();
     UserResponseDto getUserProfile(Long userId);
