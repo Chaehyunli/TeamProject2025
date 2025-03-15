@@ -134,9 +134,6 @@ public class UserServiceImpl implements UserService {
 
         // 세션 무효화
         session.invalidate();
-
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(CommonResponseDto.success(HttpStatus.OK.value(), "User deleted successfully"));
     }
 
     @Override

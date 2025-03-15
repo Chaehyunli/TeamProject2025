@@ -21,6 +21,7 @@ import com.example.teamproject2025.repository.Membership.UserRoleRepository;
 import com.example.teamproject2025.repository.University.UniversityRepository;
 import com.example.teamproject2025.repository.User.UserRepository;
 import com.google.cloud.storage.Storage;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -34,6 +35,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class ClubServiceImpl implements ClubService {
     private final ClubRepository clubRepository;
     private final UserRepository userRepository;
@@ -42,28 +44,12 @@ public class ClubServiceImpl implements ClubService {
     private final UserRoleRepository userRoleRepository;
     private final UserClubRepository userClubRepository;
     private final ClubArticleRepository clubArticleRepository;
-
-
-    @Autowired
-    private ApplicationContext applicationContext;
+    private final ApplicationContext applicationContext;
 
     // 업로드 경로 (Spring Boot의 정적 리소스로 활용, 현재 프로젝트 루트 경로에 uploads 폴더 생성)
     private static final String UPLOAD_DIR = System.getProperty("user.dir") + "/uploads/clubs/";
     @Value("${spring.cloud.gcp.storage.bucket}")
     private String bucketName;
-
-    public ClubServiceImpl(ClubRepository clubRepository, UserRepository userRepository,
-                           CategoryRepository categoryRepository, UniversityRepository universityRepository,
-                           UserRoleRepository userRoleRepository, UserClubRepository userClubRepository,
-                           Storage storage, ClubSubmissionRepository clubSubmissionRepository, ClubArticleRepository clubArticleRepository) {
-        this.clubRepository = clubRepository;
-        this.userRepository = userRepository;
-        this.categoryRepository = categoryRepository;
-        this.universityRepository = universityRepository;
-        this.userRoleRepository = userRoleRepository;
-        this.userClubRepository = userClubRepository;
-        this.clubArticleRepository = clubArticleRepository;
-    }
 
     @Override
     @Transactional
