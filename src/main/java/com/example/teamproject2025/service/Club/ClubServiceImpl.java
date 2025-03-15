@@ -1,6 +1,5 @@
 package com.example.teamproject2025.service.Club;
 
-import com.example.teamproject2025.dto.Auth.AuthorDto;
 import com.example.teamproject2025.dto.Club.*;
 import com.example.teamproject2025.dto.Membership.ClubMemberResponseDto;
 import com.example.teamproject2025.dto.Membership.UserClubResponseDto;
@@ -20,9 +19,8 @@ import com.example.teamproject2025.repository.Membership.UserClubRepository;
 import com.example.teamproject2025.repository.Membership.UserRoleRepository;
 import com.example.teamproject2025.repository.University.UniversityRepository;
 import com.example.teamproject2025.repository.User.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
-import com.google.cloud.storage.Storage;
 import org.springframework.beans.factory.annotation.Autowired;
+import com.google.cloud.storage.Storage;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
@@ -213,7 +211,7 @@ public class ClubServiceImpl implements ClubService {
 
     // 동아리 게시물 작성
     @Override
-    public ClubArticleResponseDto createArticle(Long clubId, Long userId, String title, String contents,
+    public ClubArticleResponseDto createArticle(Long clubId, Long userId, String title, String content,
                                                 String uploadedFileName, boolean is_notice) {
 
         User user = userRepository.findById(userId)
@@ -224,10 +222,10 @@ public class ClubServiceImpl implements ClubService {
 
         String storageThumbUrl = (uploadedFileName != null && !uploadedFileName.isEmpty())
                 ? uploadedFileName
-                : club.getThumbUrl(); // Club thumbnail 사용 -> 기본이미지는 어차피 개설할 때 설정됨
+                : null;
 
         ClubArticleRequestDto requestDto = new ClubArticleRequestDto(title,
-                contents, storageThumbUrl, is_notice);
+                content, storageThumbUrl, is_notice);
 
         Article newArticle = requestDto.toEntity(club, user, is_notice);
         clubArticleRepository.save(newArticle);
@@ -271,7 +269,7 @@ public class ClubServiceImpl implements ClubService {
     }
 
     @Override
-    public SpecificArticleResponseDto getUserArticle(Long userId, Long clubId, Long articleId) {
+    public SpecificArticleResponseDto getArticleDetail(Long clubId, Long articleId) {
 //        authorDto author = new authorDto(userId, username);
 
         boolean check = clubArticleRepository.existsByClub_ClubId(clubId);
@@ -279,16 +277,10 @@ public class ClubServiceImpl implements ClubService {
             throw new NoSuchElementException("존재 하지 않는 동아리입니다.");
         }
 
-        User user = userRepository.findByUserId(userId)
-                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
-
-        AuthorDto author = new AuthorDto(user.getUserId(), user.getUsername());
-
         Article article = clubArticleRepository.findByArticleId(articleId)
                 .orElseThrow(() -> new NoSuchElementException("해당 ID의 게시물이 존재하지 않습니다."));
 
-
-        return SpecificArticleResponseDto.fromEntity(article, author);
+        return SpecificArticleResponseDto.fromEntity(article);
     }
 
     // 동아리 게시물 삭제

@@ -6,8 +6,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -23,10 +25,10 @@ public class SpecificArticleResponseDto {
     private LocalDateTime updated_at;
     private String thumbUrl;
 
-    public static SpecificArticleResponseDto fromEntity(Article article, AuthorDto author) {
+    public static SpecificArticleResponseDto fromEntity(Article article) {
         return SpecificArticleResponseDto.builder()
                 .article_id(article.getArticleId())
-                .author(author)
+                .author(new AuthorDto(article.getUser().getUserId(), article.getUser().getUsername()))
                 .is_notice(article.is_notice())
                 .title(article.getTitle())
                 .contents(article.getContents())

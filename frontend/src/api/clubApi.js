@@ -9,6 +9,7 @@ export const getClubList = async() => {
             withCredentials: true // 세션 인증 유지 위해 추가
         });
 
+        console.log('clubs: ', response);
         return response.data.data.clubs;
     } catch (error) {
         console.error("동아리 목록 불러오기 실패: ", error);
@@ -25,7 +26,7 @@ export const createClub = async(clubData) => {
                 formData.append(key, value);
             }
         });
-        
+
         const response = await axios.post(`${API_BASE_URL}`, formData, {
             withCredentials: true
         });
@@ -116,7 +117,6 @@ export const getClub = async (clubId) => {
         throw error;
     }
 };
-
 // 특정 지원서 상세정보 조회
 export const getClubSubmissionDetail = async (clubId, applyId) => {
     try {
@@ -134,7 +134,7 @@ export const approveSubmission = async (clubId, applyId) => {
         const response = await axios.patch(`${API_BASE_URL}/${clubId}/submissions/${applyId}/approve`,
             {},
             { withCredentials: true }
-            );
+        );
         return response.data;
     } catch (error) {
         console.error("지원서 승인 실패:", error);
@@ -148,7 +148,7 @@ export const rejectSubmission = async (clubId, applyId) => {
         const response = await axios.patch(`${API_BASE_URL}/${clubId}/submissions/${applyId}/reject`,
             {},
             { withCredentials: true }
-            );
+        );
         return response.data;
     } catch (error) {
         console.error("지원서 거절 실패:", error);
@@ -177,7 +177,7 @@ export const createArticle = async (clubId, articleData) => {
             articleData,
             { withCredentials: true }
         );
-        return response.data;
+        return response.data.data;
     } catch (error) {
         console.error("동아리 게시물 작성 실패:", error);
         throw error;
@@ -208,7 +208,7 @@ export const getArticleDetail = async (clubId, articleId) => {
             `${API_BASE_URL}/${clubId}/articles/${articleId}`,
             { withCredentials: true }
         );
-        console.log(response.data.data.author.authorId);
+        console.log('clubApi authorId', response.data.data);
         return response.data.data;
     } catch (error) {
         console.error('게시글 상세 조회 실패:', error);
@@ -245,4 +245,16 @@ export const updateArticle = async (clubId, articleId, articleData) => {
     }
 };
 
+export const getUserRoleInClub = async (clubId) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/${clubId}/role`, {
+            withCredentials: true
+        });
 
+        console.log('사용자 역할 확인 응답: ', response.data);
+        return response.data.data.role;
+    } catch (error) {
+        console.error('동아리 멤버 조회 실패: ', error);
+        throw error;
+    }
+};

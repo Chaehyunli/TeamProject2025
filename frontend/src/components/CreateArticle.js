@@ -7,12 +7,13 @@ import {uploadImageToGCP} from "../api/uploadApi";
 const CreateArticle = () => {
     const navigate = useNavigate();
     const { clubId } = useParams();
+    const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const [formData, setFormData] = useState({
         title: '',
         contents: '',
-        // is_notice: false,
-        thumbUrl: null
+        is_notice: false,
+        thumbUrl: undefined
     });
 
     const handleChange = (e) => {
@@ -25,26 +26,33 @@ const CreateArticle = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        try {
-            let imageUrl = null;
 
-            // formData.thumbUrl이 파일 객체인지 확인 후 업로드
-            if (formData.thumbUrl instanceof File) {
-                const objectName = await uploadImageToGCP(formData.thumbUrl);
-                imageUrl = objectName;  // 업로드된 파일의 GCP 경로 (presigned URL이 필요할 수도 있음)
+        if (loading) return; // 중복 요청 방지
+
+        setLoading(true);
+
+        try {
+            let thumbUrl = null;
+
+            if(formData.thumbUrl){
+                thumbUrl = await uploadImageToGCP(formData.thumbUrl);
             }
 
             const articleData = {
                 title: formData.title,
                 contents: formData.contents,
-                thumbUrl: imageUrl  // GCP에 저장된 이미지 URL 사용
+                is_notice: false,
+                thumbUrl: thumbUrl || undefined
             };
 
             await createArticle(clubId, articleData);
+
             navigate(`/clubs/${clubId}/articles`);
         } catch (error) {
             console.error("게시글 작성 실패:", error);
             setErrorMessage("게시글 작성에 실패했습니다. 다시 시도해주세요.");
+        } finally {
+            setLoading(false);
         }
     };
 

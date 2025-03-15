@@ -26,7 +26,7 @@ public interface ClubService {
 
     ClubArticleResponseDto updateArticle(Long userId, Long clubId, Long articleId, ArticleModificationRequestDto requestDto);
 
-    SpecificArticleResponseDto getUserArticle(Long userId, Long clubId, Long articleId);
+    SpecificArticleResponseDto getArticleDetail(Long clubId, Long articleId);
 
     ArticleListResponseDto getArticlesList(Long clubId, int limit, int offset);
 }

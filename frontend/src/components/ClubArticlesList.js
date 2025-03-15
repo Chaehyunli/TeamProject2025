@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getClub, getClubArticles, getClubMembers } from "../api/clubApi";
-import { getUserProfile } from "../api/userApi";
+import { getClubArticles, getUserRoleInClub } from "../api/clubApi";
 import { ProtectedImage } from "../api/uploadApi";
 
 const ClubArticlesList = () => {
     const { clubId } = useParams();
     const navigate = useNavigate();
-    const [club, setClub] = useState(null);
     const [articles, setArticles] = useState([]);
     const [error, setError] = useState(null);
     const [name, setName] = useState(null);
@@ -15,55 +13,35 @@ const ClubArticlesList = () => {
     const [totalPages, setTotalPages] = useState(0);
     const [isClubMember, setIsClubMember] = useState(false);
     const limit = 10; // 한 페이지당 게시글 수
-    const currentUserId = Number(localStorage.getItem('userId'));
 
     useEffect(() => {
-        fetchClubInfo();
         fetchArticles();
-        checkClubMembership();
     }, [clubId, currentPage]);
-
-    const fetchClubInfo = async () => {
-        try{
-            const clubData = await getClub(clubId);
-            console.log("club Info: ", clubData);
-            setClub(clubData);
-        } catch (error) {
-            console.log("club Info Get Failure:", error)
-        }
-    }
 
     const fetchArticles = async () => {
         try {
             const offset = currentPage * limit;
             const response = await getClubArticles(clubId, limit, offset);
-            const user = await getUserProfile();
+            const role = await getUserRoleInClub(clubId);
 
-            console.log("게시글 목록 응답:", response);
+            console.log('사용자 role', role);
+            if (role === "NO_ROLE"){
+                setIsClubMember(false);
+            }else{
+                setIsClubMember(true);
+            }
+            console.log('role boolean', isClubMember);
 
-            setName(user.data.name);
+            // 응답 구조 확인
+            console.log('게시글 목록 응답:', response);
             setArticles(response.articles);
+
             setTotalPages(Math.ceil(response.pagination.total / limit));
             setError(null);
+
         } catch (error) {
             console.error("게시글 목록 조회 실패:", error);
             setError("게시글을 불러오는데 실패했습니다.");
-        }
-    };
-
-    const checkClubMembership = async () => {
-        try {
-            const response = await getClubMembers(clubId);
-            console.log("클럽 멤버 목록:", response);
-
-            const isMember = response.some(member => member.userId === currentUserId);
-            setIsClubMember(isMember);
-
-            console.log("현재 사용자 ID:", currentUserId);
-            console.log("클럽 멤버 여부:", isMember);
-        } catch (error) {
-            console.error("클럽 멤버 확인 실패:", error);
-            setIsClubMember(false);
         }
     };
 
@@ -77,7 +55,7 @@ const ClubArticlesList = () => {
 
     return (
         <div className="container mx-auto px-4 py-8">
-            {!isClubMember && (
+            {isClubMember && (
                 <div className="flex justify-end mb-4">
                     <button
                         onClick={() => navigate(`/clubs/${clubId}/articles/create`)}
@@ -100,26 +78,26 @@ const ClubArticlesList = () => {
                             <div
                                 key={article.articleId}
                                 onClick={() => navigate(`/clubs/${clubId}/articles/${article.articleId}`)}
-                                className="p-4 hover:bg-gray-50 cursor-pointer flex items-center space-x-4"
+                                className="p-4 hover:bg-gray-50 cursor-pointer"
                             >
-                                {/* 썸네일 이미지 */}
-                                <div className="flex-shrink-0">
-                                    <ProtectedImage objectName={article.thumbUrl} alt={club.clubName} />
-                                </div>
+                                {/* 썸네일이 있을 때만 이미지 로딩 */}
+                                {article.thumbUrl && (
+                                    <div className="flex-shrink-0">
+                                        <ProtectedImage objectName={article.thumbUrl} alt={article.title} />
+                                    </div>
+                                )}
 
                                 {/* 게시글 정보 */}
-                                <div className="flex-1">
-                                    <div className="flex items-center justify-between mb-2">
-                                        <h3 className="text-lg font-semibold">
-                                            {article.title}
-                                        </h3>
-                                        <span className="text-sm text-gray-500">
-                                            {new Date(article.createdAt).toLocaleDateString()}
-                                        </span>
-                                    </div>
-                                    <div className="text-sm text-gray-600">
-                                        <span>작성자: {article.author.authorName}</span>
-                                    </div>
+                                <div className="flex items-center justify-between mb-2">
+                                    <h3 className="text-lg font-semibold">
+                                        {article.title}
+                                    </h3>
+                                    <span className="text-sm text-gray-500">
+                                        {new Date(article.createdAt).toLocaleDateString()}
+                                    </span>
+                                </div>
+                                <div className="flex items-center text-sm text-gray-600">
+                                    <span>작성자: {name}({article.author.authorName})</span>
                                 </div>
                             </div>
                         ))}

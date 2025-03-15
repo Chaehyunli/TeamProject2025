@@ -174,20 +174,14 @@ public class ClubController {
         );
     }
 
+    // 동아리 특정 게시물 조회
     @GetMapping("/{clubId}/articles/{articleId}")
-    public ResponseEntity<CommonResponseDto<SpecificArticleResponseDto>> getUserArticle(
-            HttpSession session,
+    public ResponseEntity<CommonResponseDto<SpecificArticleResponseDto>> getArticleDetail(
             @PathVariable Long clubId,
             @PathVariable Long articleId
     ){
 
-        Long userId = (Long) session.getAttribute("userId");
-        if (userId == null) {
-            throw new NoSuchElementException("가입되지 않은 회원입니다.");
-        }
-
-
-        SpecificArticleResponseDto article = clubService.getUserArticle(userId, clubId, articleId);
+        SpecificArticleResponseDto article = clubService.getArticleDetail(clubId, articleId);
 
         return ResponseEntity.ok(
                 CommonResponseDto.success(200, "특정 게시물을 성공적으로 조회습니다.", article)

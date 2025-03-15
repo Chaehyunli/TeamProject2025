@@ -1,17 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import {getArticleDetail, deleteArticle, getClub, downloadFile} from '../api/clubApi';
+import {
+    getArticleDetail,
+    deleteArticle,
+    getUserClubRole
+} from '../api/clubApi';
 import axios from "axios";
-import {ProtectedImage} from "../api/uploadApi";
+import { ProtectedImage } from "../api/uploadApi";
 
 const ArticleDetail = () => {
-    const { clubId, articleId } = useParams();
+    const {clubId, articleId} = useParams();
     const navigate = useNavigate();
     const [article, setArticle] = useState(null);
-    const [club, setClub] = useState(null);
     const [errorMessage, setErrorMessage] = useState('');
-    const [userRole, setUserRole] = useState(null);
-    const currentUserId = Number(localStorage.getItem('userId')); // 현재 로그인한 사용자 ID
+    const [userRole, setUserRole] = useState('');
+    const [isLeadership, setIsLeadership] = useState(false);
+    const [articleUserId, setArticleUserId] = useState();
+    const currentUserId = localStorage.getItem('userId'); // 현재 로그인한 사용자 ID
 
     useEffect(() => {
         const fetchArticleDetail = async () => {
@@ -20,27 +25,27 @@ const ArticleDetail = () => {
                 console.log('서버 응답:', response); // 서버 응답 확인용 로그
                 setArticle(response);
 
-                // 클럽 멤버 정보에서 현재 사용자의 역할 가져오기
-                const currentUserRole = localStorage.getItem('userRole');
-                setUserRole(currentUserRole);
             } catch (error) {
                 console.error('게시글 상세 정보 조회 실패:', error);
                 setErrorMessage('게시글을 불러오는데 실패했습니다.');
             }
         };
 
-        const fetchClubInfo = async () => {
-            try{
-                const clubData = await getClub(clubId);
-                console.log("club Info: ", clubData);
-                setClub(clubData);
+        const checkUserRole = async () => {
+            try {
+                const role = await getUserClubRole(clubId);
+                setUserRole(String(role));
+                console.log('현재 사용자 역할: ', role);
+
+                setIsLeadership(role === 'PRESIDENT' || role === 'VICE_PRESIDENT');
+                console.log('isLeadership: ', isLeadership);
             } catch (error) {
-                console.log("club Info Get Failure:", error)
+                console.error('역할 확인 실패');
             }
         }
 
         fetchArticleDetail();
-        fetchClubInfo()
+        checkUserRole();
     }, [clubId, articleId]);
 
     const handleDelete = async () => {
@@ -55,12 +60,6 @@ const ArticleDetail = () => {
             }
         }
     };
-
-    // 현재 사용자가 게시글 작성자인지 확인
-    const isAuthor = article?.authorId === currentUserId;
-
-    // 현재 사용자가 회장 또는 부회장 또는 임원인지 확인
-    const isLeadership = userRole === 'PRESIDENT' || userRole === 'VICE_PRESIDENT' || userRole === 'STAFF';
 
     if (errorMessage) {
         return (
@@ -90,54 +89,59 @@ const ArticleDetail = () => {
 
                 {/* 본문 섹션 */}
                 <div className="p-6">
-                    {/* 썸네일 이미지 */}
-                    <ProtectedImage objectName={article.thumbUrl} alt={club.clubName} />
+                    <div className="p-6">
+                        {/* 썸네일이 있을 때만 이미지 로딩 */}
+                        {article.thumbUrl && (
+                            <div className="flex-shrink-0">
+                                <ProtectedImage objectName={article.thumbUrl} alt={article.title} />
+                            </div>
+                        )}
 
-                    {/* 본문 내용 */}
-                    <div className="prose max-w-none">
-                        <div className="whitespace-pre-wrap">
-                            {article.contents}
+                        {/* 본문 내용 */}
+                        <div className="prose max-w-none">
+                            <div className="whitespace-pre-wrap">
+                                {article.contents}
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                {/* 하단 버튼 섹션 */}
-                <div className="p-6 border-t border-gray-200">
-                    <div className="flex justify-between">
-                        <button
-                            onClick={() => navigate(`/clubs/${clubId}/articles`)}
-                            className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md"
-                        >
-                            목록으로
-                        </button>
-                        <div className="flex space-x-4">
-                            {/* 작성자인 경우 수정/삭제 버튼 표시 */}
-                            {!isAuthor && (
-                                <>
-                                    <button
-                                        onClick={() => navigate(`/clubs/${clubId}/articles/${articleId}/edit`)}
-                                        className="px-4 py-2 text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 rounded-md"
-                                    >
-                                        수정
-                                    </button>
-                                    <button
-                                        onClick={handleDelete}
-                                        className="px-4 py-2 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-md"
-                                    >
-                                        삭제
-                                    </button>
-                                </>
-                            )}
+                    {/* 하단 버튼 섹션 */}
+                    <div className="p-6 border-t border-gray-200">
+                        <div className="flex justify-between">
+                            <button
+                                onClick={() => navigate(`/clubs/${clubId}/articles`)}
+                                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md"
+                            >
+                                목록으로
+                            </button>
+                            <div className="flex space-x-4">
+                                {/* 작성자인 경우 수정/삭제 버튼 표시 */}
+                                {String(article.author.authorId) === currentUserId
+                                    ? (
+                                        <div className="justify-center">
+                                            <button
+                                                onClick={() => navigate(`/clubs/${clubId}/articles/${articleId}/edit`)}
+                                                className="px-4 py-2 text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 rounded-md"
+                                            >
+                                                수정
+                                            </button>
+                                            <button
+                                                onClick={handleDelete}
+                                                className="px-4 py-2 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-md"
+                                            >
+                                                삭제
+                                            </button>
+                                        </div>
+                                    ) : isLeadership ? (
+                                        <button
+                                            onClick={handleDelete}
+                                            className="px-4 py-2 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-md"
+                                        >
+                                            삭제
+                                        </button>
+                                    ) : null}
 
-                            {/* 회장/부회장이면서 작성자가 아닌 경우 삭제 버튼만 표시 */}
-                            {isLeadership && !isAuthor && (
-                                <button
-                                    onClick={handleDelete}
-                                    className="px-4 py-2 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-md"
-                                >
-                                    삭제
-                                </button>
-                            )}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -147,5 +151,3 @@ const ArticleDetail = () => {
 };
 
 export default ArticleDetail;
-
-

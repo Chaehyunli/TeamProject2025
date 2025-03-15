@@ -1,6 +1,5 @@
 package com.example.teamproject2025.entity.Club;
 
-import com.example.teamproject2025.entity.Membership.UserClub;
 import com.example.teamproject2025.entity.User.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -8,7 +7,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Getter
@@ -40,9 +38,8 @@ public class Article {
     @Column(nullable = false)
     private boolean is_notice;  // 게시물인가 공지사항인가 구분
 
-    @Builder.Default
-    @Column(nullable = false, columnDefinition = "TEXT")
-    private String thumbUrl = "https://www.mju.ac.kr/sites/mjukr/images/sub01/symbol02.png";  // 게시불 사진 URL
+    @Column(nullable = true, columnDefinition = "TEXT")
+    private String thumbUrl;  // 게시물 사진 URL (선택 사항)
 
 //    @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, orphanRemoval = true)
 //    private List<Article> articles;
