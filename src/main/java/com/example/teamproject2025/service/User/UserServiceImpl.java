@@ -55,7 +55,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.save(dto.toEntity(universityId, encodedPassword));
 
         // 5. Client 에게 응답할 DTO Build
-        return UserResponseDto.toDTO(user, dto);
+        return UserResponseDto.toDTO(user, dto.getUniversityName());
     }
 
     @Override
@@ -79,18 +79,7 @@ public class UserServiceImpl implements UserService {
 
         user.setUpdatedAt(LocalDateTime.now());
 
-        return UserResponseDto.builder()
-                .userId(user.getUserId())
-                .username(user.getUsername())
-                .email(user.getEmail())
-                .name(user.getName())
-                .studentId(user.getStudentId())
-                .department(user.getDepartment()) // 학과 정보 반환
-                .profileImage(user.getProfileImage())
-                .isEmailVerified(user.getIsEmailVerified())
-                .isUniVerified(user.getIsUniVerified())
-                .createdAt(user.getCreatedAt())
-                .build();
+        return UserResponseDto.toDTO(user);
     }
 
     // Google Cloud Storage에서 기존 이미지 삭제
@@ -105,24 +94,6 @@ public class UserServiceImpl implements UserService {
             System.err.println("❌ 기존 프로필 이미지 삭제 실패 (이미 삭제되었거나 존재하지 않음): " + objectName);
         }
     }
-
-//    @Override
-//    public UserResponseDto update(Long userId, UserUpdateRequestDto dto){
-//        User user = userRepository.findById(userId)
-//                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-//
-//        User updatedUser = user.update(dto);
-//
-//        userRepository.save(updatedUser);
-//
-//        return UserResponseDto.builder()
-//                .username(updatedUser.getUsername())
-//                .studentId(updatedUser.getStudentId())
-//                .universityName(null) // 추가 로직 필요 시 처리
-//                .email(updatedUser.getEmail())
-//                .profileImage(updatedUser.getProfileImage())
-//                .build();
-//    }
 
     @Override
     public ResponseEntity<CommonResponseDto<Void>> deleteUser(HttpSession session) {
@@ -195,22 +166,7 @@ public class UserServiceImpl implements UserService {
                 .map(userClub -> ClubSummaryDto.fromEntity(userClub.getClub()))
                 .toList();
 
-        return UserResponseDto.builder()
-                .userId(user.getUserId())
-                .username(user.getUsername())
-                .name(user.getName())
-                .email(user.getEmail())
-                .studentId(user.getStudentId())
-                .department(user.getDepartment())
-                .profileImage(user.getProfileImage())
-                .universityId(user.getUniversityId())
-                .universityName(universityName)
-                .isEmailVerified(user.getIsEmailVerified())
-                .isUniVerified(user.getIsUniVerified())
-                .createdAt(user.getCreatedAt())
-                .joinedClubs(joinedClubs)   // 가입한 동아리 목록 추가
-                .managedClubs(managedClubs) // 운영하는 동아리 목록 추가
-                .build();
+        return UserResponseDto.toDTO(user, joinedClubs, managedClubs, universityName);
     }
 }
 

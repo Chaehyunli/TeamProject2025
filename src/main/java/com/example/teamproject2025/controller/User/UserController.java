@@ -68,6 +68,7 @@ public class UserController {
         if (userId == null) {
             return ResponseEntity.status(401).build(); // 로그인되지 않은 경우
         }
+        System.out.println("Session User ID: " + userId);
 
         UserResponseDto updatedUser = userService.updateUserProfile(userId, dto);
         return ResponseEntity.ok(updatedUser);
