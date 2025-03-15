@@ -3,9 +3,12 @@ package com.example.teamproject2025.service.Auth;
 import com.example.teamproject2025.dto.Auth.EmailResponseDto;
 import com.example.teamproject2025.repository.Auth.RedisEmailVerificationRepository;
 import com.example.teamproject2025.repository.User.UserRepository;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import java.security.SecureRandom;
 
@@ -18,7 +21,7 @@ public class EmailServiceImpl implements EmailService {
     private final RedisEmailVerificationRepository redisEmailVerificationRepository;
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
-    private static final String EMAIL_SUBJECT = "Email Verification";
+    private static final String EMAIL_SUBJECT = "● 동아리 모아: 이메일 인증";
 
     // 이메일 인증 요청 메서드
     @Override
@@ -48,10 +51,19 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public void sendEmail(String to, String subject, String text) {
         try {
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setTo(to);
-            message.setSubject(subject);
-            message.setText(text);
+//            SimpleMailMessage message = new SimpleMailMessage();
+//            message.setTo(to);
+//            message.setSubject(subject);
+//            message.setText(text);
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, false, "UTF-8");
+
+            // ✅ 보내는 사람 (이름 설정 가능)
+            helper.setFrom(new InternetAddress("kth132225@gmail.com", "● 동아리 모아", "UTF-8"));
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(text, false); // false = 일반 텍스트, true = HTML
+
             mailSender.send(message);
         } catch (Exception e) {
             throw new RuntimeException("Send Mail is Failed: " + e.getMessage(), e);
