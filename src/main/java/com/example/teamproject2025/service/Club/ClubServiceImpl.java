@@ -69,7 +69,7 @@ public class ClubServiceImpl implements ClubService {
         // 4. 파일명이 없으면 기본 썸네일 이미지 사용
         String storageThumbUrl = (uploadedFileName != null && !uploadedFileName.isEmpty())
                 ? uploadedFileName
-                : "default-thumbnail.png"; // 기본 이미지
+                : "https://www.mju.ac.kr/sites/mjukr/images/sub01/symbol01.png"; // 기본 이미지
 
         // 5. 동아리 엔티티 생성 후 저장
         ClubCreateRequestDto requestDto = new ClubCreateRequestDto(clubName, categoryName, description,
