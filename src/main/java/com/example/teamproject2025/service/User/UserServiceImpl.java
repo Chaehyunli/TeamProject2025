@@ -7,11 +7,14 @@ import com.example.teamproject2025.dto.User.*;
 import com.example.teamproject2025.dto.User.UserCreateRequestDto;
 import com.example.teamproject2025.dto.User.UserResponseDto;
 import com.example.teamproject2025.dto.User.UserUpdateRequestDto;
+import com.example.teamproject2025.entity.Chat.ChatRoom;
 import com.example.teamproject2025.entity.User.User;
+import com.example.teamproject2025.repository.Chat.ChatRoomRepository;
 import com.example.teamproject2025.repository.University.UniversityRepository;
 import com.example.teamproject2025.repository.User.UserRepository;
 import com.example.teamproject2025.service.Chat.ChatService;
 import com.google.cloud.storage.Storage;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +37,7 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final Storage storage;
     private final ChatService chatService;
+    private final ChatRoomRepository chatRoomRepository;
 
     @Value("${spring.cloud.gcp.storage.bucket}")
     private String bucketName;
@@ -120,7 +124,10 @@ public class UserServiceImpl implements UserService {
         List<MyChatListResDto> myChatRooms = chatService.getMyChatRoomsByUser(user);
         for (MyChatListResDto chatRoomDto : myChatRooms) {
             if (!chatRoomDto.getIsGroupChat()) { // 그룹 채팅은 제외하고 개인 채팅방만 처리
-                chatService.leavePrivateChatRoomByUser(chatRoomDto.getRoomId(), user);
+                ChatRoom chatRoom = chatRoomRepository.findById(
+                    chatRoomDto.getRoomId())
+                    .orElseThrow(()-> new EntityNotFoundException("room cannot be found"));
+                chatRoomRepository.delete(chatRoom);
             }
         }
 
