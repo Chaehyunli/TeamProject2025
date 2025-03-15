@@ -99,7 +99,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<CommonResponseDto<Void>> deleteUser(HttpSession session) {
+    public void deleteUser(HttpSession session) {
         // 현재 로그인한 사용자 확인
         Long sessionUserId = (Long) session.getAttribute("userId");
         Boolean deletedMailVerified = (Boolean) session.getAttribute("deleted_mail_verified"); // Ref4

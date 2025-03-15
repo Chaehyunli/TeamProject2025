@@ -34,7 +34,9 @@ public class UserController {
     @DeleteMapping()
     public ResponseEntity<CommonResponseDto<Void>> deleteUser(HttpSession session) {
         session.setAttribute("deleted_mail_verified",true);
-        return userService.deleteUser(session);
+        userService.deleteUser(session);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CommonResponseDto.success(HttpStatus.OK.value(), "User deleted successfully"));
     }
 
     @GetMapping("/list")
