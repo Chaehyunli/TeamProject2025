@@ -228,6 +228,20 @@ public class ChatServiceImpl implements ChatService {
         return chatListResDtos;
     }
 
+    public List<MyChatListResDto> getMyChatRoomsByUser(User user){
+        List<ChatParticipant> chatParticipants = chatParticipantRepository.findAllByUser(user);
+        List<MyChatListResDto> chatListResDtos = new ArrayList<>();
+
+        for(ChatParticipant p : chatParticipants){
+            MyChatListResDto dto = MyChatListResDto.builder()
+                    .roomId(p.getChatRoom().getId())
+                    .isGroupChat(p.getChatRoom().getIsGroupChat())
+                    .build();
+            chatListResDtos.add(dto);
+        }
+        return chatListResDtos;
+    }
+
     @Override
     public void leaveGroupChatRoom(Long roomId, HttpServletRequest request){
         ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(()-> new EntityNotFoundException("room cannot be found"));

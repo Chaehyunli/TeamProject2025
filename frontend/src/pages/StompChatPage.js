@@ -6,6 +6,7 @@ import axios from "axios";
 import { useChat } from "../context/ChatContext";  // 🔥 ChatContext 가져오기
 import backIcon from "../assets/backIcon.png";
 import { fetchChatHistory, markMessagesAsRead } from "../api/chatApi";
+import {ProtectedImage} from "../api/uploadApi";
 
 const StompChatPage = () => {
     const { roomId } = useParams();
@@ -18,6 +19,7 @@ const StompChatPage = () => {
     const isConnectedRef = useRef(false);
     const scrollRef = useRef(null);
     const location = useLocation();
+    const [receiverImageUrl, setReceiverImageUrl] = useState(null); // GCP Presigned URL 캐싱
     const receiverNameFromNavigate = location.state?.receiverName || "알 수 없음";
 
     const [receiverEmail, setReceiverEmail] = useState("");
@@ -53,6 +55,24 @@ const StompChatPage = () => {
             disconnectWebSocket();
         };
     }, [roomId]);
+
+    // 상대방 프로필 정보 및 Presigned URL 가져오기
+    useEffect(() => {
+        if (!receiverEmail || !participants[receiverEmail]) return;
+
+        const userProfile = participants[receiverEmail];
+
+        if (userProfile.profileImage && !userProfile.profileImage.startsWith("http") && !receiverImageUrl) {
+            axios.get(`${API_BASE_URL}/api/v1/upload/presigned-url/download`, {
+                params: { objectName: userProfile.profileImage },
+                withCredentials: true
+            })
+                .then(res => setReceiverImageUrl(res.data.data.url))
+                .catch(error => console.error("❌ Presigned URL 요청 실패:", error));
+        } else {
+            setReceiverImageUrl(userProfile.profileImage); // 일반 URL이라면 그대로 사용
+        }
+    }, [receiverEmail, participants]); // receiverImageUrl을 의존성에서 제외하여 불필요한 반복 호출 방지해야 한다.
 
     useEffect(() => {
         scrollToBottom();
@@ -176,8 +196,9 @@ const StompChatPage = () => {
                             <div key={index}
                                  className={`flex ${msg.senderEmail === senderEmail ? "justify-end" : "justify-start"} items-start gap-2`}>
                                 {msg.senderEmail !== senderEmail && (
+
                                     <div className="flex items-start gap-2">
-                                        <img src={senderInfo.profileImage} alt="프로필"
+                                        <img src={receiverImageUrl} alt="프로필"
                                              className="w-8 h-8 rounded-full border mt-0"/>
                                         <div className="flex flex-col">
                                             <div className="text-sm font-semibold">{senderInfo.name}</div>

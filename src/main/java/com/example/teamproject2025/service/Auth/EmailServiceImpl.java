@@ -3,10 +3,16 @@ package com.example.teamproject2025.service.Auth;
 import com.example.teamproject2025.dto.Auth.EmailResponseDto;
 import com.example.teamproject2025.repository.Auth.RedisEmailVerificationRepository;
 import com.example.teamproject2025.repository.User.UserRepository;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
+
 import java.security.SecureRandom;
 
 @Service
@@ -16,9 +22,10 @@ public class EmailServiceImpl implements EmailService {
     private final JavaMailSender mailSender;
     private final UserRepository userRepository;
     private final RedisEmailVerificationRepository redisEmailVerificationRepository;
-    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
+    private final TemplateEngine templateEngine;
 
-    private static final String EMAIL_SUBJECT = "Email Verification";
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
+    private static final String EMAIL_SUBJECT = "이메일 인증";
 
     // 이메일 인증 요청 메서드
     @Override
@@ -27,15 +34,7 @@ public class EmailServiceImpl implements EmailService {
         String verificationCode = generateVerificationCode(); // 6자리 인증번호 생성
         redisEmailVerificationRepository.saveVerificationCode(email, verificationCode); // Redis에 인증번호 저장
 
-        String emailBody = generateVerificationEmailBody(verificationCode);
-
-        sendEmail(email, EMAIL_SUBJECT, emailBody);
-    }
-
-    // 이메일 본문 생성 메서드
-    private String generateVerificationEmailBody(String verificationCode) {
-        return "아래 인증번호를 입력하여 이메일을 인증하세요:\n\n" + verificationCode + "\n\n"
-                + "인증번호는 5분간 유효합니다.";
+        sendEmail(email, EMAIL_SUBJECT, verificationCode);
     }
 
     // 6자리 인증번호 생성
@@ -46,12 +45,25 @@ public class EmailServiceImpl implements EmailService {
 
     // 이메일 전송 부 구현
     @Override
-    public void sendEmail(String to, String subject, String text) {
+    public void sendEmail(String to, String subject, String verificationCode) {
         try {
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setTo(to);
-            message.setSubject(subject);
-            message.setText(text);
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, false, "UTF-8");
+
+            // 보내는 사람
+            helper.setFrom(new InternetAddress("kth132225@gmail.com", "● 동아리 모아", "UTF-8"));
+            helper.setTo(to);
+            helper.setSubject(subject);
+
+            // HTML Rendering
+            Context context = new Context();
+            context.setVariable("verificationCode", verificationCode);
+            String htmlContent = templateEngine.process("emailVerification", context);
+
+
+            // 이메일 본문 설정 (HTML)
+            helper.setText(htmlContent, true);
+
             mailSender.send(message);
         } catch (Exception e) {
             throw new RuntimeException("Send Mail is Failed: " + e.getMessage(), e);

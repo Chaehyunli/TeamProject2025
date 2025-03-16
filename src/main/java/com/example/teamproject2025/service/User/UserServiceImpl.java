@@ -1,15 +1,20 @@
 package com.example.teamproject2025.service.User;
 
+import com.example.teamproject2025.dto.Chat.MyChatListResDto;
 import com.example.teamproject2025.dto.Club.ClubSummaryDto;
 import com.example.teamproject2025.dto.Common.CommonResponseDto;
 import com.example.teamproject2025.dto.User.*;
 import com.example.teamproject2025.dto.User.UserCreateRequestDto;
 import com.example.teamproject2025.dto.User.UserResponseDto;
 import com.example.teamproject2025.dto.User.UserUpdateRequestDto;
+import com.example.teamproject2025.entity.Chat.ChatRoom;
 import com.example.teamproject2025.entity.User.User;
+import com.example.teamproject2025.repository.Chat.ChatRoomRepository;
 import com.example.teamproject2025.repository.University.UniversityRepository;
 import com.example.teamproject2025.repository.User.UserRepository;
+import com.example.teamproject2025.service.Chat.ChatService;
 import com.google.cloud.storage.Storage;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +36,8 @@ public class UserServiceImpl implements UserService {
     private final UniversityRepository universityRepository;
     private final PasswordEncoder passwordEncoder;
     private final Storage storage;
+    private final ChatService chatService;
+    private final ChatRoomRepository chatRoomRepository;
 
     @Value("${spring.cloud.gcp.storage.bucket}")
     private String bucketName;
@@ -55,19 +62,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.save(dto.toEntity(universityId, encodedPassword));
 
         // 5. Client 에게 응답할 DTO Build
-        return UserResponseDto.builder()
-                .userId(user.getUserId())
-                .username(user.getUsername())
-                .email(user.getEmail())
-                .name(user.getName())
-                .studentId(user.getStudentId())
-                .universityId(user.getUniversityId())
-                .universityName(dto.getUniversityName())
-                .isEmailVerified(user.getIsEmailVerified())
-                .isUniVerified(user.getIsUniVerified())
-                .profileImage(user.getProfileImage())
-                .createdAt(user.getCreatedAt())
-                .build();
+        return UserResponseDto.toDTO(user, dto.getUniversityName());
     }
 
     @Override
@@ -91,18 +86,7 @@ public class UserServiceImpl implements UserService {
 
         user.setUpdatedAt(LocalDateTime.now());
 
-        return UserResponseDto.builder()
-                .userId(user.getUserId())
-                .username(user.getUsername())
-                .email(user.getEmail())
-                .name(user.getName())
-                .studentId(user.getStudentId())
-                .department(user.getDepartment()) // 학과 정보 반환
-                .profileImage(user.getProfileImage())
-                .isEmailVerified(user.getIsEmailVerified())
-                .isUniVerified(user.getIsUniVerified())
-                .createdAt(user.getCreatedAt())
-                .build();
+        return UserResponseDto.toDTO(user);
     }
 
     // Google Cloud Storage에서 기존 이미지 삭제
@@ -118,26 +102,8 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-//    @Override
-//    public UserResponseDto update(Long userId, UserUpdateRequestDto dto){
-//        User user = userRepository.findById(userId)
-//                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-//
-//        User updatedUser = user.update(dto);
-//
-//        userRepository.save(updatedUser);
-//
-//        return UserResponseDto.builder()
-//                .username(updatedUser.getUsername())
-//                .studentId(updatedUser.getStudentId())
-//                .universityName(null) // 추가 로직 필요 시 처리
-//                .email(updatedUser.getEmail())
-//                .profileImage(updatedUser.getProfileImage())
-//                .build();
-//    }
-
     @Override
-    public ResponseEntity<CommonResponseDto<Void>> deleteUser(HttpSession session) {
+    public void deleteUser(HttpSession session) {
         // 현재 로그인한 사용자 확인
         Long sessionUserId = (Long) session.getAttribute("userId");
         Boolean deletedMailVerified = (Boolean) session.getAttribute("deleted_mail_verified"); // Ref4
@@ -154,6 +120,17 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(sessionUserId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
+        // 사용자가 참여한 모든 개인 채팅방에서 나가기
+        List<MyChatListResDto> myChatRooms = chatService.getMyChatRoomsByUser(user);
+        for (MyChatListResDto chatRoomDto : myChatRooms) {
+            if (!chatRoomDto.getIsGroupChat()) { // 그룹 채팅은 제외하고 개인 채팅방만 처리
+                ChatRoom chatRoom = chatRoomRepository.findById(
+                    chatRoomDto.getRoomId())
+                    .orElseThrow(()-> new EntityNotFoundException("room cannot be found"));
+                chatRoomRepository.delete(chatRoom);
+            }
+        }
+
         // 기존 프로필 이미지 삭제 (기본 프로필 제외)
         if (user.getProfileImage() != null && !user.getProfileImage().equals("default-profileImage.png")) {
             deleteImageFromGCS(user.getProfileImage());
@@ -164,9 +141,6 @@ public class UserServiceImpl implements UserService {
 
         // 세션 무효화
         session.invalidate();
-
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(CommonResponseDto.success(HttpStatus.OK.value(), "User deleted successfully"));
     }
 
     @Override
@@ -207,22 +181,7 @@ public class UserServiceImpl implements UserService {
                 .map(userClub -> ClubSummaryDto.fromEntity(userClub.getClub()))
                 .toList();
 
-        return UserResponseDto.builder()
-                .userId(user.getUserId())
-                .username(user.getUsername())
-                .name(user.getName())
-                .email(user.getEmail())
-                .studentId(user.getStudentId())
-                .department(user.getDepartment())
-                .profileImage(user.getProfileImage())
-                .universityId(user.getUniversityId())
-                .universityName(universityName)
-                .isEmailVerified(user.getIsEmailVerified())
-                .isUniVerified(user.getIsUniVerified())
-                .createdAt(user.getCreatedAt())
-                .joinedClubs(joinedClubs)   // 가입한 동아리 목록 추가
-                .managedClubs(managedClubs) // 운영하는 동아리 목록 추가
-                .build();
+        return UserResponseDto.toDTO(user, joinedClubs, managedClubs, universityName);
     }
 }
 

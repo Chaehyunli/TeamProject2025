@@ -4,8 +4,14 @@ import com.example.teamproject2025.dto.Common.CommonResponseDto;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -43,6 +49,26 @@ public class GlobalExceptionHandler {
     public ResponseEntity<CommonResponseDto<Void>> handleIllegalStateException(IllegalStateException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(CommonResponseDto.error(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
+    }
+
+    // DTO 검증 실패 시 400 응답
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<CommonResponseDto<Map<String, String>>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+        BindingResult bindingResult = ex.getBindingResult();
+
+        for (FieldError error : bindingResult.getFieldErrors()) {
+            errors.put(error.getField(), error.getDefaultMessage());
+        }
+
+        if (errors.size() == 1) {
+            String firstErrorMessage = errors.values().iterator().next(); // 첫 번째 값 추출
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(CommonResponseDto.error(HttpStatus.BAD_REQUEST.value(), firstErrorMessage));
+        }
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(CommonResponseDto.error(HttpStatus.BAD_REQUEST.value(), errors.toString()));
     }
 }
 

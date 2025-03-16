@@ -1,5 +1,6 @@
 package com.example.teamproject2025.dto.User;
 
+import com.example.teamproject2025.entity.User.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,4 +16,14 @@ public class UserLoginResponseDto {
     String name;
     String email;
     String profileImage;
+
+    public static UserLoginResponseDto toDTO(User user){
+        return UserLoginResponseDto.builder()
+                .userId(user.getUserId())
+                .username(user.getUsername())
+                .name(user.getName())
+                .email(user.getEmail())
+                .profileImage(user.getProfileImage())
+                .build();
+    }
 }

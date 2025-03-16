@@ -15,6 +15,7 @@ import com.example.teamproject2025.repository.Membership.ClubSubmissionRepositor
 import com.example.teamproject2025.repository.Membership.UserClubRepository;
 import com.example.teamproject2025.repository.Membership.UserRoleRepository;
 import com.example.teamproject2025.repository.User.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +23,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class ClubSubmissionServiceImpl implements ClubSubmissionService {
 
     private final ClubSubmissionRepository clubSubmissionRepository;
@@ -29,15 +31,6 @@ public class ClubSubmissionServiceImpl implements ClubSubmissionService {
     private final ClubRepository clubRepository;
     private final UserClubRepository userClubRepository;
     private final UserRoleRepository userRoleRepository;
-
-
-    public ClubSubmissionServiceImpl(ClubSubmissionRepository clubSubmissionRepository, UserRepository userRepository, ClubRepository clubRepository, UserClubRepository userClubRepository, UserRoleRepository userRoleRepository) {
-        this.clubSubmissionRepository = clubSubmissionRepository;
-        this.userRepository = userRepository;
-        this.clubRepository = clubRepository;
-        this.userClubRepository = userClubRepository;
-        this.userRoleRepository = userRoleRepository;
-    }
 
     @Override
     @Transactional

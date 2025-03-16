@@ -14,13 +14,12 @@ import com.example.teamproject2025.entity.User.User;
 import com.example.teamproject2025.repository.Club.CategoryRepository;
 import com.example.teamproject2025.repository.Club.ClubArticleRepository;
 import com.example.teamproject2025.repository.Club.ClubRepository;
-import com.example.teamproject2025.repository.Membership.ClubSubmissionRepository;
 import com.example.teamproject2025.repository.Membership.UserClubRepository;
 import com.example.teamproject2025.repository.Membership.UserRoleRepository;
 import com.example.teamproject2025.repository.University.UniversityRepository;
 import com.example.teamproject2025.repository.User.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import com.google.cloud.storage.Storage;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
@@ -32,6 +31,7 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class ClubServiceImpl implements ClubService {
     private final ClubRepository clubRepository;
     private final UserRepository userRepository;
@@ -41,28 +41,12 @@ public class ClubServiceImpl implements ClubService {
     private final UserClubRepository userClubRepository;
     private final ClubArticleRepository clubArticleRepository;
     private final Storage storage;
-
-    @Autowired
-    private ApplicationContext applicationContext;
+    private final ApplicationContext applicationContext;
 
     // 업로드 경로 (Spring Boot의 정적 리소스로 활용, 현재 프로젝트 루트 경로에 uploads 폴더 생성)
     private static final String UPLOAD_DIR = System.getProperty("user.dir") + "/uploads/clubs/";
     @Value("${spring.cloud.gcp.storage.bucket}")
     private String bucketName;
-
-    public ClubServiceImpl(ClubRepository clubRepository, UserRepository userRepository,
-                           CategoryRepository categoryRepository, UniversityRepository universityRepository,
-                           UserRoleRepository userRoleRepository, UserClubRepository userClubRepository,
-                           Storage storage, ClubSubmissionRepository clubSubmissionRepository, ClubArticleRepository clubArticleRepository) {
-        this.clubRepository = clubRepository;
-        this.userRepository = userRepository;
-        this.categoryRepository = categoryRepository;
-        this.universityRepository = universityRepository;
-        this.userRoleRepository = userRoleRepository;
-        this.userClubRepository = userClubRepository;
-        this.clubArticleRepository = clubArticleRepository;
-        this.storage = storage;
-    }
 
     @Override
     @Transactional
@@ -82,7 +66,7 @@ public class ClubServiceImpl implements ClubService {
         // 4. 파일명이 없으면 기본 썸네일 이미지 사용
         String storageThumbUrl = (uploadedFileName != null && !uploadedFileName.isEmpty())
                 ? uploadedFileName
-                : "default-thumbnail.png"; // 기본 이미지
+                : "https://www.mju.ac.kr/sites/mjukr/images/sub01/symbol01.png"; // 기본 이미지
 
         // 5. 동아리 엔티티 생성 후 저장
         ClubCreateRequestDto requestDto = new ClubCreateRequestDto(clubName, categoryName, description,

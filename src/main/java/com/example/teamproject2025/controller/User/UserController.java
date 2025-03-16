@@ -7,6 +7,7 @@ import com.example.teamproject2025.dto.User.UserResponseDto;
 import com.example.teamproject2025.dto.User.UserUpdateRequestDto;
 import com.example.teamproject2025.service.User.UserService;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +24,7 @@ public class UserController {
 
     // 사용자 등록
     @PostMapping("/register")
-    public ResponseEntity<CommonResponseDto<UserResponseDto>> register(@RequestBody UserCreateRequestDto userCreateRequestDto) {
+    public ResponseEntity<CommonResponseDto<UserResponseDto>> register(@RequestBody @Valid UserCreateRequestDto userCreateRequestDto) {
         UserResponseDto userResponse = userService.register(userCreateRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(CommonResponseDto.success(HttpStatus.CREATED.value(), "User registered successfully", userResponse));
@@ -33,7 +34,9 @@ public class UserController {
     @DeleteMapping()
     public ResponseEntity<CommonResponseDto<Void>> deleteUser(HttpSession session) {
         session.setAttribute("deleted_mail_verified",true);
-        return userService.deleteUser(session);
+        userService.deleteUser(session);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CommonResponseDto.success(HttpStatus.OK.value(), "User deleted successfully"));
     }
 
     @GetMapping("/list")
@@ -68,6 +71,7 @@ public class UserController {
         if (userId == null) {
             return ResponseEntity.status(401).build(); // 로그인되지 않은 경우
         }
+        System.out.println("Session User ID: " + userId);
 
         UserResponseDto updatedUser = userService.updateUserProfile(userId, dto);
         return ResponseEntity.ok(updatedUser);

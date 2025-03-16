@@ -43,7 +43,23 @@ const MyChatPage = () => {
     };
 
     function formatTimeFromISO(isoString) {
-        return new Date(isoString).toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" });
+        const date = new Date(isoString);
+
+        // 날짜 부분 (yyyy-mm-dd)
+        const formattedDate = date.toLocaleDateString("ko-KR", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit"
+        }).replace(/\s/g, '');
+
+        // 시간 부분 (hh:mm)
+        const formattedTime = date.toLocaleTimeString("ko-KR", {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false // 24시간 형식 유지
+        });
+
+        return `${formattedDate} ${formattedTime}`;
     }
 
     return (
