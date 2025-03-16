@@ -56,14 +56,12 @@ const StompChatPage = () => {
         };
     }, [roomId]);
 
-    // ✅ 2. 상대방 프로필 정보 및 Presigned URL 가져오기
+    // 상대방 프로필 정보 및 Presigned URL 가져오기
     useEffect(() => {
         if (!receiverEmail || !participants[receiverEmail]) return;
 
-        // 🚀 상대방 프로필 정보를 직접 상태로 저장하지 않고 Presigned URL 요청만 수행하도록 개선 ✅ 수정해야 한다.
         const userProfile = participants[receiverEmail];
 
-        // 🚀 GCP Presigned URL 요청 (한 번만) ✅ 여기를 추가해야 한다.
         if (userProfile.profileImage && !userProfile.profileImage.startsWith("http") && !receiverImageUrl) {
             axios.get(`${API_BASE_URL}/api/v1/upload/presigned-url/download`, {
                 params: { objectName: userProfile.profileImage },
@@ -72,9 +70,9 @@ const StompChatPage = () => {
                 .then(res => setReceiverImageUrl(res.data.data.url))
                 .catch(error => console.error("❌ Presigned URL 요청 실패:", error));
         } else {
-            setReceiverImageUrl(userProfile.profileImage); // 일반 URL이라면 그대로 사용 ✅ 수정해야 한다.
+            setReceiverImageUrl(userProfile.profileImage); // 일반 URL이라면 그대로 사용
         }
-    }, [receiverEmail, participants]); // ✅ receiverImageUrl을 의존성에서 제외하여 불필요한 반복 호출 방지해야 한다.
+    }, [receiverEmail, participants]); // receiverImageUrl을 의존성에서 제외하여 불필요한 반복 호출 방지해야 한다.
 
     useEffect(() => {
         scrollToBottom();
