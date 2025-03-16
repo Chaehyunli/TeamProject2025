@@ -16,8 +16,8 @@ const ClubCard = ({ club, isMember }) => {
             <h3 className="text-xl font-bold mb-1 break-words">{club.clubName}</h3>
 
             {/* 회장 및 부회장 정보 */}
-            <p className="text-gray-600 text-sm"><strong>회장:</strong> {president ? president.userName : "미정"}</p>
-            {vicePresident && <p className="text-gray-600 text-sm"><strong>부회장:</strong> {vicePresident.userName}</p>}
+            <p className="text-gray-600 text-sm"><strong>회장:</strong> {president ? president.name : "미정"}</p>
+            {vicePresident && <p className="text-gray-600 text-sm"><strong>부회장:</strong> {vicePresident.name}</p>}
 
             {/* 설명 */}
             <p className="text-gray-500 text-sm mt-2 break-words max-h-16 overflow-hidden">
