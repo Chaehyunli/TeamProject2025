@@ -1,9 +1,6 @@
 package com.example.teamproject2025.service.Membership;
 
-import com.example.teamproject2025.dto.Membership.ClubSubmissionRequestDto;
-import com.example.teamproject2025.dto.Membership.ClubSubmissionResponseDto;
-import com.example.teamproject2025.dto.Membership.UserSubmissionsUpdateRequestDto;
-import com.example.teamproject2025.dto.Membership.UserSubmissionsUpdateResponseDto;
+import com.example.teamproject2025.dto.Membership.*;
 import com.example.teamproject2025.entity.Club.Club;
 import com.example.teamproject2025.entity.Membership.ClubSubmission;
 import com.example.teamproject2025.entity.Membership.RoleType;
@@ -218,6 +215,37 @@ public class ClubSubmissionServiceImpl implements ClubSubmissionService {
 
         clubSubmissionRepository.delete(submission);
         return true; // 삭제 성공
+    }
+
+    // 특정 회원에게 권한을 부여
+    public void grantAuthority(Long grantorUserId, GrantAuthorityRequestDto requestDto){
+        Long targetUserId = requestDto.getTargetUserId();
+        Long clubId = requestDto.getClubId();
+        RoleType roleType = RoleType.valueOf(requestDto.getRole());
+
+        // 1. 대상 사용자가 해당 동아리 회원인지 확인
+        boolean isMember = userClubRepository.existsByUser_UserIdAndClub_ClubId(targetUserId, clubId);
+        if (!isMember) {
+            throw new RuntimeException("해당 사용자는 동아리 회원이 아닙니다.");
+        }
+
+        // 2. User, Club 엔티티 조회
+        User targetUser = userRepository.findById(targetUserId)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+        Club club = clubRepository.findById(clubId)
+                .orElseThrow(() -> new RuntimeException("동아리를 찾을 수 없습니다."));
+
+        // 3. 해당 동아리에서 기존 역할 조회
+        UserRole userRole = userRoleRepository.findByUser_UserIdAndClub_ClubId(targetUserId, clubId)
+                .orElseGet(() -> UserRole.builder()
+                        .user(targetUser)
+                        .club(club)
+                        .roleName(roleType)
+                        .build());
+
+        // 4. 역할 업데이트 및 저장
+        userRole.setRoleName(roleType);
+        userRoleRepository.save(userRole);
     }
 
 }

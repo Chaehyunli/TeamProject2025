@@ -3,6 +3,7 @@ package com.example.teamproject2025.controller.Membership;
 import com.example.teamproject2025.dto.Common.CommonResponseDto;
 import com.example.teamproject2025.dto.Membership.ClubSubmissionRequestDto;
 import com.example.teamproject2025.dto.Membership.ClubSubmissionResponseDto;
+import com.example.teamproject2025.dto.Membership.GrantAuthorityRequestDto;
 import com.example.teamproject2025.service.Club.ClubService;
 import com.example.teamproject2025.service.Membership.ClubSubmissionService;
 import jakarta.servlet.http.HttpSession;
@@ -151,6 +152,30 @@ public class ClubSubmissionController {
         clubSubmissionService.rejectSubmission(clubId, applyId);
 
         return CommonResponseDto.success(200, "지원서가 거절되었습니다.", null);
+    }
+
+    // 특정 회원에게 권한을 부여, 경로에서 user_id, club_id를 불러오지 않고 dto 사용
+    @PostMapping("/grant-role")
+    public CommonResponseDto<String> grantRole(
+            @RequestBody GrantAuthorityRequestDto requestDto,
+            HttpSession session){
+        // 세션에서 현재 로그인한 사용자 ID 가져오기
+        Long currentUserId = (Long) session.getAttribute("userId");
+        //Long currentUserId = (session != null) ? (Long) session.getAttribute("userId") : null;
+
+        if (currentUserId == null) {
+            return CommonResponseDto.error(401, "로그인이 필요합니다.");
+        }
+
+        // 현재 사용자가 회장 또는 부회장인지 확인
+        if (!clubService.checkUserPermission(currentUserId, requestDto.getClubId())) {
+            return CommonResponseDto.error(403, "회원에게 권한을 부여할 권한이 없습니다.(회장 또는 부회장만 가능)");
+        }
+
+        // 권한 부여 요청
+        clubSubmissionService.grantAuthority(currentUserId, requestDto);
+
+        return CommonResponseDto.success(200, "성공적으로 권한을 부여하였습니다.", null);
     }
 
 }

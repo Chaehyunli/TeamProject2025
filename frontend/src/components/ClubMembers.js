@@ -64,7 +64,7 @@ const ClubMembers = () => {
 
                         {/* 역할 선택 버튼 */}
                         <div className="flex gap-2">
-                            {["MEMBER", "EXECUTIVE", "VICE_PRESIDENT", "PRESIDENT"].map((role) => (
+                            {["MEMBER", "STAFF", "VICE_PRESIDENT", "PRESIDENT"].map((role) => (
                                 <button
                                     key={role}
                                     className={`px-3 py-1 rounded-lg ${
@@ -73,7 +73,7 @@ const ClubMembers = () => {
                                     // onClick={() => handleRoleChange(member.userId, role)}
                                 >
                                     {role === "MEMBER" ? "회원" :
-                                        role === "EXECUTIVE" ? "임원" :
+                                        role === "STAFF" ? "임원" :
                                             role === "VICE_PRESIDENT" ? "부회장" : "회장"}
                                 </button>
                             ))}
