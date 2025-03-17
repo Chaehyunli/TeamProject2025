@@ -72,7 +72,7 @@ public class ClubSubmissionController {
         }
 
         // 해당 사용자의 동아리 내 역할 조회
-        String userRole = clubService.getUserRoleInClub(userId, clubId);
+        // String userRole = clubService.getUserRoleInClub(userId, clubId);
 
         // 회장(PRESIDENT) 또는 부회장(VICE_PRESIDENT)만 지원서 목록 조회 가능
         if (!clubService.checkUserPermission(userId, clubId)) {
@@ -96,7 +96,7 @@ public class ClubSubmissionController {
         }
 
         // 사용자의 역할 가져오기
-        String userRole = clubService.getUserRoleInClub(userId, clubId);
+        // String userRole = clubService.getUserRoleInClub(userId, clubId);
 
         // PRESIDENT 또는 VICE_PRESIDENT가 아니라면 접근 제한
         if (!clubService.checkUserPermission(userId, clubId)) {
