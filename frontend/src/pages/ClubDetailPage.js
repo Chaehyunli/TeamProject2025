@@ -122,7 +122,7 @@ const ClubDetailPage = () => {
                                             className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
                                             onClick={handleButtonClick}
                                         >
-                                            썸네일 수정
+                                            이미지 수정
                                         </button>
                                         <button
                                             className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
