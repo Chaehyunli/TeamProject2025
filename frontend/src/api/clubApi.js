@@ -117,6 +117,7 @@ export const getClub = async (clubId) => {
         throw error;
     }
 };
+
 // 특정 지원서 상세정보 조회
 export const getClubSubmissionDetail = async (clubId, applyId) => {
     try {
@@ -255,6 +256,21 @@ export const getUserRoleInClub = async (clubId) => {
         return response.data.data.role;
     } catch (error) {
         console.error('동아리 멤버 조회 실패: ', error);
+        throw error;
+    }
+};
+
+// 특정 동아리 Thumbnail 수정
+export const updateClubThumbnail = async (clubId, objectName) => {
+    try {
+        const response = await axios.patch(
+            `${API_BASE_URL}/${clubId}/thumbnail`,
+            new URLSearchParams({ objectName }), // x-www-form-urlencoded 형식
+            { withCredentials: true }
+        );
+        return response.data;
+    } catch (error) {
+        console.error("동아리 썸네일 수정 실패:", error);
         throw error;
     }
 };
