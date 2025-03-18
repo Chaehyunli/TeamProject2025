@@ -31,4 +31,6 @@ public interface ClubService {
     ArticleListResponseDto getArticlesList(Long clubId, int limit, int offset);
 
     void updateClubThumbnail(String username, Long clubId, String objectName);
+
+    void resetClubThumbnail(String username, Long clubId);
 }

@@ -322,4 +322,26 @@ public class ClubServiceImpl implements ClubService {
         club.setThumbUrl(objectName);
         clubRepository.save(club);
     }
+
+    public void resetClubThumbnail(String username, Long clubId) {
+        Club club = clubRepository.findById(clubId)
+                .orElseThrow(() -> new IllegalArgumentException("❌ 존재하지 않는 동아리"));
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("❌ 존재하지 않는 사용자"));
+
+        // 클럽 관리자인지 확인
+        if (!checkUserPermission(user.getUserId(), club.getClubId())) {
+            throw new SecurityException("❌ 권한이 없습니다.");
+        }
+
+        // 기존 썸네일 삭제 (기본 이미지가 아닐 때만)
+        if (club.getThumbUrl() != null && !club.getThumbUrl().equals("default-thumbnail.png")) {
+            deleteImageFromGCS(club.getThumbUrl());
+        }
+
+        // 기본 이미지로 설정
+        club.setThumbUrl("default-thumbnail.png");
+        clubRepository.save(club);
+    }
 }

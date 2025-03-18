@@ -203,4 +203,14 @@ public class ClubController {
     }
 
     // 동아리 thumbnail 삭제 후, default로 set
+    @PatchMapping("/{clubId}/thumbnail/reset")
+    public ResponseEntity<CommonResponseDto<Void>> resetClubThumbnail(
+            HttpSession session,
+            @PathVariable Long clubId) {
+
+        String username = (String) session.getAttribute("username");
+        clubService.resetClubThumbnail(username, clubId);
+
+        return ResponseEntity.ok(CommonResponseDto.success(200, "Default Thumbnail updated successfully"));
+    }
 }
