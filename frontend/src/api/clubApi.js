@@ -274,3 +274,18 @@ export const updateClubThumbnail = async (clubId, objectName) => {
         throw error;
     }
 };
+
+// 기본 Thumbnail로 변경
+export const resetClubThumbnail = async (clubId) =>{
+  try {
+      const response = await axios.patch(`${API_BASE_URL}/${clubId}/thumbnail/reset`,
+          {},
+          { withCredentials: true }
+      );
+
+      return response.data;
+  } catch (error){
+      console.log("기본 썸네일 설정 실패:", error);
+      throw error;
+  }
+};

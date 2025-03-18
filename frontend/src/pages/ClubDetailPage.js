@@ -1,7 +1,7 @@
 import ClubDetailNavbar from "../components/ClubDetailNavbar";
 import { useParams, Outlet } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
-import { getUserClubRole, getClub, updateClubThumbnail } from "../api/clubApi";
+import { getUserClubRole, getClub, updateClubThumbnail, resetClubThumbnail } from "../api/clubApi";
 import { ProtectedImage, uploadImageToGCP } from "../api/uploadApi";
 import DirectMessageButton from "../components/DirectMessageButton";
 import { FaEdit } from "react-icons/fa"; // ✏️ 아이콘 추가
@@ -15,20 +15,21 @@ const ClubDetailPage = () => {
     const fileInputRef = useRef(null); // 파일 입력창을 트리거하기 위한 ref
     const dropdownRef = useRef(null); // 드롭다운 위치 조정용
 
-    useEffect(() => {
-        const fetchClubData = async () => {
-            try {
-                const [clubData, role] = await Promise.all([
-                    getClub(clubId),
-                    getUserClubRole(clubId)
-                ]);
+    const fetchClubData = async () => {
+        try {
+            const [clubData, role] = await Promise.all([
+                getClub(clubId),
+                getUserClubRole(clubId)
+            ]);
 
-                setClub(clubData);
-                setUserRole(role);
-            } catch (error) {
-                console.error("❌ 동아리 정보를 불러오는 중 오류 발생:", error);
-            }
-        };
+            setClub(clubData);
+            setUserRole(role);
+        } catch (error) {
+            console.error("❌ 동아리 정보를 불러오는 중 오류 발생:", error);
+        }
+    };
+
+    useEffect(() => {
         fetchClubData();
     }, [clubId]);
 
@@ -72,14 +73,19 @@ const ClubDetailPage = () => {
         }
     };
 
-    // 기본 썸네일로 변경 (API 호출 예정)
+    // 기본 썸네일로 변경
     const handleResetThumbnail = async () => {
         try {
-            await updateClubThumbnail(clubId, ""); // API 연결 시 기본 썸네일 처리
-            setClub({ ...club, thumbUrl: "" });
-            setShowOptions(false); // 옵션 창 닫기
+            await resetClubThumbnail(clubId);
+
+            setClub((prevClub) => ({
+                ...prevClub,
+                thumbUrl: "default-thumbnail.png",
+            }));
+
+            setShowOptions(false);
         } catch (error) {
-            console.error("기본 썸네일 설정 실패:", error);
+            console.error("❌ 기본 썸네일 설정 실패:", error);
         }
     };
 
