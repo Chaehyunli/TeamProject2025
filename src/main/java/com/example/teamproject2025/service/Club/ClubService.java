@@ -29,4 +29,6 @@ public interface ClubService {
     SpecificArticleResponseDto getArticleDetail(Long clubId, Long articleId);
 
     ArticleListResponseDto getArticlesList(Long clubId, int limit, int offset);
+
+    void updateClubThumbnail(String username, Long clubId, String objectName);
 }

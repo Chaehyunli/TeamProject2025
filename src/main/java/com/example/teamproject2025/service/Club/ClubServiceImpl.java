@@ -300,4 +300,26 @@ public class ClubServiceImpl implements ClubService {
             System.err.println("❌ 기존 동아리 이미지 삭제 실패 (이미 삭제되었거나 존재하지 않음): " + objectName);
         }
     }
+
+    public void updateClubThumbnail(String username, Long clubId, String objectName) {
+        Club club = clubRepository.findById(clubId)
+                .orElseThrow(() -> new IllegalArgumentException("❌ 존재하지 않는 동아리"));
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("❌ 존재하지 않는 사용자"));
+
+        // 클럽 관리자인지 확인
+        if (!checkUserPermission(user.getUserId(), club.getClubId())) {
+            throw new SecurityException("권한이 없습니다.");
+        }
+
+        // 기존 이미지 삭제 (기본 이미지가 아니라면)
+        if (club.getThumbUrl() != null && !club.getThumbUrl().equals("default-thumbnail.png")) {
+            deleteImageFromGCS(club.getThumbUrl());
+        }
+
+        // 새 썸네일 객체 이름 저장
+        club.setThumbUrl(objectName);
+        clubRepository.save(club);
+    }
 }
