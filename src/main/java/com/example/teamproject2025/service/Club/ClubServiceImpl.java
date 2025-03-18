@@ -300,4 +300,17 @@ public class ClubServiceImpl implements ClubService {
             System.err.println("❌ 기존 동아리 이미지 삭제 실패 (이미 삭제되었거나 존재하지 않음): " + objectName);
         }
     }
+
+    // 사용자가 동아리 회장인지 확인
+    @Override
+    @Transactional(readOnly = true)
+    public boolean checkUserIsPresident(Long userId, Long clubId){
+        ClubService proxyService = applicationContext.getBean(ClubService.class);
+        String userRole = proxyService.getUserRoleInClub(userId, clubId);
+
+        return "PRESIDENT".equals(userRole);
+    }
+
 }
+
+

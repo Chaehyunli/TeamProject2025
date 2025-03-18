@@ -18,6 +18,8 @@ public interface ClubService {
 
     boolean checkUserPermission(Long userId, Long clubId);
 
+    boolean checkUserIsPresident(Long userId, Long clubId);
+
     List<ClubMemberResponseDto> getClubMembers(Long clubId);
 
     ClubArticleResponseDto createArticle(Long clubId, Long userId, String title, String content, String uploadedFileName, boolean is_notice);

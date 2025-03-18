@@ -248,4 +248,26 @@ public class ClubSubmissionServiceImpl implements ClubSubmissionService {
         userRoleRepository.save(userRole);
     }
 
+    @Override
+    @Transactional
+    public void leaveClub(Long currentUserId, LeaveClubRequestDto requestDto) {
+        Long targetUserId = requestDto.getTargetUserId();
+        Long clubId = requestDto.getClubId();
+
+        // 동아리 존재 여부 확인
+        Club club = clubRepository.findById(clubId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 동아리를 찾을 수 없습니다."));
+
+        // 강퇴 대상이 동아리에 속해 있는지 확인
+        UserClub userClub = userClubRepository.findByClub_ClubIdAndUser_UserId(clubId, targetUserId)
+                .orElseThrow(() -> new RuntimeException("해당 사용자는 동아리 회원이 아닙니다."));
+
+        // 강퇴 대상의 역할(UserRole) 삭제
+        List<UserRole> userRoles = userRoleRepository.findByClub_ClubIdAndUser_UserId(clubId, targetUserId);
+
+        // 강퇴 대상의 동아리 회원(UserClub) 삭제
+        userClubRepository.delete(userClub);
+        userRoleRepository.deleteAll(userRoles);
+    }
+
 }
