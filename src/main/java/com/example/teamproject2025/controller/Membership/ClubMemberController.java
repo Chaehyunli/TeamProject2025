@@ -57,9 +57,9 @@ public class ClubMemberController {
             return CommonResponseDto.error(401, "로그인이 필요합니다.");
         }
 
-        // 현재 사용자가 회장 또는 부회장인지 확인
-        if (!clubService.checkUserPermission(currentUserId, requestDto.getClubId())) {
-            return CommonResponseDto.error(403, "회원에게 권한을 부여할 권한이 없습니다.(회장 또는 부회장만 가능)");
+        // 현재 사용자가 회장인지
+        if (!clubService.checkUserIsPresident(currentUserId, requestDto.getClubId())) {
+            return CommonResponseDto.error(403, "권한을 부여할 권한이 없습니다.(회장만 가능)");
         }
 
         // 권한 부여 요청
@@ -79,7 +79,7 @@ public class ClubMemberController {
             return CommonResponseDto.error(401, "로그인이 필요합니다.");
         }
 
-        // 현재 사용자가 회장 또는 부회장인지 확인
+        // 현재 사용자가 회장인지
         if (!clubService.checkUserIsPresident(currentUserId, requestDto.getClubId())) {
             return CommonResponseDto.error(403, "강퇴할 권한이 없습니다.(회장만 가능)");
         }

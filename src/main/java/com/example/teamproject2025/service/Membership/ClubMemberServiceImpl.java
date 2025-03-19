@@ -46,7 +46,32 @@ public class ClubMemberServiceImpl implements ClubMemberService {
         Club club = clubRepository.findById(clubId)
                 .orElseThrow(() -> new RuntimeException("동아리를 찾을 수 없습니다."));
 
-        // 3. 해당 동아리에서 기존 역할 조회
+        // 3. 현재 역할 가져오기 (권한을 부여하는 사람)
+        RoleType grantorRole = userRoleRepository.findByUser_UserIdAndClub_ClubId(grantorUserId, clubId)
+                .map(UserRole::getRoleName)
+                .orElseThrow(() -> new RuntimeException("권한을 부여할 수 없는 사용자입니다."));
+
+        // 4. 대상 사용자의 현재 역할 가져오기
+        RoleType targetUserRole = userRoleRepository.findByUser_UserIdAndClub_ClubId(targetUserId, clubId)
+                .map(UserRole::getRoleName)
+                .orElseThrow(() -> new RuntimeException("해당 사용자는 동아리에서 역할을 가지고 있지 않습니다."));
+
+        // 5. 회장만 역할을 변경할 수 있음
+        if (grantorRole != RoleType.PRESIDENT) {
+            throw new RuntimeException("회장만 역할을 변경할 수 있습니다.");
+        }
+
+        // 6. 현재 회장의 역할을 변경할 수 없음
+        if (targetUserRole == RoleType.PRESIDENT) {
+            throw new RuntimeException("회장의 역할은 변경할 수 없습니다.");
+        }
+
+        // 7. 다른 회원을 회장(PRESIDENT)으로 임명할 수 없음
+        if (roleType == RoleType.PRESIDENT) {
+            throw new RuntimeException("다른 회원을 회장으로 임명할 수 없습니다.");
+        }
+
+        // 8. 기존 역할이 있으면 업데이트, 없으면 새로 생성
         UserRole userRole = userRoleRepository.findByUser_UserIdAndClub_ClubId(targetUserId, clubId)
                 .orElseGet(() -> UserRole.builder()
                         .user(targetUser)
@@ -54,7 +79,7 @@ public class ClubMemberServiceImpl implements ClubMemberService {
                         .roleName(roleType)
                         .build());
 
-        // 4. 역할 업데이트 및 저장
+        // 9. 역할 업데이트 및 저장
         userRole.setRoleName(roleType);
         userRoleRepository.save(userRole);
     }
