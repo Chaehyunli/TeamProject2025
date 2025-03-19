@@ -258,3 +258,43 @@ export const getUserRoleInClub = async (clubId) => {
         throw error;
     }
 };
+
+// 특정 회원에게 권한 부여
+export const grantRole = async (targetUserId, clubId, role) => {
+    try {
+        const response = await axios.post(
+            `${API_BASE_URL}/grant-role`,
+            { targetUserId, clubId, role },
+            {
+                withCredentials: true,
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            }
+        );
+        return response.data.message;
+    } catch (error) {
+        console.error('권한 부여 실패: ', error);
+        return error;
+    }
+};
+
+// 특정 회원 강퇴
+export const leaveClub = async (targetUserId, clubId) => {
+    try {
+        const response = await axios.delete(
+            `${API_BASE_URL}/leave-club`,
+            {
+                data: { targetUserId, clubId },
+                withCredentials: true,
+                headers: {
+                    "Content-Type": "application/json",  // 명확한 설정
+                },
+            }
+        );
+        return response.data.message;  
+    } catch (error) {
+        console.error('동아리 강퇴 실패: ', error);
+        return error;
+    }
+};
