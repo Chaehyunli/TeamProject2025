@@ -17,6 +17,5 @@ public interface ClubSubmissionService {
     ClubSubmissionResponseDto getSubmissionById(Long applyId);
     UserSubmissionsUpdateResponseDto updateSubmission(Long userId, Long applyId, UserSubmissionsUpdateRequestDto updateDto);
     boolean deleteSubmission(Long userId, Long applyId);
-    public void grantAuthority(Long grantorUserId, GrantAuthorityRequestDto requestDto);
-    public void leaveClub(Long currentUserId, LeaveClubRequestDto requestDto);
+
 }
