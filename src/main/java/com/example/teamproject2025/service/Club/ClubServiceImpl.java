@@ -178,6 +178,21 @@ public class ClubServiceImpl implements ClubService {
         return "PRESIDENT".equals(userRole) || "VICE_PRESIDENT".equals(userRole);
     }
 
+    // 동아리 멤버 조회 (ClubMemberResponseDto 사용)
+    @Override
+    @Transactional(readOnly = true)
+    public List<ClubMemberResponseDto> getClubMembers(Long clubId) {
+        List<UserClub> members = userClubRepository.findByClub_ClubId(clubId);
+
+        return members.stream()
+                .map(member -> new ClubMemberResponseDto(
+                        member.getUser().getUserId(),
+                        member.getUser().getName(),  // 사용자 이름 추가
+                        member.getRole().getRoleName().name() // 역할 정보 추가
+                ))
+                .collect(Collectors.toList());
+    }
+
     // 동아리 게시물 작성
     @Override
     public ClubArticleResponseDto createArticle(Long clubId, Long userId, String title, String content,
@@ -286,6 +301,51 @@ public class ClubServiceImpl implements ClubService {
         }
     }
 
+    public void updateClubThumbnail(String username, Long clubId, String objectName) {
+        Club club = clubRepository.findById(clubId)
+                .orElseThrow(() -> new IllegalArgumentException("❌ 존재하지 않는 동아리"));
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("❌ 존재하지 않는 사용자"));
+
+        // 클럽 관리자인지 확인
+        if (!checkUserPermission(user.getUserId(), club.getClubId())) {
+            throw new SecurityException("권한이 없습니다.");
+        }
+
+        // 기존 이미지 삭제 (기본 이미지가 아니라면)
+        if (club.getThumbUrl() != null && !club.getThumbUrl().equals("default-thumbnail.png")) {
+            deleteImageFromGCS(club.getThumbUrl());
+        }
+
+        // 새 썸네일 객체 이름 저장
+        club.setThumbUrl(objectName);
+        clubRepository.save(club);
+    }
+
+    public void resetClubThumbnail(String username, Long clubId) {
+        Club club = clubRepository.findById(clubId)
+                .orElseThrow(() -> new IllegalArgumentException("❌ 존재하지 않는 동아리"));
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("❌ 존재하지 않는 사용자"));
+
+        // 클럽 관리자인지 확인
+        if (!checkUserPermission(user.getUserId(), club.getClubId())) {
+            throw new SecurityException("❌ 권한이 없습니다.");
+        }
+
+        // 기존 썸네일 삭제 (기본 이미지가 아닐 때만)
+        if (club.getThumbUrl() != null && !club.getThumbUrl().equals("default-thumbnail.png")) {
+            deleteImageFromGCS(club.getThumbUrl());
+        }
+
+        // 기본 이미지로 설정
+        club.setThumbUrl("default-thumbnail.png");
+        clubRepository.save(club);
+    }
+}
+
     // 사용자가 동아리 회장인지 확인
     @Override
     @Transactional(readOnly = true)
@@ -295,7 +355,3 @@ public class ClubServiceImpl implements ClubService {
 
         return "PRESIDENT".equals(userRole);
     }
-
-}
-
-

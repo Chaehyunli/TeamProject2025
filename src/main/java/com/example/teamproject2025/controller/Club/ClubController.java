@@ -189,4 +189,28 @@ public class ClubController {
 
     }
 
+    // 동아리 thumbnail 수정
+    @PatchMapping("/{clubId}/thumbnail")
+    public ResponseEntity<CommonResponseDto<String>> updateClubThumbnail(
+            HttpSession session,
+            @PathVariable Long clubId,
+            @RequestParam("objectName") String objectName) {
+
+        String username = (String) session.getAttribute("username");
+        clubService.updateClubThumbnail(username, clubId, objectName);
+
+        return ResponseEntity.ok(CommonResponseDto.success(200, "Thumbnail updated successfully", null));
+    }
+
+    // 동아리 thumbnail 삭제 후, default로 set
+    @PatchMapping("/{clubId}/thumbnail/reset")
+    public ResponseEntity<CommonResponseDto<Void>> resetClubThumbnail(
+            HttpSession session,
+            @PathVariable Long clubId) {
+
+        String username = (String) session.getAttribute("username");
+        clubService.resetClubThumbnail(username, clubId);
+
+        return ResponseEntity.ok(CommonResponseDto.success(200, "Default Thumbnail updated successfully"));
+    }
 }

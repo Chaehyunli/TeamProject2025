@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { FaChevronDown } from "react-icons/fa";
 import { logout } from "../api/authApi";
 import { useNavigate } from "react-router-dom";
@@ -7,6 +7,7 @@ import { ProtectedImage } from "../api/uploadApi";
 const ProfileDropdown = ({ username, userImage, onLogout }) => {
     const [isOpen, setIsOpen] = useState(false);
     const navigate = useNavigate();
+    const dropdownRef = useRef(null);
 
     const handleLogout = async () => {
         try {
@@ -23,8 +24,22 @@ const ProfileDropdown = ({ username, userImage, onLogout }) => {
         }
     };
 
+    // 드롭다운 외부 클릭 시 닫기
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setIsOpen(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+
     return (
-        <div className="relative">
+        <div className="relative" ref={dropdownRef}>
             {/* 프로필 버튼 */}
             <div
                 className="flex items-center gap-2 cursor-pointer"
