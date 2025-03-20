@@ -138,3 +138,19 @@ export const getParticularUserProfile = async (userId) => {
         throw error;
     }
 };
+
+// 프로필 이미지 기본으로 변경
+export const resetUserProfileImage = async (file) => {
+    try {
+        const response = await axios.patch(
+            `${API_BASE_URL}/profile/image/reset`,
+            {},
+            { withCredentials: true }
+        );
+
+        return response.data;
+    } catch (error) {
+        console.error("프로필 기본 이미지 설정 실패:", error);
+        throw error;
+    }
+};
