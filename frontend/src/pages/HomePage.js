@@ -8,6 +8,7 @@ const HomePage = () => {
     const [username] = useState(localStorage.getItem("username"));
     const [clubs, setClubs] = useState([]);
     const [userClubs, setUserClubs] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         if (!username) {
@@ -48,7 +49,25 @@ const HomePage = () => {
                     <h1 className="text-white text-3xl font-bold">동아리를 찾아보세요!</h1>
                 </div>
             </div>
-            <ClubList clubs={clubs} userClubs={userClubs} />
+
+            { clubs.length === 0 ? (
+                // 동아리가 없을 때 메시지 표시
+                <div className="text-center mt-10">
+                    <p className="text-lg text-gray-600">아직 등록된 동아리가 없습니다.</p>
+                    <p className="text-xl font-semibold text-gray-800 mt-2">
+                        🏆 <span className="text-blue-500">최초의 동아리 등록자가 되어보세요!</span>
+                    </p>
+                    <button
+                        className="mt-4 px-6 py-2 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600"
+                        onClick={() => navigate("/club-register")}
+                    >
+                        동아리 등록하기
+                    </button>
+                </div>
+            ) : (
+                // 동아리가 있는 경우 목록 표시
+                <ClubList clubs={clubs} userClubs={userClubs} />
+            )}
         </div>
     );
 };
