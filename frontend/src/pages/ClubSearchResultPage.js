@@ -1,13 +1,25 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import {getClubList, getUserClubs} from "../api/clubApi";
+import { useNavigate, useLocation  } from "react-router-dom";
+import {getSearchClubList, getUserClubs} from "../api/clubApi";
 import ClubList from "../components/ClubList";
 
-const HomePage = () => {
+const ClubSearchResultPage = () => {
     const navigate = useNavigate();
+    const location = useLocation();
     const [username] = useState(localStorage.getItem("username"));
     const [clubs, setClubs] = useState([]);
     const [userClubs, setUserClubs] = useState([]);
+    const [searchQuery, setSearchQuery] = useState("");
+
+    // 쿼리 파라메터의 검색어 넘겨받기
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const search = params.get("search"); // ?search=개발 같은 URL에서 검색어 가져오기
+        console.log("현재 URL 검색어:", search);
+        if (search) {
+            setSearchQuery(search);
+        }
+    }, [location.search]);
 
     useEffect(() => {
         if (!username) {
@@ -18,10 +30,14 @@ const HomePage = () => {
 
         const fetchClubs = async () => {
             try {
-                const clubData = await getClubList();
-                setClubs(clubData);
+                console.log("searchQuery 값:", searchQuery);
+                if (searchQuery) {
+                    const clubData = await getSearchClubList(searchQuery);
+                    console.log("검색된 클럽 리스트:", clubData);
+                    setClubs(clubData);
+                }
             } catch (error) {
-                console.error("동아리 목록 불러오기 실패:", error);
+                console.error("동아리 검색 결과 불러오기 실패:", error);
             }
         };
 
@@ -30,14 +46,14 @@ const HomePage = () => {
                 const userClubData = await getUserClubs(); // 사용자의 동아리 목록 요청
                 setUserClubs(userClubData); // userClubs 상태 업데이트
             } catch (error) {
-                console.error("사용자의 동아리 목록 불러오기 실패:", error);
+                console.error("사용자의 동아리 검색 결과 불러오기 실패:", error);
                 setUserClubs([]); // 오류 발생 시 빈 배열로 설정
             }
         };
 
         fetchClubs();
         fetchUserClubs();
-    }, [username, navigate]);
+    }, [username, searchQuery, navigate]);
 
     return (
         <div className="container mx-auto px-8 lg:px-16">
@@ -53,4 +69,4 @@ const HomePage = () => {
     );
 };
 
-export default HomePage;
+export default ClubSearchResultPage;

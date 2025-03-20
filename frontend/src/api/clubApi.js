@@ -328,3 +328,19 @@ export const leaveClub = async (targetUserId, clubId) => {
         return error;
     }
 };
+
+// 검색어로 동아리 검색 (페이지네이션 고려 x)
+export const getSearchClubList = async (searchQuery) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/search`, {
+            params: { search: searchQuery }, // 검색어만 전달
+            withCredentials: true
+        });
+
+        return response.data.data.clubs;
+    } catch (error) {
+        console.error("동아리 검색 실패: ", error);
+        return [];
+    }
+};
+

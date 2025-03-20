@@ -94,8 +94,10 @@ const TopNavbar = () => {
     };
 
     const handleSearch = () => {
-        console.log("검색어:", searchQuery);
-        inputRef.current.blur();
+        if (searchQuery.trim()) {
+            navigate(`/search?search=${encodeURIComponent(searchQuery.trim())}`);
+            inputRef.current.blur(); // 입력창 포커스 해제
+        }
     };
 
     const handleKeyDown = (event) => {
