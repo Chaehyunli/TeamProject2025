@@ -40,13 +40,14 @@ public class ClubController {
     @GetMapping
     public ResponseEntity<CommonResponseDto<ClubListResponseDto>> getClubs(
             HttpSession session, // 로그인한 사용자
-            @RequestParam(defaultValue = "10") int limit,
+            @RequestParam(defaultValue = "12") int limit,
             @RequestParam(defaultValue = "0") int offset
     ) {
         String username = (String) session.getAttribute("username");
         ClubListResponseDto clubList = clubService.getClubsByUserUniversity(username, limit, offset);
 
-        return ResponseEntity.ok(CommonResponseDto.success(200, "Club list retrieved successfully", clubList));}
+        return ResponseEntity.ok(CommonResponseDto.success(200, "Club list retrieved successfully", clubList));
+    }
 
     @GetMapping("/{clubId}/role")
     public ResponseEntity<CommonResponseDto<Map<String, String>>> getUserRoleInClub(
@@ -212,5 +213,19 @@ public class ClubController {
         clubService.resetClubThumbnail(username, clubId);
 
         return ResponseEntity.ok(CommonResponseDto.success(200, "Default Thumbnail updated successfully"));
+    }
+
+    // 검색어를 이용해서 동아리 검색
+    @GetMapping("/search")
+    public ResponseEntity<CommonResponseDto<ClubListResponseDto>> searchClubs(
+            HttpSession session,
+            @RequestParam String search, // 검색어 필수
+            @RequestParam(defaultValue = "12") int limit,
+            @RequestParam(defaultValue = "0") int offset
+    ) {
+        String username = (String) session.getAttribute("username");
+        ClubListResponseDto clubList = clubService.searchClubsByUserUniversity(username, search, limit, offset);
+
+        return ResponseEntity.ok(CommonResponseDto.success(200, "Club search results retrieved successfully", clubList));
     }
 }

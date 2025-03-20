@@ -33,4 +33,6 @@ public interface ClubService {
     void updateClubThumbnail(String username, Long clubId, String objectName);
 
     void resetClubThumbnail(String username, Long clubId);
+
+    ClubListResponseDto searchClubsByUserUniversity(String username, String search, int limit, int offset);
 }

@@ -21,4 +21,6 @@ public interface ClubRepository extends JpaRepository<Club, Long> {
     // 동아리 썸네일 가져오기
     @Query("SELECT c FROM Club c WHERE c.clubId = :clubId")
     Optional<Club> findByIdWithThumbUrl(@Param("clubId") Long clubId);
+
+    List<Club> findByUniversity_UniversityIdAndClubNameContaining(Long universityId, String search);
 }

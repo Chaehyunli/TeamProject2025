@@ -339,5 +339,29 @@ public class ClubServiceImpl implements ClubService {
 
         return "PRESIDENT".equals(userRole);
     }
+
+    // 검색어를 이용해서 동아리 검색
+    @Override
+    @Transactional(readOnly = true)
+    public ClubListResponseDto searchClubsByUserUniversity(String username, String search, int limit, int offset){
+        // 1. 현재 로그인한 사용자 찾기
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        // 2. 해당 사용자의 대학교 ID로 필터링하여 동아리 조회 (검색어 적용)
+        List<Club> clubs = clubRepository.findByUniversity_UniversityIdAndClubNameContaining(user.getUniversityId(), search);
+
+        // 전체 검색된 동아리 개수
+        int total = clubs.size();
+
+        // 3. 페이지네이션 적용
+        List<Club> paginatedClubs = clubs.stream()
+                .skip(offset)
+                .limit(limit)
+                .collect(Collectors.toList());
+
+        // 4. DTO 변환 후 반환
+        return ClubListResponseDto.fromEntity(paginatedClubs, total, limit, offset);
+    }
 }
 
