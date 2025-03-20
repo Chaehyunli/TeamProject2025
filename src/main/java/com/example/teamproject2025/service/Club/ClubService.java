@@ -1,7 +1,6 @@
 package com.example.teamproject2025.service.Club;
 
 import com.example.teamproject2025.dto.Club.*;
-import com.example.teamproject2025.dto.Membership.ClubMemberResponseDto;
 import com.example.teamproject2025.dto.Membership.UserClubResponseDto;
 
 import java.io.IOException;
@@ -35,4 +34,6 @@ public interface ClubService {
     void resetClubThumbnail(String username, Long clubId);
 
     ClubListResponseDto searchClubsByUserUniversity(String username, String search, int limit, int offset);
+
+    void deleteClub(Long clubId, Long userId);
 }

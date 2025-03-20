@@ -13,11 +13,14 @@ import com.example.teamproject2025.entity.User.User;
 import com.example.teamproject2025.repository.Club.CategoryRepository;
 import com.example.teamproject2025.repository.Club.ClubArticleRepository;
 import com.example.teamproject2025.repository.Club.ClubRepository;
+import com.example.teamproject2025.repository.Membership.ClubSubmissionRepository;
 import com.example.teamproject2025.repository.Membership.UserClubRepository;
 import com.example.teamproject2025.repository.Membership.UserRoleRepository;
 import com.example.teamproject2025.repository.University.UniversityRepository;
 import com.example.teamproject2025.repository.User.UserRepository;
 import com.google.cloud.storage.Storage;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -39,6 +42,7 @@ public class ClubServiceImpl implements ClubService {
     private final UserRoleRepository userRoleRepository;
     private final UserClubRepository userClubRepository;
     private final ClubArticleRepository clubArticleRepository;
+    private final ClubSubmissionRepository clubSubmissionRepository;
     private final Storage storage;
     private final ApplicationContext applicationContext;
 
@@ -46,6 +50,9 @@ public class ClubServiceImpl implements ClubService {
     private static final String UPLOAD_DIR = System.getProperty("user.dir") + "/uploads/clubs/";
     @Value("${spring.cloud.gcp.storage.bucket}")
     private String bucketName;
+
+    @PersistenceContext
+    private EntityManager entityManager;  // 영속성 컨텍스트 주입
 
     @Override
     @Transactional
@@ -361,5 +368,36 @@ public class ClubServiceImpl implements ClubService {
 
         // 4. DTO 변환 후 반환
         return ClubListResponseDto.fromEntity(paginatedClubs, total, limit, offset);
+    }
+
+    @Override
+    @Transactional
+    public void deleteClub(Long clubId, Long userId) {
+        // 1. 동아리 존재 여부 확인
+        Club club = clubRepository.findById(clubId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 동아리입니다."));
+
+        // 2. 현재 사용자가 동아리 회장인지 확인
+        if (!checkUserIsPresident(userId, clubId)) {
+            throw new SecurityException("동아리를 삭제할 권한이 없습니다.");
+        }
+
+        // 3. 가입된 멤버가 남아있는지 확인
+        long memberCount = userClubRepository.countByClubId(clubId);
+        if (memberCount > 1) {
+            throw new IllegalStateException("동아리에 가입된 멤버가 있어서 삭제할 수 없습니다.");
+        }
+
+        // 3. 연관된 엔티티 삭제
+        userClubRepository.deleteAllByClubId(clubId);
+        userRoleRepository.deleteAllByClubId(clubId);
+        clubSubmissionRepository.deleteAllByClubId(clubId);
+        clubArticleRepository.deleteAllByClubId(clubId);
+
+        // 4. 영속성 컨텍스트 초기화
+        entityManager.clear();  // Hibernate가 TransientObjectException을 방지하기 위해 영속성 컨텍스트를 비움
+
+        // 5. 동아리 삭제
+        clubRepository.delete(club);
     }
 }

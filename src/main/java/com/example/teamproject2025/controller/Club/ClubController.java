@@ -228,4 +228,20 @@ public class ClubController {
 
         return ResponseEntity.ok(CommonResponseDto.success(200, "Club search results retrieved successfully", clubList));
     }
+
+    @DeleteMapping("/{clubId}")
+    public ResponseEntity<CommonResponseDto<Void>> deleteClub(
+            @PathVariable Long clubId,
+            HttpSession session) {
+
+        Long userId = (Long) session.getAttribute("userId"); // 세션에서 userId 가져오기
+        if (userId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(CommonResponseDto.error(401, "로그인이 필요합니다."));
+        }
+
+        clubService.deleteClub(clubId, userId);
+
+        return ResponseEntity.ok(CommonResponseDto.success(200, "동아리가 성공적으로 삭제되었습니다."));
+    }
 }
