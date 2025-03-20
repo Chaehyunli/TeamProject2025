@@ -5,6 +5,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { getUserProfile } from "../api/userApi";
 import { logout } from "../api/authApi";
 import MainLogoForm from "./MainLogoForm";
+import { useAuth } from "../context/AuthContext";
 
 const TopNavbar = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -14,6 +15,7 @@ const TopNavbar = () => {
     const inputRef = useRef(null);
     const navigate = useNavigate();
     const location = useLocation();
+    const { user, logoutUser } = useAuth();
 
     // 현재 선택된 메뉴 상태 관리
     const [selectedMenu, setSelectedMenu] = useState("/home");
@@ -72,11 +74,7 @@ const TopNavbar = () => {
     const handleLogout = async () => {
         try {
             await logout();
-            localStorage.clear();
-            setIsLoggedIn(false);
-            setUsername("");
-            setUserImage("");
-            window.dispatchEvent(new Event("storage"));
+            logoutUser();
             navigate("/login");
         } catch (error) {
             console.error("로그아웃 실패", error);
