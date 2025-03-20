@@ -36,6 +36,8 @@ const LoginForm = () => {
                 profileImage: userProfile.profileImage,
             });
 
+            window.dispatchEvent(new Event("storage"));
+
             // 로그인 성공 후 자동으로 홈 페이지로 이동
             navigate("/home");
         } catch (error) {
