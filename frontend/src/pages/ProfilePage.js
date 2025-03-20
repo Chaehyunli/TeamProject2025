@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { logout } from "../api/authApi";
-import { deleteUser, getUserProfile } from "../api/userApi";
-import {useNavigate} from "react-router-dom";
+import { deleteUser, getUserProfile, resetUserProfileImage } from "../api/userApi";
+import { useNavigate } from "react-router-dom";
 import { ProtectedImage } from "../api/uploadApi";
 
 const ProfilePage = () => {
@@ -59,6 +59,17 @@ const ProfilePage = () => {
         }
     };
 
+    const handleResetProfileImage = async () => {
+        if(!window.confirm("정말 기본 이미지로 설정하시겠습니까?")) return;
+
+        try {
+            await resetUserProfileImage()
+            setUser({ ...user, profileImage: "default-profileImage.png" }); // UI 즉시 반영
+        } catch (error) {
+            console.log("❌ 기본 이미지 설정 실패:", error);
+        }
+    }
+
     return (
         <div className="w-full max-w-4xl mx-auto mt-10 p-10">
             {/* 프로필 정보 */}
@@ -73,6 +84,12 @@ const ProfilePage = () => {
                             <p>
                                 {user.universityName || "대학교 미입력"} | {user.studentId || "학번 미입력"} | {user.department || "학과 미입력"} | {user.email || "이메일 미입력"}
                             </p>
+                            <button
+                                className="ml-2 px-3 py-1 text-xs text-gray-500 bg-gray-200 rounded-lg hover:bg-gray-300"
+                                onClick={handleResetProfileImage}
+                            >
+                                기본 이미지로 변경
+                            </button>
                             <button
                                 className="ml-4 px-3 py-1 text-xs text-white bg-primary rounded-lg hover:bg-hoverBlueColor"
                                 onClick={() => navigate("/updateProfile")}
