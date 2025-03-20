@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate,useLocation } from "react-router-dom";
 
-const ClubDetailNavbar = ({ clubId, userRole }) => {
+const ClubDetailNavbar = ({ clubId, userRole, onDeleteClub }) => {
     console.log("ClubDetailNavbar received userRole:", userRole); // props 확인
 
     const [selected, setSelected] = useState("게시물");
@@ -48,6 +48,16 @@ const ClubDetailNavbar = ({ clubId, userRole }) => {
                     </button>
                 ))}
             </div>
+
+            {/* 회장(PRESIDENT)일 때만 삭제 버튼 보이도록 추가 */}
+            {userRole === "PRESIDENT" && (
+                <button
+                    className="px-4 py-2 bg-red-500 text-white rounded"
+                    onClick={onDeleteClub} // 부모 컴포넌트에서 삭제 로직 실행
+                >
+                    동아리 삭제
+                </button>
+            )}
 
             {/*<button*/}
             {/*    className="px-4 py-2 bg-blue-500 text-white rounded"*/}

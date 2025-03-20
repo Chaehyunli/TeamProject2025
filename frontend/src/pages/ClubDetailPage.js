@@ -1,7 +1,7 @@
 import ClubDetailNavbar from "../components/ClubDetailNavbar";
-import { useParams, Outlet } from "react-router-dom";
+import { useParams, Outlet, useNavigate } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
-import { getUserClubRole, getClub, updateClubThumbnail, resetClubThumbnail } from "../api/clubApi";
+import { getUserClubRole, getClub, updateClubThumbnail, resetClubThumbnail,deleteClub } from "../api/clubApi";
 import { ProtectedImage, uploadImageToGCP } from "../api/uploadApi";
 import DirectMessageButton from "../components/DirectMessageButton";
 import { FaEdit } from "react-icons/fa"; // ✏️ 아이콘 추가
@@ -14,6 +14,7 @@ const ClubDetailPage = () => {
     const [showOptions, setShowOptions] = useState(false); // 썸네일 수정 옵션 표시 여부
     const fileInputRef = useRef(null); // 파일 입력창을 트리거하기 위한 ref
     const dropdownRef = useRef(null); // 드롭다운 위치 조정용
+    const navigate = useNavigate();
 
     const fetchClubData = async () => {
         try {
@@ -96,6 +97,19 @@ const ClubDetailPage = () => {
         }
     };
 
+    // 동아리 삭제
+    const handleDeleteClub = async () => {
+        if (!window.confirm("정말로 동아리를 삭제하시겠습니까? 회원이 없는 상태여야 합니다.")) return;
+
+        try {
+            await deleteClub(clubId);
+            alert("동아리가 삭제되었습니다.");
+            navigate("/home"); // 삭제 후 동아리 목록으로 이동
+        } catch (error) {
+            alert(error.response?.data?.message || "❌ 삭제에 실패했습니다.");
+        }
+    };
+
     return (
         <div className="p-4 pt-14">
             {/* 동아리 기본 정보 (배경 이미지 포함) */}
@@ -174,7 +188,7 @@ const ClubDetailPage = () => {
 
             {/* 네비게이션 바 */}
             <div className="mt-6">
-                <ClubDetailNavbar clubId={clubId} userRole={userRole} />
+                <ClubDetailNavbar clubId={clubId} userRole={userRole} onDeleteClub={handleDeleteClub} />
             </div>
 
             {/* 본문: Outlet을 통해 페이지 변경 */}

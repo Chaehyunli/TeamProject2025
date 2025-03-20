@@ -344,3 +344,12 @@ export const getSearchClubList = async (searchQuery) => {
     }
 };
 
+export const deleteClub = async (clubId) => {
+    try {
+        await axios.delete(`${API_BASE_URL}/${clubId}`, { withCredentials: true });
+        return true;
+    } catch (error){
+        console.log("동아리 삭제 실패:", error);
+        throw error;
+    }
+}
