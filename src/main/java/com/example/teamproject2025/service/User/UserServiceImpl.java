@@ -2,9 +2,8 @@ package com.example.teamproject2025.service.User;
 
 import com.example.teamproject2025.dto.Chat.MyChatListResDto;
 import com.example.teamproject2025.dto.Club.ClubSummaryDto;
-import com.example.teamproject2025.dto.Common.CommonResponseDto;
-import com.example.teamproject2025.dto.User.*;
 import com.example.teamproject2025.dto.User.UserCreateRequestDto;
+import com.example.teamproject2025.dto.User.UserListResDto;
 import com.example.teamproject2025.dto.User.UserResponseDto;
 import com.example.teamproject2025.dto.User.UserUpdateRequestDto;
 import com.example.teamproject2025.entity.Chat.ChatRoom;
@@ -19,13 +18,11 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -183,6 +180,22 @@ public class UserServiceImpl implements UserService {
 
         return UserResponseDto.toDTO(user, joinedClubs, managedClubs, universityName);
     }
+
+    @Override
+    public void resetUserProfileImage(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("❌ 존재하지 않는 사용자"));
+
+        // 기존 프로필 이미지 삭제 (기본 이미지가 아닐 때만)
+        if (user.getProfileImage() != null && !user.getProfileImage().equals("default-profileImage.png")) {
+            deleteImageFromGCS(user.getProfileImage());
+        }
+
+        // 기본 프로필 이미지로 설정
+        user.setProfileImage("default-profileImage.png");
+        userRepository.save(user);
+    }
+
 }
 
 
