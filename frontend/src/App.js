@@ -30,6 +30,7 @@ import CreateArticle from "./components/CreateArticle";
 import ArticleDetail from "./components/ArticleDetail";
 import DeleteArticle from "./components/DeleteArticle";
 import UpdateArticle from "./components/UpdateArticle";
+import ClubSearchResultPage from "./pages/ClubSearchResultPage";
 
 function App() {
 
@@ -40,6 +41,7 @@ function App() {
             <Routes>
                 <Route path="/" element={<Navigate to="/home" />} />
                 <Route path="/home" element={<HomePage />} />
+                <Route path="/search" element={<ClubSearchResultPage />} />
                 <Route path="/club-register" element={<ClubRegisterPage />} />
                 <Route path="/chatrooms" element={<UnderConstruction />} />
                 <Route path="/profile" element={<ProfilePage />} />
