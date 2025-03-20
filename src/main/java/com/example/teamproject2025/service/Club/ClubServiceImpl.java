@@ -394,10 +394,15 @@ public class ClubServiceImpl implements ClubService {
         clubSubmissionRepository.deleteAllByClubId(clubId);
         clubArticleRepository.deleteAllByClubId(clubId);
 
-        // 4. 영속성 컨텍스트 초기화
+        // 4. GCP에 저장된 썸네일 이미지 삭제 (기본 이미지가 아닐 경우)
+        if (club.getThumbUrl() != null && !club.getThumbUrl().equals("default-thumbnail-mju.png")) {
+            deleteImageFromGCS(club.getThumbUrl());
+        }
+
+        // 5. 영속성 컨텍스트 초기화
         entityManager.clear();  // Hibernate가 TransientObjectException을 방지하기 위해 영속성 컨텍스트를 비움
 
-        // 5. 동아리 삭제
+        // 6. 동아리 삭제
         clubRepository.delete(club);
     }
 }
