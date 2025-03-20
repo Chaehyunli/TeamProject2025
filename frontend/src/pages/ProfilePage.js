@@ -60,13 +60,29 @@ const ProfilePage = () => {
     };
 
     const handleResetProfileImage = async () => {
+        if (user.profileImage === "default-profileImage.png") {
+            alert("이미 기본 이미지입니다."); // 이미 기본 이미지라면 알림만 표시하고 종료
+            return;
+        }
+
         if(!window.confirm("정말 기본 이미지로 설정하시겠습니까?")) return;
 
         try {
-            await resetUserProfileImage()
-            setUser({ ...user, profileImage: "default-profileImage.png" }); // UI 즉시 반영
+            await resetUserProfileImage();
+            const newProfileImage = "default-profileImage.png";
+
+            // localStorage에 즉시 반영
+            localStorage.setItem("profileImage", newProfileImage);
+
+            setUser((prevUser) => ({
+                ...prevUser,
+                profileImage: newProfileImage,
+            }));
+
+            // `storage` 이벤트 트리거 (크롬 외 브라우저 대응)
+            window.dispatchEvent(new Event("storage"));
         } catch (error) {
-            console.log("❌ 기본 이미지 설정 실패:", error);
+            console.error("❌ 기본 이미지 설정 실패:", error);
         }
     }
 
