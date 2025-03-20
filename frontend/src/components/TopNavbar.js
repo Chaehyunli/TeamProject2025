@@ -27,16 +27,6 @@ const TopNavbar = () => {
 
     // 로그인된 사용자 정보 가져오기
     const fetchProfile = async () => {
-        if (!localStorage.getItem("username")) {
-            setIsLoggedIn(false);
-            navigate("/login");
-
-            localStorage.removeItem("name");
-            localStorage.removeItem("profileImage");
-
-            return;
-        }
-
         try {
             const response = await getUserProfile();
             if (response.data) {
