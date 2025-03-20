@@ -61,7 +61,7 @@ const TopNavbar = () => {
         return () => {
             window.removeEventListener("storage", handleStorageChange);
         };
-    }, [location.pathname]);
+    }, []);
 
     // useEffect(() => {
     //     if (!isLoggedIn && location.pathname === "/profile") {
