@@ -72,7 +72,7 @@ public class ClubServiceImpl implements ClubService {
         // 4. 파일명이 없으면 기본 썸네일 이미지 사용
         String storageThumbUrl = (uploadedFileName != null && !uploadedFileName.isEmpty())
                 ? uploadedFileName
-                : "https://www.mju.ac.kr/sites/mjukr/images/sub01/symbol01.png"; // 기본 이미지
+                : "default-thumbnail-mju.png"; // 기본 이미지
 
         // 5. 동아리 엔티티 생성 후 저장
         ClubCreateRequestDto requestDto = new ClubCreateRequestDto(clubName, categoryName, description,
@@ -271,7 +271,7 @@ public class ClubServiceImpl implements ClubService {
 
         // 기존 이미지 삭제 로직 추가(Google Cloud)
         if (article.getThumbUrl() != null
-                && !article.getThumbUrl().equals("default-thumbnail.png")) {
+                && !article.getThumbUrl().equals("default-thumbnail-mju.png")) {
             deleteImageFromGCS(article.getThumbUrl()); // 기존 이미지 삭제 (기본 이미지 제외)
         }
 
@@ -282,7 +282,7 @@ public class ClubServiceImpl implements ClubService {
     // Google Cloud Storage에서 기존 이미지 삭제
     private void deleteImageFromGCS(String objectName) {
         if (objectName == null || objectName.trim().isEmpty()) return; // null 또는 빈 값 방지
-        if ("default-thumbnail.png".equals(objectName)) return; // 기본 프로필 이미지는 삭제하지 않음
+        if ("default-thumbnail-mju.png".equals(objectName)) return; // 기본 프로필 이미지는 삭제하지 않음
 
         boolean deleted = storage.delete(bucketName, objectName); // GCS에서 객체 삭제
         if (deleted) {
@@ -305,7 +305,7 @@ public class ClubServiceImpl implements ClubService {
         }
 
         // 기존 이미지 삭제 (기본 이미지가 아니라면)
-        if (club.getThumbUrl() != null && !club.getThumbUrl().equals("default-thumbnail.png")) {
+        if (club.getThumbUrl() != null && !club.getThumbUrl().equals("default-thumbnail-mju.png")) {
             deleteImageFromGCS(club.getThumbUrl());
         }
 
@@ -327,12 +327,12 @@ public class ClubServiceImpl implements ClubService {
         }
 
         // 기존 썸네일 삭제 (기본 이미지가 아닐 때만)
-        if (club.getThumbUrl() != null && !club.getThumbUrl().equals("default-thumbnail.png")) {
+        if (club.getThumbUrl() != null && !club.getThumbUrl().equals("default-thumbnail-mju.png")) {
             deleteImageFromGCS(club.getThumbUrl());
         }
 
         // 기본 이미지로 설정
-        club.setThumbUrl("default-thumbnail.png");
+        club.setThumbUrl("default-thumbnail-mju.png");
         clubRepository.save(club);
     }
 
