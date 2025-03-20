@@ -76,12 +76,19 @@ const ClubDetailPage = () => {
 
     // 기본 썸네일로 변경
     const handleResetThumbnail = async () => {
+        if (club.thumbUrl === "default-thumbnail-mju.png") {
+            alert("이미 기본 이미지입니다."); // 이미 기본 이미지라면 알림만 표시하고 종료
+            return;
+        }
+
+        if(!window.confirm("정말 기본 이미지로 설정하시겠습니까?")) return;
+
         try {
             await resetClubThumbnail(clubId);
 
             setClub((prevClub) => ({
                 ...prevClub,
-                thumbUrl: "default-thumbnail.png",
+                thumbUrl: "default-thumbnail-mju.png",
             }));
 
             setShowOptions(false);
