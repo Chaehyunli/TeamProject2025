@@ -85,6 +85,9 @@ const UpdateProfilePage = () => {
             }
 
             await updateUserProfile(updatedFields);
+
+            window.dispatchEvent(new Event("storage"));
+
             alert("프로필이 업데이트되었습니다.");
             navigate("/profile");
         } catch (error) {
