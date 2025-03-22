@@ -36,4 +36,5 @@ public interface ClubService {
     ClubListResponseDto searchClubsByUserUniversity(String username, String search, int limit, int offset);
 
     void deleteClub(Long clubId, Long userId);
+
 }

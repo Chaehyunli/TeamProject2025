@@ -32,6 +32,7 @@ import UpdateArticle from "./components/UpdateArticle";
 import ClubSearchResultPage from "./pages/ClubSearchResultPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 
+
 function App() {
     return (
         <Router>
