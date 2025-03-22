@@ -9,4 +9,5 @@ import lombok.*;
 @AllArgsConstructor
 public class EmailRequestDto {
     private String email;
+    private String university;
 }

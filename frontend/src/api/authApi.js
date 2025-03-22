@@ -3,9 +3,12 @@ import axios from "axios";
 const API_BASE_URL = "http://localhost:8080/api/v1/auth";
 
 // 이메일 인증 요청
-export const requestVerificationCode = async (email) => {
+export const requestVerificationCode = async (email, universityName) => {
     try {
-        await axios.post(`${API_BASE_URL}/email`, { email });
+        await axios.post(`${API_BASE_URL}/email`, {
+            email,
+            university: universityName,
+        });
     } catch (error) {
         console.error("이메일 전송 오류: ", error);
         throw error;

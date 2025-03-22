@@ -3,9 +3,12 @@ package com.example.teamproject2025.service.Auth;
 import com.example.teamproject2025.dto.Auth.EmailResponseDto;
 import com.example.teamproject2025.repository.Auth.RedisEmailVerificationRepository;
 import com.example.teamproject2025.repository.User.UserRepository;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -13,7 +16,9 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import java.io.InputStream;
 import java.security.SecureRandom;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -27,9 +32,41 @@ public class EmailServiceImpl implements EmailService {
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
     private static final String EMAIL_SUBJECT = "이메일 인증";
 
+    // JSON 도메인 매핑용 객체
+    private Map<String, String> univDomainMap;
+
+    // ✅ 도메인 검증 메서드
+    private boolean isEmailDomainMatched(String email, String univName) {
+        try {
+            if (univDomainMap == null) {
+                loadDomainJson(); // 최초 1회 로딩
+            }
+
+            String expectedDomain = univDomainMap.get(univName);
+            if (expectedDomain == null) return false;
+
+            String emailDomain = email.split("@")[1]; // 예: mju.ac.kr
+            return emailDomain.contains(expectedDomain); // ex. mju 포함 여부
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    // ✅ JSON 로딩
+    private void loadDomainJson() throws Exception {
+        ClassPathResource resource = new ClassPathResource("univ_domains.json");
+        InputStream inputStream = resource.getInputStream();
+        ObjectMapper objectMapper = new ObjectMapper();
+        univDomainMap = objectMapper.readValue(inputStream, new TypeReference<>() {});
+    }
+
     // 이메일 인증 요청 메서드
     @Override
-    public void sendVerificationEmail(String email){
+    public void sendVerificationEmail(String email, String univName){
+
+        if (!isEmailDomainMatched(email, univName)) {
+            throw new IllegalArgumentException("대학교 이메일을 입력해주세요");
+        }
 
         String verificationCode = generateVerificationCode(); // 6자리 인증번호 생성
         redisEmailVerificationRepository.saveVerificationCode(email, verificationCode); // Redis에 인증번호 저장
@@ -47,6 +84,7 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public void sendEmail(String to, String subject, String verificationCode) {
         try {
+
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, false, "UTF-8");
 

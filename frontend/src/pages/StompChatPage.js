@@ -6,7 +6,6 @@ import axios from "axios";
 import { useChat } from "../context/ChatContext";  // 🔥 ChatContext 가져오기
 import backIcon from "../assets/backIcon.png";
 import { fetchChatHistory, markMessagesAsRead } from "../api/chatApi";
-import {ProtectedImage} from "../api/uploadApi";
 
 const StompChatPage = () => {
     const { roomId } = useParams();

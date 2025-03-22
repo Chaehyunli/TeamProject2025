@@ -111,6 +111,7 @@ const RegisterForm = ({ onSubmit }) => {
                 initialEmail={formData.email}
                 onEmailChange={(email) => setFormData((prev) => ({ ...prev, email }))} // 추가
                 onVerificationSuccess={handleEmailVerificationSuccess}
+                universityName={formData.universityName} // ✅ 이 줄만 추가
             />
 
 
