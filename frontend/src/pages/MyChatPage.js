@@ -7,6 +7,8 @@ const MyChatPage = () => {
     const [chatList, setChatList] = useState([]);
     const navigate = useNavigate();
 
+    console.log("😎 두둥 태현이 등장! ");
+
     useEffect(() => {
         loadMyChatRooms();
     }, []);
