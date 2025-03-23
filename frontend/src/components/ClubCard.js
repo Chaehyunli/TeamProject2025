@@ -29,7 +29,7 @@ const ClubCard = ({ club, isMember }) => {
                 {/* 상세보기 버튼 */}
                 <button
                     onClick={() => navigate(`/clubs/${club.clubId}`)}
-                    className="flex-1 py-2 bg-white rounded-lg border border-gray-300 text-black font-semibold hover:bg-hoverWhiteColor whitespace-normal text-center w-[80px]"
+                    className="flex-1 py-2 bg-white rounded-lg border border-gray-300 text-black font-semibold hover:bg-hoverWhiteColor whitespace-normal text-center"
                 >
                     상세보기
                 </button>
@@ -38,7 +38,7 @@ const ClubCard = ({ club, isMember }) => {
                 {!isMember && (
                     <button
                         onClick={() => navigate(`/clubs/${club.clubId}/apply`)}
-                        className="flex-1 py-2 rounded-lg bg-primary text-white hover:bg-hoverBlueColor whitespace-normal text-center w-[85px]"
+                        className="flex-1 py-2 rounded-lg bg-primary text-white hover:bg-hoverBlueColor whitespace-normal text-center"
                     >
                         지원하기
                     </button>
