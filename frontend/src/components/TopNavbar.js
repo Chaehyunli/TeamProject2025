@@ -10,7 +10,7 @@ import { useAuth } from "../context/AuthContext";
 const TopNavbar = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [username, setUsername] = useState(localStorage.getItem("name") || "");
-    const [userImage, setUserImage] = useState(localStorage.getItem("profileImage") || "https://via.placeholder.com/50");
+    const [userImage, setUserImage] = useState(localStorage.getItem("profileImage") || "default-profileImage.png");
     const [searchQuery, setSearchQuery] = useState("");
     const inputRef = useRef(null);
     const navigate = useNavigate();
