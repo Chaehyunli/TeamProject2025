@@ -96,23 +96,29 @@ const ProfilePage = () => {
                     </div>
                     <div>
                         <h2 className="text-xl font-bold">{user.name}</h2>
-                        <div className="flex items-center text-gray-500">
-                            <p>
-                                {user.universityName || "대학교 미입력"} | {user.studentId || "학번 미입력"} | {user.department || "학과 미입력"} | {user.email || "이메일 미입력"}
-                            </p>
-                            <button
-                                className="ml-2 px-3 py-1 text-xs text-gray-500 bg-gray-200 rounded-lg hover:bg-gray-300"
-                                onClick={handleResetProfileImage}
-                            >
-                                기본 이미지로 변경
-                            </button>
-                            <button
-                                className="ml-4 px-3 py-1 text-xs text-white bg-primary rounded-lg hover:bg-hoverBlueColor"
-                                onClick={() => navigate("/updateProfile")}
-                            >
-                                수정
-                            </button>
+                        <div className="flex justify-between items-start text-gray-500 w-full">
+                            <div className="flex-1">
+                                <p className="leading-snug">
+                                    {user.universityName || "대학교 미입력"} | {user.studentId || "학번 미입력"} | {user.department || "학과 미입력"} | {user.email || "이메일 미입력"}
+                                </p>
+                            </div>
+
+                            <div className="flex-shrink-0 flex items-center space-x-2 ml-4">
+                                <button
+                                    className="px-3 py-1 text-xs text-gray-500 bg-gray-200 rounded-lg hover:bg-gray-300 whitespace-nowrap"
+                                    onClick={handleResetProfileImage}
+                                >
+                                    기본 이미지로 변경
+                                </button>
+                                <button
+                                    className="px-3 py-1 text-xs text-white bg-primary rounded-lg hover:bg-hoverBlueColor whitespace-nowrap"
+                                    onClick={() => navigate("/updateProfile")}
+                                >
+                                    수정
+                                </button>
+                            </div>
                         </div>
+
                     </div>
                 </div>
             </div>
