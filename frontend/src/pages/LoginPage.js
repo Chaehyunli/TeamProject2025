@@ -1,8 +1,17 @@
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import LoginForm from "../components/LoginForm";
 
 function LoginPage() {
     const navigate = useNavigate(); // 페이지 이동을 위한 훅
+
+    // 로그인 상태 확인
+    useEffect(() => {
+        const userId = localStorage.getItem("userId");
+        if (userId) {
+            navigate("/home", { replace: true }); // replace: 뒤로가기 방지
+        }
+    }, [navigate]);
 
     return (
         <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
