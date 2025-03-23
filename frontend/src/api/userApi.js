@@ -132,6 +132,8 @@ export const getParticularUserProfile = async (userId) => {
         const response = await axios.get(`${API_BASE_URL}/${userId}/profile`, {
             withCredentials: true,
         });
+
+        console.log("특정 사용자 프로필 조회:", response.data);
         return response.data;
     } catch (error) {
         console.error("특정 사용자 프로필 조회 실패:", error);

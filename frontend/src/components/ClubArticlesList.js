@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getClubArticles, getUserRoleInClub } from "../api/clubApi";
 import { ProtectedImage } from "../api/uploadApi";
+import {getParticularUserProfile} from "../api/userApi";
 
 const ClubArticlesList = () => {
     const { clubId } = useParams();
@@ -16,7 +17,8 @@ const ClubArticlesList = () => {
 
     useEffect(() => {
         fetchArticles();
-    }, [clubId, currentPage]);
+        fetchUserName(articles.author.authorId);
+    }, [clubId, currentPage, articles.author.authorId]);
 
     const fetchArticles = async () => {
         try {
@@ -43,11 +45,22 @@ const ClubArticlesList = () => {
             console.error("게시글 목록 조회 실패:", error);
             setError("게시글을 불러오는데 실패했습니다.");
         }
+
+        const fetchUserName = async (authorId) => {
+            try{
+                const userProfile = await getParticularUserProfile(authorId);
+                setName(userProfile.name);
+            } catch (error) {
+                console.log("작성자 프로필 조회 실패: ", error);
+            }
+        };
     };
 
     const handlePageChange = (newPage) => {
         setCurrentPage(newPage);
     };
+
+
 
     if (error) {
         return <div className="text-red-500 text-center p-4">{error}</div>;
@@ -97,9 +110,10 @@ const ClubArticlesList = () => {
                                     </span>
                                 </div>
                                 <div className="flex items-center text-sm text-gray-600">
-                                    <span>작성자: {name}({article.author.authorName})</span>
+                                    <span>작성자: {}({article.author.authorName})</span>
                                 </div>
                             </div>
+
                         ))}
                     </div>
                 )}
