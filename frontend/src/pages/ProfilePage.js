@@ -124,14 +124,30 @@ const ProfilePage = () => {
                     <span>{user.username}</span>
                 </div>
 
-                <p className="text-lg font-semibold cursor-pointer text-primary">
+                <p
+                    className="text-lg font-semibold cursor-pointer text-primary"
+                    onClick={() => {
+                        if (!user || !user.username) {
+                            alert("사용자 정보를 불러오는 중입니다. 잠시 후 다시 시도해주세요.");
+                            return;
+                        }
+
+                        navigate("/profile/update-pw", {
+                            state: {
+                                from: "profile",
+                                universityName: user.universityName,
+                                username: user.username,
+                            }
+                        });
+                    }}
+                >
                     비밀번호 변경
                 </p>
 
                 <div className="flex justify-between text-lg">
                     <span className="font-semibold">대학교 인증</span>
-                    <span className={`font-bold ${user.isUniVerified ? "text-green-400" : "text-red-400"}`}>
-                        {user.isUniVerified ? "인증 완료" : "미인증"}
+                    <span className={`font-bold ${user.isEmailVerified ? "text-green-400" : "text-red-400"}`}>
+                        {user.isEmailVerified ? "인증 완료" : "미인증"}
                     </span>
                 </div>
 

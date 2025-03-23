@@ -31,6 +31,10 @@ import DeleteArticle from "./components/DeleteArticle";
 import UpdateArticle from "./components/UpdateArticle";
 import ClubSearchResultPage from "./pages/ClubSearchResultPage";
 import ProtectedRoute from "./components/ProtectedRoute";
+import ResetPasswordForm from "./components/ResetPasswordForm";
+import EmailVerificationForm from "./components/EmailVerificationForm";
+import FindPasswordForm from "./components/FindPasswordForm";
+import UpdatePasswordPage from "./pages/UpdatePasswordPage";
 
 
 function App() {
@@ -49,6 +53,7 @@ function App() {
                 <Route path="/users/submissions/:applyId" element={<ProtectedRoute><MySubmissionsDetailPage /></ProtectedRoute>} />
                 <Route path="/users/submissions/:applyId/edit" element={<ProtectedRoute><MySubmissionsUpdatePage /></ProtectedRoute>} />
                 <Route path="/myclub" element={<ProtectedRoute><MyClubsPage /></ProtectedRoute>} />
+                <Route path="/profile/update-pw" element={<ProtectedRoute><UpdatePasswordPage /></ProtectedRoute>} />
 
                 {/* 로그인 불필요 페이지 */}
                 <Route path="/login" element={<LoginPage />} />
@@ -66,7 +71,9 @@ function App() {
                 </Route>
 
                 {/* 테스트 페이지 */}
-                <Route path="/chat/test" element={<ProtectedRoute><TestPage /></ProtectedRoute>} />
+                <Route path="/test/chat" element={<ProtectedRoute><TestPage /></ProtectedRoute>} />
+                <Route path="/test/reset-pw" element={<ProtectedRoute><ResetPasswordPage /></ProtectedRoute>} />
+                <Route path="/test/find-pw" element={<ProtectedRoute><FindPasswordForm/></ProtectedRoute>} />
 
                 {/* 동아리 관련 페이지 */}
                 <Route path="/clubs/:clubId" element={<ProtectedRoute><ClubDetailPage /></ProtectedRoute>}>
