@@ -29,4 +29,14 @@ public interface ClubService {
     SpecificArticleResponseDto getArticleDetail(Long clubId, Long articleId);
 
     ArticleListResponseDto getArticlesList(Long clubId, int limit, int offset);
+
+    NoticeCreateResponseDto createNotice(Long clubId, Long userId, NoticeCreateRequestDto requestDto);
+
+    NoticeListResponseDto getNoticeList(Long clubId, int limit, int offset);
+
+    NoticeCreateResponseDto updateNotice(Long userId, Long clubId, Long noticeId, NoticeCreateRequestDto requestDto );
+
+    boolean deleteNotice(Long clubId, Long noticeId, Long userId);
+
+    SpecificNoticeResponseDto getNoticeDetail(Long userId, Long noticeId);
 }

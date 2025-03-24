@@ -288,6 +288,37 @@ public class ClubServiceImpl implements ClubService {
         return true;
     }
 
+    // 동아리 공지사항 작성
+    @Override
+    public NoticeCreateResponseDto createNotice(Long clubId, Long userId, NoticeCreateRequestDto requestDto) {
+
+
+    }
+
+    // 동아리 공지사항 조회
+    @Override
+    public NoticeListResponseDto getNoticeList(Long clubId, int limit, int offset) {
+        return null;
+    }
+
+    // 동아리 공지사항 수정
+    @Override
+    public NoticeCreateResponseDto updateNotice(Long userId, Long clubId, Long noticeId, NoticeCreateRequestDto requestDto) {
+        return null;
+    }
+
+    // 동아리 공지사항 삭제
+    @Override
+    public boolean deleteNotice(Long clubId, Long noticeId, Long userId) {
+        return false;
+    }
+
+    // 동아리 특정 공지사항 조회
+    @Override
+    public SpecificNoticeResponseDto getNoticeDetail(Long userId, Long noticeId) {
+        return null;
+    }
+
     // Google Cloud Storage에서 기존 이미지 삭제
     private void deleteImageFromGCS(String objectName) {
         if (objectName == null || objectName.trim().isEmpty()) return; // null 또는 빈 값 방지
