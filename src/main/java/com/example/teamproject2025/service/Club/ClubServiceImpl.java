@@ -61,6 +61,12 @@ public class ClubServiceImpl implements ClubService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
+        // PRESIDENT 역할 개수 제한
+        int presidentClubCount = userRoleRepository.countByUserAndRoleName(user, RoleType.PRESIDENT);
+        if (presidentClubCount >= 3) {
+            throw new IllegalStateException("최대 3개의 동아리만 개설할 수 있습니다.");
+        }
+
         // 2. 카테고리 찾기
         Category category = categoryRepository.findByCategoryName(categoryName)
                 .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 카테고리입니다."));
