@@ -16,7 +16,7 @@ public class NoticeCreateRequestDto {
 
     private String noticeTitle;
     private String noticeContents;
-    private String thumb_url;
+    private String thumbUrl;
 
     public Notice toEntity(Club club, User user){
         return Notice.builder()
@@ -24,7 +24,7 @@ public class NoticeCreateRequestDto {
                 .user(user)
                 .noticeTitle(noticeTitle)
                 .noticeContents(noticeContents)
-                .thumbUrl(thumb_url)
+                .thumbUrl(thumbUrl)
                 .build();
     }
 }

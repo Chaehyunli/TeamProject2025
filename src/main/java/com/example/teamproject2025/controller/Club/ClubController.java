@@ -244,21 +244,22 @@ public class ClubController {
 
     // 동아리 공지사항 수정
     @PutMapping("/{clubId}/notices/{noticeId}")
-    public ResponseEntity<CommonResponseDto<NoticeCreateResponseDto>> updateNotice(
+    public ResponseEntity<CommonResponseDto<NoticeModifyResponseDto>> updateNotice(
             @PathVariable Long clubId,
             @PathVariable Long noticeId,
             HttpSession session,
-            @RequestBody NoticeCreateRequestDto requestDto
+            @RequestBody NoticeModifyRequestDto requestDto
     ){
         Long userId = (Long) session.getAttribute("userId");
 
-        NoticeCreateResponseDto modification = clubService.updateNotice(userId, clubId, noticeId, requestDto);
+        NoticeModifyResponseDto modification = clubService.updateNotice(userId, clubId, noticeId, requestDto);
 
         return ResponseEntity.ok(
                 CommonResponseDto.success(200, "공지사항 수정을 성공적으로 했습니다.", modification)
         );
     }
 
+    // 동아리 특정 공지사항 조회
     @GetMapping("/{clubId}/notices/{noticeId}")
     public ResponseEntity<CommonResponseDto<SpecificNoticeResponseDto>> getNoticeDetail(
             @PathVariable Long clubId,

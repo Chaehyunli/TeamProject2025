@@ -34,9 +34,9 @@ public interface ClubService {
 
     NoticeListResponseDto getNoticeList(Long clubId, int limit, int offset);
 
-    NoticeCreateResponseDto updateNotice(Long userId, Long clubId, Long noticeId, NoticeCreateRequestDto requestDto );
+    NoticeModifyResponseDto updateNotice(Long userId, Long clubId, Long noticeId, NoticeModifyRequestDto requestDto );
 
     boolean deleteNotice(Long clubId, Long noticeId, Long userId);
 
-    SpecificNoticeResponseDto getNoticeDetail(Long userId, Long noticeId);
+    SpecificNoticeResponseDto getNoticeDetail(Long clubId, Long noticeId);
 }
