@@ -262,7 +262,7 @@ public class ClubController {
     @GetMapping("/{clubId}/notices/{noticeId}")
     public ResponseEntity<CommonResponseDto<SpecificNoticeResponseDto>> getNoticeDetail(
             @PathVariable Long clubId,
-            @PathVariable Long noticeId,
+            @PathVariable Long noticeId
     ){
 
         SpecificNoticeResponseDto notice = clubService.getNoticeDetail(clubId, noticeId);

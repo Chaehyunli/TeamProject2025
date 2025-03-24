@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 public class NoticeCreateRequestDto {
 
     private String noticeTitle;
-    private String noticeContent;
+    private String noticeContents;
     private String thumb_url;
 
     public Notice toEntity(Club club, User user){
@@ -23,7 +23,7 @@ public class NoticeCreateRequestDto {
                 .club(club)
                 .user(user)
                 .noticeTitle(noticeTitle)
-                .noticeContent(noticeContent)
+                .noticeContents(noticeContents)
                 .thumbUrl(thumb_url)
                 .build();
     }

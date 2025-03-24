@@ -22,7 +22,7 @@ public class Notice {
     private Long noticeId;
 
     @Column(nullable = false)
-    private String noticeContent;
+    private String noticeContents;
 
     @Column(nullable = false)
     private String noticeTitle;

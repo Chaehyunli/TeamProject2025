@@ -6,6 +6,7 @@ import com.example.teamproject2025.dto.Membership.UserClubResponseDto;
 import com.example.teamproject2025.entity.Club.Article;
 import com.example.teamproject2025.entity.Club.Category;
 import com.example.teamproject2025.entity.Club.Club;
+import com.example.teamproject2025.entity.Club.Notice;
 import com.example.teamproject2025.entity.Membership.RoleType;
 import com.example.teamproject2025.entity.Membership.UserClub;
 import com.example.teamproject2025.entity.Membership.UserRole;
@@ -13,6 +14,7 @@ import com.example.teamproject2025.entity.University.University;
 import com.example.teamproject2025.entity.User.User;
 import com.example.teamproject2025.repository.Club.CategoryRepository;
 import com.example.teamproject2025.repository.Club.ClubArticleRepository;
+import com.example.teamproject2025.repository.Club.ClubNoticeRepository;
 import com.example.teamproject2025.repository.Club.ClubRepository;
 import com.example.teamproject2025.repository.Membership.UserClubRepository;
 import com.example.teamproject2025.repository.Membership.UserRoleRepository;
@@ -45,6 +47,7 @@ public class ClubServiceImpl implements ClubService {
 
     // 업로드 경로 (Spring Boot의 정적 리소스로 활용, 현재 프로젝트 루트 경로에 uploads 폴더 생성)
     private static final String UPLOAD_DIR = System.getProperty("user.dir") + "/uploads/clubs/";
+    private final ClubNoticeRepository clubNoticeRepository;
     @Value("${spring.cloud.gcp.storage.bucket}")
     private String bucketName;
 
@@ -291,8 +294,23 @@ public class ClubServiceImpl implements ClubService {
     // 동아리 공지사항 작성
     @Override
     public NoticeCreateResponseDto createNotice(Long clubId, Long userId, NoticeCreateRequestDto requestDto) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다. userId: " + userId));
 
+        Club club = clubRepository.findByIdWithThumbUrl(clubId)
+                .orElseThrow(() -> new IllegalArgumentException("동아리를 찾을 수 없습니다."));
 
+        String storageThumbUrl = (requestDto.getThumb_url() != null && !requestDto.getThumb_url().isEmpty())
+                ? requestDto.getThumb_url()
+                : null;
+
+        NoticeCreateRequestDto noticeRequestDto = new NoticeCreateRequestDto(requestDto.getNoticeTitle(),
+                requestDto.getNoticeContents(), storageThumbUrl);
+
+        Notice newNotice = noticeRequestDto.toEntity(club, user);
+        clubNoticeRepository.save(newNotice);
+
+        return NoticeCreateResponseDto.fromEntity(newNotice);
     }
 
     // 동아리 공지사항 조회
