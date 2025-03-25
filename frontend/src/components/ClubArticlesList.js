@@ -13,12 +13,16 @@ const ClubArticlesList = () => {
     const [totalPages, setTotalPages] = useState(0);
     const [isClubMember, setIsClubMember] = useState(false);
     const limit = 10; // 한 페이지당 게시글 수
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         fetchArticles();
     }, [clubId, currentPage]);
 
     const fetchArticles = async () => {
+        if (loading) return;
+
+        setLoading(true);
         try {
             const offset = currentPage * limit;
             const response = await getClubArticles(clubId, limit, offset);
@@ -42,6 +46,8 @@ const ClubArticlesList = () => {
         } catch (error) {
             console.error("게시글 목록 조회 실패:", error);
             setError("게시글을 불러오는데 실패했습니다.");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -53,6 +59,14 @@ const ClubArticlesList = () => {
         return <div className="text-red-500 text-center p-4">{error}</div>;
     }
 
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center h-64">
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+            </div>
+        );
+    }
+    
     return (
         <div className="container mx-auto px-4 py-8">
             {isClubMember && (
