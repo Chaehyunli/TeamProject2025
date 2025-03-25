@@ -94,7 +94,7 @@ const ClubApply = () => {
     if (loading) {
         return (
             <div className="flex justify-center items-center h-64">
-                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
             </div>
         );
     }
@@ -103,13 +103,13 @@ const ClubApply = () => {
         <div className="flex justify-center items-start py-10">
             <div className="w-[500px] p-6 bg-white shadow-lg rounded-lg">
                 <h2 className="text-2xl font-semibold text-center mb-6">
-                    <span className="text-hoverBlueColor">{clubName}</span> 동아리 지원하기
+                    <span className="text-primary">{clubName}</span> 동아리 지원하기
                 </h2>
 
                 {loading ? (
                     <p className="text-gray-500 mt-4 text-center">로딩 중...</p>
                 ) : hasApplied ? (
-                    <p className="text-red-500 font-semibold mt-4 text-center">이미 지원하였습니다.</p>
+                    <p className="text-warningText font-semibold mt-4 text-center">이미 지원하였습니다.</p>
                 ) : (
                     <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
                         {/* 사용자 이름 - 자동 입력, 수정 불가 */}
@@ -148,7 +148,7 @@ const ClubApply = () => {
                         </div>
 
                         {/* 지원하기 버튼 */}
-                        <button type="submit" className="w-full bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600 transition duration-200">
+                        <button type="submit" className="w-full bg-primary text-white p-3 rounded-lg hover:bg-hoverBlueColor transition duration-200">
                             지원하기
                         </button>
                     </form>

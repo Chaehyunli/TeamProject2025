@@ -73,7 +73,7 @@ const ArticleDetail = () => {
 
     if (errorMessage) {
         return (
-            <div className="text-center text-red-500 p-4">
+            <div className="text-center bg-warningText p-4">
                 {errorMessage}
             </div>
         );
@@ -82,7 +82,7 @@ const ArticleDetail = () => {
     if (loading || !article) {
         return (
             <div className="flex justify-center items-center h-64">
-                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
             </div>
         );
     }
@@ -131,13 +131,13 @@ const ArticleDetail = () => {
                                         <div className="justify-center">
                                             <button
                                                 onClick={() => navigate(`/clubs/${clubId}/articles/${articleId}/edit`)}
-                                                className="px-4 py-2 text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 rounded-md"
+                                                className="px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-hoverBlueColor rounded-md"
                                             >
                                                 수정
                                             </button>
                                             <button
                                                 onClick={handleDelete}
-                                                className="px-4 py-2 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-md"
+                                                className="px-4 py-2 text-sm font-medium text-white bg-warningButton hover:bg-hoverWarningButton rounded-md"
                                             >
                                                 삭제
                                             </button>
@@ -145,7 +145,7 @@ const ArticleDetail = () => {
                                     ) : isLeadership ? (
                                         <button
                                             onClick={handleDelete}
-                                            className="px-4 py-2 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-md"
+                                            className="px-4 py-2 text-sm font-medium text-white bg-warningButton hover:bg-hoverWarningButton rounded-md"
                                         >
                                             삭제
                                         </button>
