@@ -61,6 +61,19 @@ const ClubApply = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // 전화번호 유효성 검사 (숫자 11자리)
+        if (!/^01[01]\d{8}$/.test(formData.contact)) {
+            alert("유효한 전화번호를 입력해주세요.");
+            return;
+        }
+
+        // 학과 유효성 검사
+        if (!formData.department || formData.department.trim() === "") {
+            alert("학과 정보가 없습니다. 내 정보에서 학과를 먼저 입력해주세요.");
+            return;
+        }
+
         try {
             await submitClubApplication(clubId, formData);
             alert("지원서 제출 성공!");
