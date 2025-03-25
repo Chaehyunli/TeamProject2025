@@ -7,12 +7,17 @@ import { getParticularUserProfile } from "../api/userApi";
 const ClubMembers = () => {
     const { clubId } = useParams();
     const [members, setMembers] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [membersLoading, setMembersLoading] = useState(false);
+    const [roleLoading, setRoleLoading] = useState(false);
+    const [actionLoading, setActionLoading] = useState(false);
     const [currentUserRole, setCurrentUserRole] = useState(null); // 현재 로그인한 사용자의 역할
     const [currentUserId, setCurrentUserId] = useState(null); // 현재 로그인한 사용자 ID
 
     useEffect(() => {
         const fetchMembers = async () => {
+            if (membersLoading) return;
+
+            setMembersLoading(true);
             try {
                 const response = await getClubMembers(clubId);
                 const membersData = response.data || [];
@@ -46,7 +51,7 @@ const ClubMembers = () => {
             } catch (error) {
                 console.error("멤버 목록을 불러오지 못했습니다.", error);
             } finally {
-                setLoading(false);
+                setMembersLoading(false);
             }
         };
 
@@ -55,6 +60,10 @@ const ClubMembers = () => {
 
     useEffect(() => {
         if (currentUserId !== null) {
+            if (roleLoading) return;
+
+            setRoleLoading(true);
+
             fetchUserRole(currentUserId);
         }
     }, [currentUserId]);
@@ -62,10 +71,12 @@ const ClubMembers = () => {
     const fetchUserRole = async (userId) => {
         const role = await getUserClubRole(clubId);
         setCurrentUserRole(role);
+        setRoleLoading(false);
     };
 
     // 역할 변경 핸들러
     const handleRoleChange = async (userId, newRole, username) => {
+        if (actionLoading) return;
         console.log(`현재 사용자 ID: ${currentUserId}, 변경 대상 ID: ${userId}`);
 
         if (currentUserRole !== "PRESIDENT") {
@@ -86,18 +97,28 @@ const ClubMembers = () => {
         const confirmed = window.confirm(`${username}님을 ${newRole}로 임명하시겠습니까?`);
         if (!confirmed) return;
 
-        const message = await grantRole(userId, clubId, newRole);
-        alert(message);
+        setActionLoading(true);
+        try {
+            const message = await grantRole(userId, clubId, newRole);
+            alert(message);
 
-        setMembers((prevMembers) =>
-            prevMembers.map((member) =>
-                member.userId === userId ? { ...member, roleName: newRole } : member
-            )
-        );
+            setMembers((prevMembers) =>
+                prevMembers.map((member) =>
+                    member.userId === userId ? { ...member, roleName: newRole } : member
+                )
+            );
+        } catch (error) {
+            console.error("역할 변경 실패:", error);
+            alert("역할 변경에 실패했습니다.");
+        } finally {
+            setActionLoading(false);
+        }
     };
 
     // 강퇴 핸들러
     const handleRemoveMember = async (userId, username) => {
+        if (actionLoading) return;
+
         if (currentUserRole !== "PRESIDENT") {
             alert("회장만 회원을 강퇴할 수 있습니다.");
             return;
@@ -106,13 +127,27 @@ const ClubMembers = () => {
         const confirmed = window.confirm(`${username}님을 강퇴하시겠습니까?`);
         if (!confirmed) return;
 
-        const message = await leaveClub(userId, clubId);
-        alert(message);
+        setActionLoading(true);
+        try {
+            const message = await leaveClub(userId, clubId);
+            alert(message);
 
-        setMembers((prevMembers) => prevMembers.filter((member) => member.userId !== userId));
+            setMembers((prevMembers) => prevMembers.filter((member) => member.userId !== userId));
+        } catch (error) {
+            console.error("강퇴 실패:", error);
+            alert("강퇴에 실패했습니다.");
+        } finally {
+            setActionLoading(false);
+        }
     };
 
-    if (loading) return <p className="text-center mt-10">⏳ 로딩 중...</p>;
+    if (membersLoading || roleLoading) {
+        return (
+            <div className="flex justify-center items-center h-64">
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+            </div>
+        );
+    }
 
     return (
         <div className="w-full max-w-5xl mx-auto mt-6 p-6 bg-white shadow-md rounded-lg">
