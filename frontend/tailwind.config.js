@@ -12,6 +12,8 @@ module.exports = {
                 extraText: '#717171', // 부가적 텍스트 eg) 동아리 검색
                 hoverGrayColor: '#374151', // text-extraText hover 시
                 warningText: '#EF4444', // 경고 텍스트
+                warningButton: '#FF5050', // 경고 버튼
+                hoverWarningButton: '#DC2626' // 경고 버튼 hover 시 더 진한 빨간색
             }
         },
     },
