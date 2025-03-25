@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getUserClubs, getClubList } from "../api/clubApi";
 import ClubList from "../components/ClubList";
+import { DEFAULT_CLUB_THUMBNAIL } from "../constants/DefaultImage";
 
 const MyClubsPage = () => {
     const navigate = useNavigate();
@@ -25,29 +26,8 @@ const MyClubsPage = () => {
             }
         };
 
-        const fetchAllClubs = async () => {
-            try {
-                const clubData = await getClubList(); // 모든 동아리 목록 가져오기
-                setAllClubs(clubData);
-            } catch (error) {
-                console.error("전체 동아리 목록 불러오기 실패:", error);
-                setAllClubs([]);
-            }
-        };
-
         fetchUserClubs();
-        fetchAllClubs();
     }, [username, navigate]);
-
-    // `userClubs` 데이터에 `allClubs` 데이터를 병합해서 이미지 & 회장 정보 추가
-    const enrichedUserClubs = userClubs.map(userClub => {
-        const fullClubData = allClubs.find(club => club.clubId === userClub.clubId);
-        return {
-            ...userClub,
-            thumbUrl: fullClubData?.thumbUrl || "", // 이미지 URL 추가
-            leaders: fullClubData?.leaders || []   // 회장/부회장 정보 추가
-        };
-    });
 
     return (
         <div className="container mx-auto px-8 lg:px-16">
@@ -58,7 +38,7 @@ const MyClubsPage = () => {
                 </div>
             </div>
 
-            <ClubList clubs={enrichedUserClubs} userClubs={enrichedUserClubs} />
+            <ClubList clubs={userClubs} userClubs={userClubs} />
         </div>
     );
 };

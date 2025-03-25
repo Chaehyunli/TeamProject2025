@@ -16,7 +16,7 @@ public class ClubLeaderDto {
         return ClubLeaderDto.builder()
                 .userId(userClub.getUser() != null ? userClub.getUser().getUserId() : null)
                 .name(userClub.getUser() != null ? userClub.getUser().getName() : null)
-                .roleName(userClub.getRole().getRoleName().name())
+                .roleName(userClub.getRole() != null ? userClub.getRole().getRoleName().name() : null)
                 .build();
     }
 }
