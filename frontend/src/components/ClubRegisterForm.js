@@ -10,6 +10,7 @@ const ClubRegistrationForm = ({ presidentName, onSubmit }) => {
     const [thumbUrl, setThumbUrl] = useState(null);
     const [errorMessage, setErrorMessage] = useState("");
     const [categories, setCategories] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     // 허용되는 파일 형식
     const allowedFileTypes = ["image/png", "image/jpeg"];
@@ -18,12 +19,17 @@ const ClubRegistrationForm = ({ presidentName, onSubmit }) => {
     useEffect(() => {
         // 카테고리 가져오는 핸들러
         const fetchCategory = async() => {
+            if (loading) return;
+
+            setLoading(true);
             try {
                 const categoriesData = await getCategory();
                 setCategories(categoriesData);
             } catch (error) {
                 console.error("카테고리 정보 불러오기 실패: ", error);
                 setCategories([]);
+            } finally {
+                setLoading(false);
             }
         };
 
@@ -57,6 +63,14 @@ const ClubRegistrationForm = ({ presidentName, onSubmit }) => {
             thumbUrl,
         });
     };
+
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center h-64">
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+            </div>
+        );
+    }
 
     return (
         <form onSubmit={handleSubmit} className="max-w-[600px] mx-auto space-y-4">

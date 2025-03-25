@@ -16,10 +16,12 @@ const ClubApply = () => {
         contents: "",
     });
     const [hasApplied, setHasApplied] = useState(false);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
+            if (loading) return;
+
             setLoading(true);
             try {
                 // ✅ 1. 사용자가 이미 지원했는지 확인
@@ -48,8 +50,9 @@ const ClubApply = () => {
                 }
             } catch (error) {
                 console.error("데이터 불러오기 실패: ", error);
+            } finally {
+                setLoading(false);
             }
-            setLoading(false);
         };
 
         fetchData();
@@ -74,14 +77,27 @@ const ClubApply = () => {
             return;
         }
 
+        if (loading) return;
+
+        setLoading(true);
         try {
             await submitClubApplication(clubId, formData);
             alert("지원서 제출 성공!");
             navigate(`/clubs/${clubId}/articles`); // 지원 후 이동
         } catch (error) {
             alert("지원서 제출에 실패했습니다.");
+        } finally {
+            setLoading(false);
         }
     };
+
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center h-64">
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+            </div>
+        );
+    }
 
     return (
         <div className="flex justify-center items-start py-10">
