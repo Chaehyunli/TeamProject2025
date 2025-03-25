@@ -101,7 +101,7 @@ const ClubSubmissions = () => {
     if (loading) {
         return (
             <div className="flex justify-center items-center h-64">
-                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
             </div>
         );
     }
@@ -139,7 +139,7 @@ const ClubSubmissions = () => {
 
                                 <button
                                     disabled={actionLoading}
-                                    className={`px-3 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 ${
+                                    className={`px-3 py-1 bg-primary text-white rounded-lg hover:bg-hoverBlueColor ${
                                         actionLoading ? "opacity-50 cursor-not-allowed" : ""
                                     }`}
                                     onClick={() => handleApprove(applicant)}
