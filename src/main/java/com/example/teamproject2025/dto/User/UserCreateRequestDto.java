@@ -1,6 +1,6 @@
 package com.example.teamproject2025.dto.User;
 
-
+import com.example.teamproject2025.constant.DefaultImage;
 import com.example.teamproject2025.entity.User.User;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -30,7 +30,7 @@ public class UserCreateRequestDto {
     private String universityName;
     private String studentId;
     @Builder.Default
-    private String profileImage = "default-profileImage.png";
+    private String profileImage = DefaultImage.PROFILE_IMAGE;
     @Builder.Default
     private Boolean isEmailVerified = false; // Ref1
     @Builder.Default
