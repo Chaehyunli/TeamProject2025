@@ -172,7 +172,7 @@ const ClubMembers = () => {
                                 <button
                                     key={role}
                                     className={`px-3 py-1 rounded-lg ${
-                                        member.roleName === role ? "bg-blue-500 text-white" : "border"
+                                        member.roleName === role ? "bg-primary text-white" : "border"
                                     }`}
                                     onClick={() => handleRoleChange(member.userId, role, member.username)}
                                     disabled={currentUserRole !== "PRESIDENT" || member.isCurrentUser || role === "PRESIDENT"}
