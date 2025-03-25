@@ -106,9 +106,7 @@ const ClubApply = () => {
                     <span className="text-primary">{clubName}</span> 동아리 지원하기
                 </h2>
 
-                {loading ? (
-                    <p className="text-gray-500 mt-4 text-center">로딩 중...</p>
-                ) : hasApplied ? (
+                {hasApplied ? (
                     <p className="text-warningText font-semibold mt-4 text-center">이미 지원하였습니다.</p>
                 ) : (
                     <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
