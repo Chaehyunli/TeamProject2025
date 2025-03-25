@@ -56,13 +56,13 @@ const ClubArticlesList = () => {
     };
 
     if (error) {
-        return <div className="text-red-500 text-center p-4">{error}</div>;
+        return <div className="text-warningText text-center p-4">{error}</div>;
     }
 
     if (loading) {
         return (
             <div className="flex justify-center items-center h-64">
-                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
             </div>
         );
     }
@@ -73,7 +73,7 @@ const ClubArticlesList = () => {
                 <div className="flex justify-end mb-4">
                     <button
                         onClick={() => navigate(`/clubs/${clubId}/articles/create`)}
-                        className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg"
+                        className="bg-primary hover:bg-hoverBlueColor text-white px-4 py-2 rounded-lg"
                     >
                         게시글 작성
                     </button>
@@ -128,7 +128,7 @@ const ClubArticlesList = () => {
                         className={`px-4 py-2 rounded ${
                             currentPage === 0
                                 ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                                : "bg-blue-500 text-white hover:bg-blue-600"
+                                : "bg-primary text-white hover:bg-hoverBlueColor"
                         }`}
                     >
                         이전
@@ -140,7 +140,7 @@ const ClubArticlesList = () => {
                                 onClick={() => handlePageChange(index)}
                                 className={`px-4 py-2 rounded ${
                                     currentPage === index
-                                        ? "bg-blue-500 text-white"
+                                        ? "bg-primary text-white"
                                         : "bg-gray-200 hover:bg-gray-300"
                                 }`}
                             >
@@ -154,7 +154,7 @@ const ClubArticlesList = () => {
                         className={`px-4 py-2 rounded ${
                             currentPage === totalPages - 1
                                 ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                                : "bg-blue-500 text-white hover:bg-blue-600"
+                                : "bg-primary text-white hover:bg-hoverBlueColor"
                         }`}
                     >
                         다음

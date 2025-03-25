@@ -67,7 +67,7 @@ const ClubRegistrationForm = ({ presidentName, onSubmit }) => {
     if (loading) {
         return (
             <div className="flex justify-center items-center h-64">
-                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
             </div>
         );
     }
@@ -101,7 +101,7 @@ const ClubRegistrationForm = ({ presidentName, onSubmit }) => {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 required
-                className="w-full px-4 py-2 border rounded-md shadow-sm h-32 resize-none focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
+                className="w-full px-4 py-2 border rounded-md shadow-sm h-32 resize-none focus:outline-none focus:ring-2 focus:ring-primary"
                 placeholder="동아리 설명을 입력하세요"
             ></textarea>
 
@@ -112,7 +112,7 @@ const ClubRegistrationForm = ({ presidentName, onSubmit }) => {
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
                 required
-                className="w-full px-4 py-2 border rounded-md shadow-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
+                className="w-full px-4 py-2 border rounded-md shadow-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary"
             >
                 <option value="">카테고리를 선택하세요</option>
                 {categories.map(category => (
@@ -129,7 +129,7 @@ const ClubRegistrationForm = ({ presidentName, onSubmit }) => {
                 onFileSelect={handleFileChange}
             />
 
-            {errorMessage && <p className="text-red-500 text-sm">{errorMessage}</p>}
+            {errorMessage && <p className="text-warningText text-sm">{errorMessage}</p>}
 
             {/* 신청하기 버튼 */}
             <button

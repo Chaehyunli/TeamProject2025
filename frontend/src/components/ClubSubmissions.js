@@ -107,7 +107,7 @@ const ClubSubmissions = () => {
     }
 
     if (!userRole || (userRole !== "PRESIDENT" && userRole !== "VICE_PRESIDENT")) {
-        return <p className="text-center mt-10 text-red-500 text-xl">⚠️ 권한이 없습니다.</p>;
+        return <p className="text-center mt-10 text-warningText text-xl">⚠️ 권한이 없습니다.</p>;
     }
 
     return (
@@ -148,7 +148,7 @@ const ClubSubmissions = () => {
                                 </button>
                                 {/* 이후에 userid 이름 가져오는 api 추가 후에 이름으로 변경 */}
                                 <button
-                                    className={`px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600 ${
+                                    className={`px-3 py-1 bg-warningButton text-white rounded-lg hover:bg-hoverWarningButton ${
                                         actionLoading ? "opacity-50 cursor-not-allowed" : ""
                                     }`}
                                     onClick={() => handleReject(applicant)}

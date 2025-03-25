@@ -144,7 +144,7 @@ const ClubMembers = () => {
     if (membersLoading || roleLoading) {
         return (
             <div className="flex justify-center items-center h-64">
-                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
             </div>
         );
     }
@@ -186,7 +186,7 @@ const ClubMembers = () => {
                                 className={`px-3 py-1 rounded-lg ${
                                     member.roleName === "PRESIDENT" || currentUserRole === "VICE_PRESIDENT"
                                         ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                                        : "bg-red-500 text-white hover:bg-red-600"
+                                        : "bg-warningButton text-white hover:bg-hoverWarningButton"
                                 }`}
                                 onClick={() => handleRemoveMember(member.userId, member.username)}
                                 disabled={member.roleName === "PRESIDENT" || currentUserRole !== "PRESIDENT"}
