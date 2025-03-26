@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { logout } from "../api/authApi";
-import { deleteUser, getUserProfile } from "../api/userApi";
-import {useNavigate} from "react-router-dom";
+import { deleteUser, getUserProfile, resetUserProfileImage } from "../api/userApi";
+import { useNavigate } from "react-router-dom";
 import { ProtectedImage } from "../api/uploadApi";
 
 const ProfilePage = () => {
@@ -59,6 +59,33 @@ const ProfilePage = () => {
         }
     };
 
+    const handleResetProfileImage = async () => {
+        if (user.profileImage === "default-profileImage.png") {
+            alert("이미 기본 이미지입니다."); // 이미 기본 이미지라면 알림만 표시하고 종료
+            return;
+        }
+
+        if(!window.confirm("정말 기본 이미지로 설정하시겠습니까?")) return;
+
+        try {
+            await resetUserProfileImage();
+            const newProfileImage = "default-profileImage.png";
+
+            // localStorage에 즉시 반영
+            localStorage.setItem("profileImage", newProfileImage);
+
+            setUser((prevUser) => ({
+                ...prevUser,
+                profileImage: newProfileImage,
+            }));
+
+            // `storage` 이벤트 트리거 (크롬 외 브라우저 대응)
+            window.dispatchEvent(new Event("storage"));
+        } catch (error) {
+            console.error("❌ 기본 이미지 설정 실패:", error);
+        }
+    }
+
     return (
         <div className="w-full max-w-4xl mx-auto mt-10 p-10">
             {/* 프로필 정보 */}
@@ -69,17 +96,29 @@ const ProfilePage = () => {
                     </div>
                     <div>
                         <h2 className="text-xl font-bold">{user.name}</h2>
-                        <div className="flex items-center text-gray-500">
-                            <p>
-                                {user.universityName || "대학교 미입력"} | {user.studentId || "학번 미입력"} | {user.department || "학과 미입력"} | {user.email || "이메일 미입력"}
-                            </p>
-                            <button
-                                className="ml-4 px-3 py-1 text-xs text-white bg-primary rounded-lg hover:bg-hoverBlueColor"
-                                onClick={() => navigate("/updateProfile")}
-                            >
-                                수정
-                            </button>
+                        <div className="flex justify-between items-start text-gray-500 w-full">
+                            <div className="flex-1">
+                                <p className="leading-snug">
+                                    {user.universityName || "대학교 미입력"} | {user.studentId || "학번 미입력"} | {user.department || "학과 미입력"} | {user.email || "이메일 미입력"}
+                                </p>
+                            </div>
+
+                            <div className="flex-shrink-0 flex items-center space-x-2 ml-4">
+                                <button
+                                    className="px-3 py-1 text-xs text-gray-500 bg-gray-200 rounded-lg hover:bg-gray-300 whitespace-nowrap"
+                                    onClick={handleResetProfileImage}
+                                >
+                                    기본 이미지로 변경
+                                </button>
+                                <button
+                                    className="px-3 py-1 text-xs text-white bg-primary rounded-lg hover:bg-hoverBlueColor whitespace-nowrap"
+                                    onClick={() => navigate("/updateProfile")}
+                                >
+                                    수정
+                                </button>
+                            </div>
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -91,14 +130,30 @@ const ProfilePage = () => {
                     <span>{user.username}</span>
                 </div>
 
-                <p className="text-lg font-semibold cursor-pointer text-primary">
+                <p
+                    className="text-lg font-semibold cursor-pointer text-primary"
+                    onClick={() => {
+                        if (!user || !user.username) {
+                            alert("사용자 정보를 불러오는 중입니다. 잠시 후 다시 시도해주세요.");
+                            return;
+                        }
+
+                        navigate("/profile/update-pw", {
+                            state: {
+                                from: "profile",
+                                universityName: user.universityName,
+                                username: user.username,
+                            }
+                        });
+                    }}
+                >
                     비밀번호 변경
                 </p>
 
                 <div className="flex justify-between text-lg">
                     <span className="font-semibold">대학교 인증</span>
-                    <span className={`font-bold ${user.isUniVerified ? "text-green-400" : "text-red-400"}`}>
-                        {user.isUniVerified ? "인증 완료" : "미인증"}
+                    <span className={`font-bold ${user.isEmailVerified ? "text-green-400" : "text-red-400"}`}>
+                        {user.isEmailVerified ? "인증 완료" : "미인증"}
                     </span>
                 </div>
 

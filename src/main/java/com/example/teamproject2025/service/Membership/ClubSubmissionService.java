@@ -1,9 +1,6 @@
 package com.example.teamproject2025.service.Membership;
 
-import com.example.teamproject2025.dto.Membership.ClubSubmissionRequestDto;
-import com.example.teamproject2025.dto.Membership.ClubSubmissionResponseDto;
-import com.example.teamproject2025.dto.Membership.UserSubmissionsUpdateRequestDto;
-import com.example.teamproject2025.dto.Membership.UserSubmissionsUpdateResponseDto;
+import com.example.teamproject2025.dto.Membership.*;
 
 import java.util.List;
 
@@ -20,4 +17,5 @@ public interface ClubSubmissionService {
     ClubSubmissionResponseDto getSubmissionById(Long applyId);
     UserSubmissionsUpdateResponseDto updateSubmission(Long userId, Long applyId, UserSubmissionsUpdateRequestDto updateDto);
     boolean deleteSubmission(Long userId, Long applyId);
+
 }

@@ -18,7 +18,7 @@ public interface ClubService {
 
     boolean checkUserPermission(Long userId, Long clubId);
 
-    List<ClubMemberResponseDto> getClubMembers(Long clubId);
+    boolean checkUserIsPresident(Long userId, Long clubId);
 
     ClubArticleResponseDto createArticle(Long clubId, Long userId, String title, String content, String uploadedFileName, boolean is_notice);
 
@@ -39,4 +39,13 @@ public interface ClubService {
     boolean deleteNotice(Long clubId, Long noticeId, Long userId);
 
     SpecificNoticeResponseDto getNoticeDetail(Long clubId, Long noticeId);
+
+    void updateClubThumbnail(String username, Long clubId, String objectName);
+
+    void resetClubThumbnail(String username, Long clubId);
+
+    ClubListResponseDto searchClubsByUserUniversity(String username, String search, int limit, int offset);
+
+    void deleteClub(Long clubId, Long userId);
+
 }

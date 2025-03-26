@@ -5,7 +5,7 @@ import FindIdForm from "../components/FindIdForm";
 import FindPasswordForm from "../components/FindPasswordForm";
 
 function FindAccountPage() {
-    const [activeTab, setActiveTab] = useState("id"); // "id" 또는 "pw" 저장
+    const [activeTab, setActiveTab] = useState("id"); // "id" 또는 "pw" 저장\
 
     return (
         <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">

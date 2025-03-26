@@ -31,7 +31,7 @@ public class AuthController {
     // 이메일 인증 요청
     @PostMapping("/email")
     public ResponseEntity<CommonResponseDto<Object>> requestEmailVerification(@RequestBody @Validated EmailRequestDto request) {
-        emailServiceImpl.sendVerificationEmail(request.getEmail());
+        emailServiceImpl.sendVerificationEmail(request.getEmail(), request.getUniversity());
         return ResponseEntity.status(HttpStatus.OK)
                 .body(CommonResponseDto.success(HttpStatus.OK.value(), "Verification email sent successfully", null));
     }

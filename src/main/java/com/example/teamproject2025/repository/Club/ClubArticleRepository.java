@@ -2,8 +2,10 @@ package com.example.teamproject2025.repository.Club;
 
 import com.example.teamproject2025.entity.Club.Article;
 import io.lettuce.core.dynamic.annotation.Param;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
@@ -22,4 +24,9 @@ public interface ClubArticleRepository extends JpaRepository<Article, Long> {
 
     @EntityGraph(attributePaths = "user")
     Optional<Article> findByArticleId(Long articleId);
+
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM Article a WHERE a.club.clubId = :clubId")
+    void deleteAllByClubId(@Param("clubId") Long clubId);
 }

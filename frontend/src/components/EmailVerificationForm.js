@@ -2,7 +2,12 @@ import React, { useState, useEffect } from "react";
 import { requestVerificationCode, verifyCode } from "../api/authApi";
 import InputField from "./InputField";
 
-const EmailVerificationForm = ({ onVerificationSuccess, initialEmail, onEmailChange}) => {
+const EmailVerificationForm = ({
+    onVerificationSuccess,
+    initialEmail,
+    onEmailChange,
+    universityName
+}) => {
     const [email, setEmail] = useState(initialEmail || ""); // 초기값 설정
     const [verificationCode, setVerificationCode] = useState("");
     const [isCodeSent, setIsCodeSent] = useState(false);
@@ -40,12 +45,18 @@ const EmailVerificationForm = ({ onVerificationSuccess, initialEmail, onEmailCha
         setIntervalId(newIntervalId);
 
         try {
-            await requestVerificationCode(email);
-
+            await requestVerificationCode(email, universityName);
         } catch (error) {
-            setMessage("⚠️ 이메일 전송 중 오류가 발생했습니다.");
+            if (
+                error.response &&
+                error.response.data.message === "대학교 이메일을 입력해주세요"
+            ) {
+                setMessage("❌ 대학교 이메일을 입력해주세요.");
+            } else {
+                setMessage("⚠️ 이메일 전송 중 오류가 발생했습니다.");
+            }
             console.error(error);
-            setIsCodeSent(false); // 요청 실패 시 다시 원래 상태로 변경
+            setIsCodeSent(false);
         }
     };
 

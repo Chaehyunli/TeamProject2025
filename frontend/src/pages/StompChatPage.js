@@ -1,12 +1,11 @@
 import { useState, useEffect, useRef } from "react";
-import { useParams, useLocation } from "react-router-dom";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
 import SockJS from "sockjs-client";
 import Stomp from "webstomp-client";
 import axios from "axios";
 import { useChat } from "../context/ChatContext";  // 🔥 ChatContext 가져오기
 import backIcon from "../assets/backIcon.png";
 import { fetchChatHistory, markMessagesAsRead } from "../api/chatApi";
-import {ProtectedImage} from "../api/uploadApi";
 
 const StompChatPage = () => {
     const { roomId } = useParams();
@@ -24,8 +23,10 @@ const StompChatPage = () => {
 
     const [receiverEmail, setReceiverEmail] = useState("");
     const [receiverName, setReceiverName] = useState(receiverNameFromNavigate);
+    const navigate = useNavigate();
 
     const API_BASE_URL = "http://localhost:8080";
+
 
     useEffect(() => {
         if (!isConnectedRef.current) {
@@ -172,12 +173,17 @@ const StompChatPage = () => {
         return new Date(isoString).toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" });
     }
 
+    const handleBack = async () => {
+        await disconnectWebSocket();   // 읽음처리
+        navigate("/my-chatpage");      // 그 다음 페이지 이동
+    };
+
     return (
         <div className="flex flex-col items-center justify-center py-40">
             <div className="w-full max-w-lg bg-white rounded-2xl shadow-lg flex flex-col overflow-hidden">
                 <div
                     className="p-4 border-blue-500 border-b border-b-white flex relative justify-center items-center bg-blue-900 text-white font-semibold text-lg rounded-t-2xl">
-                    <button onClick={() => window.history.back()} className="absolute left-4">
+                    <button onClick={handleBack} className="absolute left-4">
                         <img src={String(backIcon)} alt="뒤로가기" className="w-5 h-5"/>
                     </button>
                     {receiverName}

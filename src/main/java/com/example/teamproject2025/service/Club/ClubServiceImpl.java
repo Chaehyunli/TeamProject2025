@@ -1,7 +1,6 @@
 package com.example.teamproject2025.service.Club;
 
 import com.example.teamproject2025.dto.Club.*;
-import com.example.teamproject2025.dto.Membership.ClubMemberResponseDto;
 import com.example.teamproject2025.dto.Membership.UserClubResponseDto;
 import com.example.teamproject2025.entity.Club.Article;
 import com.example.teamproject2025.entity.Club.Category;
@@ -16,11 +15,14 @@ import com.example.teamproject2025.repository.Club.CategoryRepository;
 import com.example.teamproject2025.repository.Club.ClubArticleRepository;
 import com.example.teamproject2025.repository.Club.ClubNoticeRepository;
 import com.example.teamproject2025.repository.Club.ClubRepository;
+import com.example.teamproject2025.repository.Membership.ClubSubmissionRepository;
 import com.example.teamproject2025.repository.Membership.UserClubRepository;
 import com.example.teamproject2025.repository.Membership.UserRoleRepository;
 import com.example.teamproject2025.repository.University.UniversityRepository;
 import com.example.teamproject2025.repository.User.UserRepository;
 import com.google.cloud.storage.Storage;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -42,6 +44,7 @@ public class ClubServiceImpl implements ClubService {
     private final UserRoleRepository userRoleRepository;
     private final UserClubRepository userClubRepository;
     private final ClubArticleRepository clubArticleRepository;
+    private final ClubSubmissionRepository clubSubmissionRepository;
     private final Storage storage;
     private final ApplicationContext applicationContext;
 
@@ -50,6 +53,9 @@ public class ClubServiceImpl implements ClubService {
     private final ClubNoticeRepository clubNoticeRepository;
     @Value("${spring.cloud.gcp.storage.bucket}")
     private String bucketName;
+
+    @PersistenceContext
+    private EntityManager entityManager;  // 영속성 컨텍스트 주입
 
     @Override
     @Transactional
@@ -69,7 +75,7 @@ public class ClubServiceImpl implements ClubService {
         // 4. 파일명이 없으면 기본 썸네일 이미지 사용
         String storageThumbUrl = (uploadedFileName != null && !uploadedFileName.isEmpty())
                 ? uploadedFileName
-                : "https://www.mju.ac.kr/sites/mjukr/images/sub01/symbol01.png"; // 기본 이미지
+                : "default-thumbnail-mju.png"; // 기본 이미지
 
         // 5. 동아리 엔티티 생성 후 저장
         ClubCreateRequestDto requestDto = new ClubCreateRequestDto(clubName, categoryName, description,
@@ -181,21 +187,6 @@ public class ClubServiceImpl implements ClubService {
         return "PRESIDENT".equals(userRole) || "VICE_PRESIDENT".equals(userRole);
     }
 
-    // 동아리 멤버 조회 (ClubMemberResponseDto 사용)
-    @Override
-    @Transactional(readOnly = true)
-    public List<ClubMemberResponseDto> getClubMembers(Long clubId) {
-        List<UserClub> members = userClubRepository.findByClub_ClubId(clubId);
-
-        return members.stream()
-                .map(member -> new ClubMemberResponseDto(
-                        member.getUser().getUserId(),
-                        member.getUser().getName(),  // 사용자 이름 추가
-                        member.getRole().getRoleName().name() // 역할 정보 추가
-                ))
-                .collect(Collectors.toList());
-    }
-
     // 동아리 게시물 작성
     @Override
     public ClubArticleResponseDto createArticle(Long clubId, Long userId, String title, String content,
@@ -285,7 +276,7 @@ public class ClubServiceImpl implements ClubService {
 
         // 기존 이미지 삭제 로직 추가(Google Cloud)
         if (article.getThumbUrl() != null
-                && !article.getThumbUrl().equals("default-thumbnail.png")) {
+                && !article.getThumbUrl().equals("default-thumbnail-mju.png")) {
             deleteImageFromGCS(article.getThumbUrl()); // 기존 이미지 삭제 (기본 이미지 제외)
         }
 
@@ -394,7 +385,7 @@ public class ClubServiceImpl implements ClubService {
     // Google Cloud Storage에서 기존 이미지 삭제
     private void deleteImageFromGCS(String objectName) {
         if (objectName == null || objectName.trim().isEmpty()) return; // null 또는 빈 값 방지
-        if ("default-thumbnail.png".equals(objectName)) return; // 기본 프로필 이미지는 삭제하지 않음
+        if ("default-thumbnail-mju.png".equals(objectName)) return; // 기본 프로필 이미지는 삭제하지 않음
 
         boolean deleted = storage.delete(bucketName, objectName); // GCS에서 객체 삭제
         if (deleted) {
@@ -402,5 +393,119 @@ public class ClubServiceImpl implements ClubService {
         } else {
             System.err.println("❌ 기존 동아리 이미지 삭제 실패 (이미 삭제되었거나 존재하지 않음): " + objectName);
         }
+    }
+
+    public void updateClubThumbnail(String username, Long clubId, String objectName) {
+        Club club = clubRepository.findById(clubId)
+                .orElseThrow(() -> new IllegalArgumentException("❌ 존재하지 않는 동아리"));
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("❌ 존재하지 않는 사용자"));
+
+        // 클럽 관리자인지 확인
+        if (!checkUserPermission(user.getUserId(), club.getClubId())) {
+            throw new SecurityException("권한이 없습니다.");
+        }
+
+        // 기존 이미지 삭제 (기본 이미지가 아니라면)
+        if (club.getThumbUrl() != null && !club.getThumbUrl().equals("default-thumbnail-mju.png")) {
+            deleteImageFromGCS(club.getThumbUrl());
+        }
+
+        // 새 썸네일 객체 이름 저장
+        club.setThumbUrl(objectName);
+        clubRepository.save(club);
+    }
+
+    public void resetClubThumbnail(String username, Long clubId) {
+        Club club = clubRepository.findById(clubId)
+                .orElseThrow(() -> new IllegalArgumentException("❌ 존재하지 않는 동아리"));
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("❌ 존재하지 않는 사용자"));
+
+        // 클럽 관리자인지 확인
+        if (!checkUserPermission(user.getUserId(), club.getClubId())) {
+            throw new SecurityException("❌ 권한이 없습니다.");
+        }
+
+        // 기존 썸네일 삭제 (기본 이미지가 아닐 때만)
+        if (club.getThumbUrl() != null && !club.getThumbUrl().equals("default-thumbnail-mju.png")) {
+            deleteImageFromGCS(club.getThumbUrl());
+        }
+
+        // 기본 이미지로 설정
+        club.setThumbUrl("default-thumbnail-mju.png");
+        clubRepository.save(club);
+    }
+
+    // 사용자가 동아리 회장인지 확인
+    @Override
+    @Transactional(readOnly = true)
+    public boolean checkUserIsPresident(Long userId, Long clubId){
+        ClubService proxyService = applicationContext.getBean(ClubService.class);
+        String userRole = proxyService.getUserRoleInClub(userId, clubId);
+
+        return "PRESIDENT".equals(userRole);
+    }
+
+    // 검색어를 이용해서 동아리 검색
+    @Override
+    @Transactional(readOnly = true)
+    public ClubListResponseDto searchClubsByUserUniversity(String username, String search, int limit, int offset){
+        // 1. 현재 로그인한 사용자 찾기
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        // 2. 해당 사용자의 대학교 ID로 필터링하여 동아리 조회 (검색어 적용)
+        List<Club> clubs = clubRepository.findByUniversity_UniversityIdAndClubNameContaining(user.getUniversityId(), search);
+
+        // 전체 검색된 동아리 개수
+        int total = clubs.size();
+
+        // 3. 페이지네이션 적용
+        List<Club> paginatedClubs = clubs.stream()
+                .skip(offset)
+                .limit(limit)
+                .collect(Collectors.toList());
+
+        // 4. DTO 변환 후 반환
+        return ClubListResponseDto.fromEntity(paginatedClubs, total, limit, offset);
+    }
+
+    @Override
+    @Transactional
+    public void deleteClub(Long clubId, Long userId) {
+        // 1. 동아리 존재 여부 확인
+        Club club = clubRepository.findById(clubId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 동아리입니다."));
+
+        // 2. 현재 사용자가 동아리 회장인지 확인
+        if (!checkUserIsPresident(userId, clubId)) {
+            throw new SecurityException("동아리를 삭제할 권한이 없습니다.");
+        }
+
+        // 3. 가입된 멤버가 남아있는지 확인
+        long memberCount = userClubRepository.countByClubId(clubId);
+        if (memberCount > 1) {
+            throw new IllegalStateException("동아리에 가입된 멤버가 있어서 삭제할 수 없습니다.");
+        }
+
+        // 3. 연관된 엔티티 삭제
+        userClubRepository.deleteAllByClubId(clubId);
+        userRoleRepository.deleteAllByClubId(clubId);
+        clubSubmissionRepository.deleteAllByClubId(clubId);
+        clubArticleRepository.deleteAllByClubId(clubId);
+
+        // 4. GCP에 저장된 썸네일 이미지 삭제 (기본 이미지가 아닐 경우)
+        if (club.getThumbUrl() != null && !club.getThumbUrl().equals("default-thumbnail-mju.png")) {
+            deleteImageFromGCS(club.getThumbUrl());
+        }
+
+        // 5. 영속성 컨텍스트 초기화
+        entityManager.clear();  // Hibernate가 TransientObjectException을 방지하기 위해 영속성 컨텍스트를 비움
+
+        // 6. 동아리 삭제
+        clubRepository.delete(club);
     }
 }

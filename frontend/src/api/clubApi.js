@@ -332,3 +332,98 @@ export const updateNotice = async (clubId, noticeId, noticeData) => {
 }
 
 
+
+// 특정 동아리 Thumbnail 수정
+export const updateClubThumbnail = async (clubId, objectName) => {
+    try {
+        const response = await axios.patch(
+            `${API_BASE_URL}/${clubId}/thumbnail`,
+            new URLSearchParams({ objectName }), // x-www-form-urlencoded 형식
+            { withCredentials: true }
+        );
+        return response.data;
+    } catch (error) {
+        console.error("동아리 썸네일 수정 실패:", error);
+        throw error;
+    }
+};
+
+// 기본 Thumbnail로 변경
+export const resetClubThumbnail = async (clubId) =>{
+  try {
+      const response = await axios.patch(`${API_BASE_URL}/${clubId}/thumbnail/reset`,
+          {},
+          { withCredentials: true }
+      );
+
+      return response.data;
+  } catch (error){
+      console.log("기본 썸네일 설정 실패:", error);
+      throw error;
+  }
+};
+
+// 특정 회원에게 권한 부여
+export const grantRole = async (targetUserId, clubId, role) => {
+    try {
+        const response = await axios.post(
+            `${API_BASE_URL}/grant-role`,
+            { targetUserId, clubId, role },
+            {
+                withCredentials: true,
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            }
+        );
+        return response.data.message;
+    } catch (error) {
+        console.error('권한 부여 실패: ', error);
+        return error;
+    }
+};
+
+// 특정 회원 강퇴
+export const leaveClub = async (targetUserId, clubId) => {
+    try {
+        const response = await axios.delete(
+            `${API_BASE_URL}/leave-club`,
+            {
+                data: { targetUserId, clubId },
+                withCredentials: true,
+                headers: {
+                    "Content-Type": "application/json",  // 명확한 설정
+                },
+            }
+        );
+        return response.data.message;
+    } catch (error) {
+        console.error('동아리 강퇴 실패: ', error);
+        return error;
+    }
+};
+
+// 검색어로 동아리 검색 (페이지네이션 고려 x)
+export const getSearchClubList = async (searchQuery) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/search`, {
+            params: { search: searchQuery }, // 검색어만 전달
+            withCredentials: true
+        });
+
+        return response.data.data.clubs;
+    } catch (error) {
+        console.error("동아리 검색 실패: ", error);
+        return [];
+    }
+};
+
+export const deleteClub = async (clubId) => {
+    try {
+        await axios.delete(`${API_BASE_URL}/${clubId}`, { withCredentials: true });
+        return true;
+    } catch (error){
+        console.log("동아리 삭제 실패:", error);
+        throw error;
+    }
+}

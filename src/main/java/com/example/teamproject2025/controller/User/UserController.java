@@ -84,4 +84,18 @@ public class UserController {
                 CommonResponseDto.success(200, "User profile retrieved successfully", userProfile)
         );
     }
+
+    // 사용자 프로필 이미지를 기본 이미지로 설정
+    @PatchMapping("/profile/image/reset")
+    public ResponseEntity<CommonResponseDto<Void>> resetUserProfileImage(HttpSession session) {
+        Long userId = (Long) session.getAttribute("userId");
+
+        if (userId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(CommonResponseDto.error(HttpStatus.UNAUTHORIZED.value(), "로그인이 필요합니다."));
+        }
+
+        userService.resetUserProfileImage(userId);
+        return ResponseEntity.ok(CommonResponseDto.success(200, "기본 프로필 이미지로 변경 완료"));
+    }
 }

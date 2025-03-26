@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { getClubMembers } from "../api/clubApi";
+import { getClubMembers, grantRole, leaveClub, getUserClubRole } from "../api/clubApi";
 import { ProtectedImage } from "../api/uploadApi";
 import { getParticularUserProfile } from "../api/userApi";
 
@@ -8,12 +8,20 @@ const ClubMembers = () => {
     const { clubId } = useParams();
     const [members, setMembers] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [currentUserRole, setCurrentUserRole] = useState(null); // 현재 로그인한 사용자의 역할
+    const [currentUserId, setCurrentUserId] = useState(null); // 현재 로그인한 사용자 ID
 
     useEffect(() => {
         const fetchMembers = async () => {
             try {
                 const response = await getClubMembers(clubId);
                 const membersData = response.data || [];
+
+                // 현재 로그인한 사용자 ID 가져오기 (sessionStorage 또는 localStorage 사용)
+                const loggedInUserId = Number(sessionStorage.getItem("userId") || localStorage.getItem("userId"));
+
+                console.log("현재 로그인한 사용자 ID:", loggedInUserId);
+                console.log("멤버 데이터:", membersData);
 
                 // 각 멤버의 프로필 정보 가져오기
                 const membersWithProfile = await Promise.all(
@@ -23,16 +31,18 @@ const ClubMembers = () => {
                             return {
                                 ...member,
                                 profileImage: userProfile.data.profileImage,
-                                username: userProfile.data.username // API에서 name 필드 사용
+                                username: userProfile.data.username,
+                                isCurrentUser: member.userId === loggedInUserId
                             };
                         } catch (error) {
                             console.error(`사용자 ${member.userId} 프로필 불러오기 실패:`, error);
-                            return { ...member, profileImage: "/default-profile.png", username: "알 수 없음" };
+                            return { ...member, profileImage: "/default-profile.png", username: "알 수 없음", isCurrentUser: member.userId === loggedInUserId };
                         }
                     })
                 );
 
                 setMembers(membersWithProfile);
+                setCurrentUserId(loggedInUserId);
             } catch (error) {
                 console.error("멤버 목록을 불러오지 못했습니다.", error);
             } finally {
@@ -42,6 +52,65 @@ const ClubMembers = () => {
 
         fetchMembers();
     }, [clubId]);
+
+    useEffect(() => {
+        if (currentUserId !== null) {
+            fetchUserRole(currentUserId);
+        }
+    }, [currentUserId]);
+
+    const fetchUserRole = async (userId) => {
+        const role = await getUserClubRole(clubId);
+        setCurrentUserRole(role);
+    };
+
+    // 역할 변경 핸들러
+    const handleRoleChange = async (userId, newRole, username) => {
+        console.log(`현재 사용자 ID: ${currentUserId}, 변경 대상 ID: ${userId}`);
+
+        if (currentUserRole !== "PRESIDENT") {
+            alert("회장만 역할을 변경할 수 있습니다.");
+            return;
+        }
+
+        if ((userId ?? 0) === (currentUserId ?? 0)) {
+            alert("자기 자신의 역할은 변경할 수 없습니다.");
+            return;
+        }
+
+        if (newRole === "PRESIDENT") {
+            alert("다른 회원을 회장으로 임명할 수 없습니다.");
+            return;
+        }
+
+        const confirmed = window.confirm(`${username}님을 ${newRole}로 임명하시겠습니까?`);
+        if (!confirmed) return;
+
+        const message = await grantRole(userId, clubId, newRole);
+        alert(message);
+
+        setMembers((prevMembers) =>
+            prevMembers.map((member) =>
+                member.userId === userId ? { ...member, roleName: newRole } : member
+            )
+        );
+    };
+
+    // 강퇴 핸들러
+    const handleRemoveMember = async (userId, username) => {
+        if (currentUserRole !== "PRESIDENT") {
+            alert("회장만 회원을 강퇴할 수 있습니다.");
+            return;
+        }
+
+        const confirmed = window.confirm(`${username}님을 강퇴하시겠습니까?`);
+        if (!confirmed) return;
+
+        const message = await leaveClub(userId, clubId);
+        alert(message);
+
+        setMembers((prevMembers) => prevMembers.filter((member) => member.userId !== userId));
+    };
 
     if (loading) return <p className="text-center mt-10">⏳ 로딩 중...</p>;
 
@@ -58,32 +127,34 @@ const ClubMembers = () => {
                                                 className="w-full h-full object-cover"/>
                             </div>
                             <span className="text-lg font-medium">
-                                    {member.name}(ID: {member.username})
+                                {member.username} (ID: {member.name})
                             </span>
                         </div>
 
                         {/* 역할 선택 버튼 */}
                         <div className="flex gap-2">
-                            {["MEMBER", "EXECUTIVE", "VICE_PRESIDENT", "PRESIDENT"].map((role) => (
+                            {["MEMBER", "STAFF", "VICE_PRESIDENT", "PRESIDENT"].map((role) => (
                                 <button
                                     key={role}
                                     className={`px-3 py-1 rounded-lg ${
                                         member.roleName === role ? "bg-blue-500 text-white" : "border"
                                     }`}
-                                    // onClick={() => handleRoleChange(member.userId, role)}
+                                    onClick={() => handleRoleChange(member.userId, role, member.username)}
+                                    disabled={currentUserRole !== "PRESIDENT" || member.isCurrentUser || role === "PRESIDENT"}
                                 >
                                     {role === "MEMBER" ? "회원" :
-                                        role === "EXECUTIVE" ? "임원" :
+                                        role === "STAFF" ? "임원" :
                                             role === "VICE_PRESIDENT" ? "부회장" : "회장"}
                                 </button>
                             ))}
                             <button
                                 className={`px-3 py-1 rounded-lg ${
-                                    member.roleName === "PRESIDENT"
-                                        ? "bg-gray-300 text-gray-500 cursor-not-allowed" // 회장은 회색으로 변경 & 클릭 방지
+                                    member.roleName === "PRESIDENT" || currentUserRole === "VICE_PRESIDENT"
+                                        ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                                         : "bg-red-500 text-white hover:bg-red-600"
                                 }`}
-                                disabled={member.role === "PRESIDENT"} // 회장은 클릭 불가능
+                                onClick={() => handleRemoveMember(member.userId, member.username)}
+                                disabled={member.roleName === "PRESIDENT" || currentUserRole !== "PRESIDENT"}
                             >
                                 강퇴
                             </button>
@@ -96,3 +167,6 @@ const ClubMembers = () => {
 };
 
 export default ClubMembers;
+
+
+

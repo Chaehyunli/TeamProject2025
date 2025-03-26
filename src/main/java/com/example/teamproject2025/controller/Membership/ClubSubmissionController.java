@@ -3,6 +3,8 @@ package com.example.teamproject2025.controller.Membership;
 import com.example.teamproject2025.dto.Common.CommonResponseDto;
 import com.example.teamproject2025.dto.Membership.ClubSubmissionRequestDto;
 import com.example.teamproject2025.dto.Membership.ClubSubmissionResponseDto;
+import com.example.teamproject2025.dto.Membership.GrantAuthorityRequestDto;
+import com.example.teamproject2025.dto.Membership.LeaveClubRequestDto;
 import com.example.teamproject2025.service.Club.ClubService;
 import com.example.teamproject2025.service.Membership.ClubSubmissionService;
 import jakarta.servlet.http.HttpSession;
@@ -72,7 +74,7 @@ public class ClubSubmissionController {
         }
 
         // 해당 사용자의 동아리 내 역할 조회
-        String userRole = clubService.getUserRoleInClub(userId, clubId);
+        // String userRole = clubService.getUserRoleInClub(userId, clubId);
 
         // 회장(PRESIDENT) 또는 부회장(VICE_PRESIDENT)만 지원서 목록 조회 가능
         if (!clubService.checkUserPermission(userId, clubId)) {
@@ -96,7 +98,7 @@ public class ClubSubmissionController {
         }
 
         // 사용자의 역할 가져오기
-        String userRole = clubService.getUserRoleInClub(userId, clubId);
+        // String userRole = clubService.getUserRoleInClub(userId, clubId);
 
         // PRESIDENT 또는 VICE_PRESIDENT가 아니라면 접근 제한
         if (!clubService.checkUserPermission(userId, clubId)) {

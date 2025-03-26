@@ -5,6 +5,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { getUserProfile } from "../api/userApi";
 import { logout } from "../api/authApi";
 import MainLogoForm from "./MainLogoForm";
+import { useAuth } from "../context/AuthContext";
 
 const TopNavbar = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -14,6 +15,7 @@ const TopNavbar = () => {
     const inputRef = useRef(null);
     const navigate = useNavigate();
     const location = useLocation();
+    const { user, logoutUser } = useAuth();
 
     // 현재 선택된 메뉴 상태 관리
     const [selectedMenu, setSelectedMenu] = useState("/home");
@@ -27,16 +29,6 @@ const TopNavbar = () => {
 
     // 로그인된 사용자 정보 가져오기
     const fetchProfile = async () => {
-        if (!localStorage.getItem("username")) {
-            setIsLoggedIn(false);
-            navigate("/login");
-
-            localStorage.removeItem("name");
-            localStorage.removeItem("profileImage");
-
-            return;
-        }
-
         try {
             const response = await getUserProfile();
             if (response.data) {
@@ -71,7 +63,7 @@ const TopNavbar = () => {
         return () => {
             window.removeEventListener("storage", handleStorageChange);
         };
-    }, [location.pathname]);
+    }, []);
 
     // useEffect(() => {
     //     if (!isLoggedIn && location.pathname === "/profile") {
@@ -82,11 +74,7 @@ const TopNavbar = () => {
     const handleLogout = async () => {
         try {
             await logout();
-            localStorage.clear();
-            setIsLoggedIn(false);
-            setUsername("");
-            setUserImage("");
-            window.dispatchEvent(new Event("storage"));
+            logoutUser();
             navigate("/login");
         } catch (error) {
             console.error("로그아웃 실패", error);
@@ -94,8 +82,10 @@ const TopNavbar = () => {
     };
 
     const handleSearch = () => {
-        console.log("검색어:", searchQuery);
-        inputRef.current.blur();
+        if (searchQuery.trim()) {
+            navigate(`/search?search=${encodeURIComponent(searchQuery.trim())}`);
+            inputRef.current.blur(); // 입력창 포커스 해제
+        }
     };
 
     const handleKeyDown = (event) => {

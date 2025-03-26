@@ -1,5 +1,5 @@
 import React from "react";
-import {BrowserRouter as Router, Routes, Route, Navigate} from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import TopNavbar from "./components/TopNavbar";
 import UnderConstruction from "./components/UnderConstruction";
 import HomePage from "./pages/HomePage";
@@ -14,7 +14,6 @@ import MyChatPage from "./pages/MyChatPage";
 import ChatLayout from "./layouts/ChatLayout";
 import StompChatPage from "./pages/StompChatPage";
 import TestPage from "./pages/TestPage";
-import HeaderComponent from "./components/HeaderComponents";
 import ClubRegisterPage from "./pages/ClubRegisterPage";
 import ClubDetailPage from "./pages/ClubDetailPage";
 import ClubArticlesList from "./components/ClubArticlesList";
@@ -30,63 +29,71 @@ import CreateArticle from "./components/CreateArticle";
 import ArticleDetail from "./components/ArticleDetail";
 import DeleteArticle from "./components/DeleteArticle";
 import UpdateArticle from "./components/UpdateArticle";
+import ClubSearchResultPage from "./pages/ClubSearchResultPage";
+import ProtectedRoute from "./components/ProtectedRoute";
+import ResetPasswordForm from "./components/ResetPasswordForm";
+import EmailVerificationForm from "./components/EmailVerificationForm";
+import FindPasswordForm from "./components/FindPasswordForm";
+import UpdatePasswordPage from "./pages/UpdatePasswordPage";
+
 import CreateNotice from "./components/CreateNotice";
 import NoticeList from "./components/NoitceList";
 import NoticeDetail from "./components/NoticeDetail";
 
 function App() {
-
     return (
         <Router>
-            {/*<HeaderComponent />*/}
             <TopNavbar />
             <Routes>
-                <Route path="/" element={<Navigate to="/home" />} />
-                <Route path="/home" element={<HomePage />} />
-                <Route path="/club-register" element={<ClubRegisterPage />} />
-                <Route path="/chatrooms" element={<UnderConstruction />} />
-                <Route path="/profile" element={<ProfilePage />} />
-                <Route path="/updateProfile" element={<UpdateProfilePage />} />
-                <Route path="/users/submissions" element={<MySubmissionsPage />} />
-                <Route path="/users/submissions/:applyId" element={<MySubmissionsDetailPage />} />
-                <Route path="/users/submissions/:applyId/edit" element={<MySubmissionsUpdatePage />} />
-                <Route path="/myclub" element={<MyClubsPage />} />
+                {/* 로그인 필수 페이지 */}
+                <Route path="/" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
+                <Route path="/home" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
+                <Route path="/search" element={<ProtectedRoute><ClubSearchResultPage /></ProtectedRoute>} />
+                <Route path="/club-register" element={<ProtectedRoute><ClubRegisterPage /></ProtectedRoute>} />
+                <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+                <Route path="/updateProfile" element={<ProtectedRoute><UpdateProfilePage /></ProtectedRoute>} />
+                <Route path="/users/submissions" element={<ProtectedRoute><MySubmissionsPage /></ProtectedRoute>} />
+                <Route path="/users/submissions/:applyId" element={<ProtectedRoute><MySubmissionsDetailPage /></ProtectedRoute>} />
+                <Route path="/users/submissions/:applyId/edit" element={<ProtectedRoute><MySubmissionsUpdatePage /></ProtectedRoute>} />
+                <Route path="/myclub" element={<ProtectedRoute><MyClubsPage /></ProtectedRoute>} />
+                <Route path="/profile/update-pw" element={<ProtectedRoute><UpdatePasswordPage /></ProtectedRoute>} />
 
-                {/* Auth */}
+                {/* 로그인 불필요 페이지 */}
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
                 <Route path="/account/find" element={<FindAccountPage />} />
                 <Route path="/account/reset-pw" element={<ResetPasswordPage />} />
 
-                {/*Chatting*/}
-                <Route path="/chat/userlist" element={<UserChatList />} />
-                <Route path="/my-chatpage" element={<MyChatPage />} />
+                {/* 채팅 관련 페이지 - 로그인 필수 */}
+                <Route path="/chat/userlist" element={<ProtectedRoute><UserChatList /></ProtectedRoute>} />
+                <Route path="/my-chatpage" element={<ProtectedRoute><MyChatPage /></ProtectedRoute>} />
 
-                {/* ✅ 채팅 관련 페이지는 ChatLayout을 통해 감싼다 */}
-                <Route path="/chatpage" element={<ChatLayout />}>
-                    <Route path=":roomId" element={<StompChatPage />} />
+                {/* 채팅 Layout 적용 */}
+                <Route path="/chatpage" element={<ProtectedRoute><ChatLayout /></ProtectedRoute>}>
+                    <Route path=":roomId" element={<ProtectedRoute><StompChatPage /></ProtectedRoute>} />
                 </Route>
 
-                {/* ✅ 테스트 페이지 라우트 설정 */}
-                <Route path="/chat/test" element={<TestPage />} />
+                {/* 테스트 페이지 */}
+                <Route path="/test/chat" element={<ProtectedRoute><TestPage /></ProtectedRoute>} />
+                <Route path="/test/reset-pw" element={<ProtectedRoute><ResetPasswordPage /></ProtectedRoute>} />
+                <Route path="/test/find-pw" element={<ProtectedRoute><FindPasswordForm/></ProtectedRoute>} />
 
-                {/* Club */}
-                <Route path="/clubs/:clubId" element={<ClubDetailPage />}> {/* ClubDetailNavbar에서 누른 것에 따라 Outlet되어 렌더링*/}
-                    <Route index element={<Navigate to="articles" replace />} />  {/* 기본 경로는 게시물 */}
-                    <Route path="articles" element={<ClubArticlesList />} /> {/* 게시물 */}
-                    <Route path="submissions" element={<ClubSubmissions />} /> {/* 지원자 관리 */}
-                    <Route path="submissions/:applyId" element={<ClubSubmissionDetail />} /> {/* 지원서 상세 페이지 관리 */}
-                    <Route path="members" element={<ClubMembers />} /> {/* 권한 */}
-                    <Route path="apply" element={<ClubApply />} />  {/* 동아리 지원하기 */}
-                    <Route path="articles/create" element={<CreateArticle />} /> {/* 게시글 작성 */}
-                    <Route path="articles/:articleId" element={<ArticleDetail />} />
-                    <Route path="articles/:articleId/delete" element={<DeleteArticle />} />
-                    <Route path="articles/:articleId/edit" element={<UpdateArticle />} />
+                {/* 동아리 관련 페이지 */}
+                <Route path="/clubs/:clubId" element={<ProtectedRoute><ClubDetailPage /></ProtectedRoute>}>
+                    <Route index element={<Navigate to="articles" replace />} />
+                    <Route path="articles" element={<ProtectedRoute><ClubArticlesList /></ProtectedRoute>} />
+                    <Route path="submissions" element={<ProtectedRoute><ClubSubmissions /></ProtectedRoute>} />
+                    <Route path="submissions/:applyId" element={<ProtectedRoute><ClubSubmissionDetail /></ProtectedRoute>} />
+                    <Route path="members" element={<ProtectedRoute><ClubMembers /></ProtectedRoute>} />
+                    <Route path="apply" element={<ProtectedRoute><ClubApply /></ProtectedRoute>} />
+                    <Route path="/clubs/:clubId/articles/create" element={<ProtectedRoute><CreateArticle /></ProtectedRoute>} />
+                    <Route path="articles/:articleId" element={<ProtectedRoute><ArticleDetail /></ProtectedRoute>} />
+                    <Route path="/clubs/:clubId/articles/:articleId/delete" element={<ProtectedRoute><DeleteArticle /></ProtectedRoute>} />
+                    <Route path="/clubs/:clubId/articles/:articleId/edit" element={<ProtectedRoute><UpdateArticle /></ProtectedRoute>} />
                     <Route path="notices/create" element={<CreateNotice />} />
                     <Route path="notices" element={<NoticeList />} />
                     <Route path="notices/:noticeId" element={<NoticeDetail />} />
                     <Route path="notices/:noticeId/delete" element={<DeleteArticle />} />
-
 
                 </Route>
 

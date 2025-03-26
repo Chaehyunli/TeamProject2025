@@ -40,13 +40,14 @@ public class ClubController {
     @GetMapping
     public ResponseEntity<CommonResponseDto<ClubListResponseDto>> getClubs(
             HttpSession session, // 로그인한 사용자
-            @RequestParam(defaultValue = "10") int limit,
+            @RequestParam(defaultValue = "12") int limit,
             @RequestParam(defaultValue = "0") int offset
     ) {
         String username = (String) session.getAttribute("username");
         ClubListResponseDto clubList = clubService.getClubsByUserUniversity(username, limit, offset);
 
-        return ResponseEntity.ok(CommonResponseDto.success(200, "Club list retrieved successfully", clubList));}
+        return ResponseEntity.ok(CommonResponseDto.success(200, "Club list retrieved successfully", clubList));
+    }
 
     @GetMapping("/{clubId}/role")
     public ResponseEntity<CommonResponseDto<Map<String, String>>> getUserRoleInClub(
@@ -273,4 +274,58 @@ public class ClubController {
         );
     }
 
+    // 동아리 thumbnail 수정
+    @PatchMapping("/{clubId}/thumbnail")
+    public ResponseEntity<CommonResponseDto<String>> updateClubThumbnail(
+            HttpSession session,
+            @PathVariable Long clubId,
+            @RequestParam("objectName") String objectName) {
+
+        String username = (String) session.getAttribute("username");
+        clubService.updateClubThumbnail(username, clubId, objectName);
+
+        return ResponseEntity.ok(CommonResponseDto.success(200, "Thumbnail updated successfully", null));
+    }
+
+    // 동아리 thumbnail 삭제 후, default로 set
+    @PatchMapping("/{clubId}/thumbnail/reset")
+    public ResponseEntity<CommonResponseDto<Void>> resetClubThumbnail(
+            HttpSession session,
+            @PathVariable Long clubId) {
+
+        String username = (String) session.getAttribute("username");
+        clubService.resetClubThumbnail(username, clubId);
+
+        return ResponseEntity.ok(CommonResponseDto.success(200, "Default Thumbnail updated successfully"));
+    }
+
+    // 검색어를 이용해서 동아리 검색
+    @GetMapping("/search")
+    public ResponseEntity<CommonResponseDto<ClubListResponseDto>> searchClubs(
+            HttpSession session,
+            @RequestParam String search, // 검색어 필수
+            @RequestParam(defaultValue = "12") int limit,
+            @RequestParam(defaultValue = "0") int offset
+    ) {
+        String username = (String) session.getAttribute("username");
+        ClubListResponseDto clubList = clubService.searchClubsByUserUniversity(username, search, limit, offset);
+
+        return ResponseEntity.ok(CommonResponseDto.success(200, "Club search results retrieved successfully", clubList));
+    }
+
+    @DeleteMapping("/{clubId}")
+    public ResponseEntity<CommonResponseDto<Void>> deleteClub(
+            @PathVariable Long clubId,
+            HttpSession session) {
+
+        Long userId = (Long) session.getAttribute("userId"); // 세션에서 userId 가져오기
+        if (userId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(CommonResponseDto.error(401, "로그인이 필요합니다."));
+        }
+
+        clubService.deleteClub(clubId, userId);
+
+        return ResponseEntity.ok(CommonResponseDto.success(200, "동아리가 성공적으로 삭제되었습니다."));
+    }
 }
