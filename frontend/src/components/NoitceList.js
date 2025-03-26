@@ -22,7 +22,7 @@ const NoticeList = () => {
                 setNotices(response.noticeList);
                 setIsLeadership(role === 'PRESIDENT' || role === 'VICE_PRESIDENT');
 
-                console.log('공지사항 목록 응답: ', response);
+                console.log('공지사항 List: ', response.noticeList);
                 console.log('사용자 role', role);
 
                 setTotalPage(Math.ceil(response.pagination.total / limit));
@@ -46,16 +46,16 @@ const NoticeList = () => {
                         onClick={() => navigate(`/clubs/${clubId}/notices/create`)}
                         className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg"
                     >
-                        게시글 작성
+                        공지사항 작성
                     </button>
                 </div>
             )}
 
-            {/* 게시글 목록 */}
+            {/* 공지사항 목록 */}
             <div className="bg-white shadow-md rounded-lg">
                 {notices.length === 0 ? (
                     <div className="text-center py-8 text-gray-500">
-                        게시글이 없습니다.
+                        공지사항이 없습니다.
                     </div>
                 ) : (
                     <div className="divide-y divide-gray-200">
@@ -68,14 +68,14 @@ const NoticeList = () => {
                                 {/* 썸네일이 있을 때만 이미지 로딩 */}
                                 {notice.thumbUrl && (
                                     <div className="flex-shrink-0">
-                                        <ProtectedImage objectName={notice.thumbUrl} alt={notice.title}/>
+                                        <ProtectedImage objectName={notice.thumbUrl} alt={notice.noticeTitle}/>
                                     </div>
                                 )}
 
-                                {/* 게시글 정보 */}
+                                {/* 공지사항 정보 */}
                                 <div className="flex items-center justify-between mb-2">
                                     <h3 className="text-lg font-semibold">
-                                        {notice.title}
+                                        {notice.noticeTitle}
                                     </h3>
                                     <span className="text-sm text-gray-500">
                                         {new Date(notice.createdAt).toLocaleDateString()}
@@ -134,7 +134,7 @@ const NoticeList = () => {
                 </div>
             )}
         </div>
-    )
-}
+    );
+};
 
 export default NoticeList;
