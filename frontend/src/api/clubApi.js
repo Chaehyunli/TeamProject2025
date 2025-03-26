@@ -3,9 +3,10 @@ import axios from "axios";
 const API_BASE_URL = "http://localhost:8080/api/v1/clubs";
 
 // 동아리 목록 조회
-export const getClubList = async() => {
+export const getClubList = async(limit, offset) => {
     try{
         const response = await axios.get(`${API_BASE_URL}`, {
+            params: { limit, offset },
             withCredentials: true // 세션 인증 유지 위해 추가
         });
 

@@ -5,7 +5,6 @@ import {
     deleteArticle,
     getUserClubRole
 } from '../api/clubApi';
-import axios from "axios";
 import { ProtectedImage } from "../api/uploadApi";
 
 const ArticleDetail = () => {
@@ -17,9 +16,13 @@ const ArticleDetail = () => {
     const [isLeadership, setIsLeadership] = useState(false);
     const [articleUserId, setArticleUserId] = useState();
     const currentUserId = localStorage.getItem('userId'); // 현재 로그인한 사용자 ID
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         const fetchArticleDetail = async () => {
+            if (loading) return;
+
+            setLoading(true);
             try {
                 const response = await getArticleDetail(clubId, articleId);
                 console.log('서버 응답:', response); // 서버 응답 확인용 로그
@@ -28,10 +31,15 @@ const ArticleDetail = () => {
             } catch (error) {
                 console.error('게시글 상세 정보 조회 실패:', error);
                 setErrorMessage('게시글을 불러오는데 실패했습니다.');
+            } finally {
+                setLoading(false);
             }
         };
 
         const checkUserRole = async () => {
+            if (loading) return;
+
+            setLoading(true);
             try {
                 const role = await getUserClubRole(clubId);
                 setUserRole(String(role));
@@ -41,6 +49,8 @@ const ArticleDetail = () => {
                 console.log('isLeadership: ', isLeadership);
             } catch (error) {
                 console.error('역할 확인 실패');
+            } finally {
+                setLoading(false);
             }
         }
 
@@ -63,16 +73,16 @@ const ArticleDetail = () => {
 
     if (errorMessage) {
         return (
-            <div className="text-center text-red-500 p-4">
+            <div className="text-center bg-warningText p-4">
                 {errorMessage}
             </div>
         );
     }
 
-    if (!article) {
+    if (loading || !article) {
         return (
             <div className="flex justify-center items-center h-64">
-                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
             </div>
         );
     }
@@ -121,13 +131,13 @@ const ArticleDetail = () => {
                                         <div className="justify-center">
                                             <button
                                                 onClick={() => navigate(`/clubs/${clubId}/articles/${articleId}/edit`)}
-                                                className="px-4 py-2 text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 rounded-md"
+                                                className="px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-hoverBlueColor rounded-md"
                                             >
                                                 수정
                                             </button>
                                             <button
                                                 onClick={handleDelete}
-                                                className="px-4 py-2 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-md"
+                                                className="px-4 py-2 text-sm font-medium text-white bg-warningButton hover:bg-hoverWarningButton rounded-md"
                                             >
                                                 삭제
                                             </button>
@@ -135,7 +145,7 @@ const ArticleDetail = () => {
                                     ) : isLeadership ? (
                                         <button
                                             onClick={handleDelete}
-                                            className="px-4 py-2 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-md"
+                                            className="px-4 py-2 text-sm font-medium text-white bg-warningButton hover:bg-hoverWarningButton rounded-md"
                                         >
                                             삭제
                                         </button>

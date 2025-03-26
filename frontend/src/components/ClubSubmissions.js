@@ -8,11 +8,15 @@ const ClubSubmissions = () => {
     const { clubId } = useParams(); // URL에서 동아리 ID 가져오기
     const [submissions, setSubmissions] = useState([]);
     const [userRole, setUserRole] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const [actionLoading, setActionLoading] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
+            if (loading) return;
+
+            setLoading(true);
             try {
                 // 로그인한 사용자의 역할 가져오기
                 const role = await getUserClubRole(clubId);
@@ -57,10 +61,13 @@ const ClubSubmissions = () => {
     }, [clubId]);
 
     const handleApprove = async (applicant) => {
+        if (actionLoading) return;
+
         const { name, username, applyId } = applicant;
         const isConfirmed = window.confirm(`${name}(ID: ${username}) 님을 합격시키겠습니까?`);
         if (!isConfirmed) return;
 
+        setActionLoading(true);
         try {
             await approveSubmission(clubId, applyId);
             alert(`${name}(ID: ${username}) 님의 승인 완료되었습니다.`);
@@ -68,14 +75,19 @@ const ClubSubmissions = () => {
         } catch (error) {
             alert("승인 처리 중 오류가 발생했습니다.");
             console.error("승인 오류:", error);
+        } finally {
+            setActionLoading(false);
         }
     };
 
     const handleReject = async (applicant) => {
+        if (actionLoading) return;
+
         const { name, username, applyId } = applicant;
         const isConfirmed = window.confirm(`${name}(ID: ${username}) 님을 불합격시키겠습니까?`);
         if (!isConfirmed) return;
 
+        setActionLoading(true);
         try {
             await rejectSubmission(clubId, applyId);
             alert(`${name}(ID: ${username}) 님의 거절이 완료되었습니다.`);
@@ -86,10 +98,16 @@ const ClubSubmissions = () => {
         }
     };
 
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center h-64">
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+            </div>
+        );
+    }
 
-    if (loading) return <p className="text-center mt-10">⏳ 로딩 중...</p>;
     if (!userRole || (userRole !== "PRESIDENT" && userRole !== "VICE_PRESIDENT")) {
-        return <p className="text-center mt-10 text-red-500 text-xl">⚠️ 권한이 없습니다.</p>;
+        return <p className="text-center mt-10 text-warningText text-xl">⚠️ 권한이 없습니다.</p>;
     }
 
     return (
@@ -120,14 +138,19 @@ const ClubSubmissions = () => {
                                 </button>
 
                                 <button
-                                    className="px-3 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                                    disabled={actionLoading}
+                                    className={`px-3 py-1 bg-primary text-white rounded-lg hover:bg-hoverBlueColor ${
+                                        actionLoading ? "opacity-50 cursor-not-allowed" : ""
+                                    }`}
                                     onClick={() => handleApprove(applicant)}
                                 >
                                     합격
                                 </button>
                                 {/* 이후에 userid 이름 가져오는 api 추가 후에 이름으로 변경 */}
                                 <button
-                                    className="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600"
+                                    className={`px-3 py-1 bg-warningButton text-white rounded-lg hover:bg-hoverWarningButton ${
+                                        actionLoading ? "opacity-50 cursor-not-allowed" : ""
+                                    }`}
                                     onClick={() => handleReject(applicant)}
                                 >
                                     불합격

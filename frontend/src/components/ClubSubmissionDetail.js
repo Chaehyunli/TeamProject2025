@@ -8,12 +8,16 @@ import dayjs from "dayjs"; // 날짜 변환 라이브러리 -> 지원 시간 및
 const ClubSubmissionDetail = () => {
     const { clubId, applyId } = useParams(); // 경로 변수 가져오기
     const [submission, setSubmission] = useState(null);
-    const [loading, setLoading] = useState(true);
     const [name, setName] = useState("");
     const [clubName, setClubName] = useState("");
+    const [submissionLoading, setSubmissionLoading] = useState(false);
+    const [profileLoading, setProfileLoading] = useState(false);
 
     useEffect(() => {
         const fetchSubmissionDetail = async () => {
+            if (submissionLoading) return;
+
+            setSubmissionLoading(true);
             try {
                 const response = await getClubSubmissionDetail(clubId, applyId);
                 setSubmission(response.data);
@@ -23,7 +27,7 @@ const ClubSubmissionDetail = () => {
             } catch (error) {
                 console.error("지원서 상세 정보를 불러오지 못했습니다.", error);
             } finally {
-                setLoading(false);
+                setSubmissionLoading(false);
             }
         };
 
@@ -34,6 +38,9 @@ const ClubSubmissionDetail = () => {
     useEffect(() => {
         if (submission && submission.userId) {
             const fetchUserProfile = async () => {
+                if (profileLoading) return;
+
+                setProfileLoading(true);
                 try {
                     const userResponse = await getParticularUserProfile(submission.userId);
                     if (userResponse && userResponse.data) {
@@ -41,6 +48,8 @@ const ClubSubmissionDetail = () => {
                     }
                 } catch (error) {
                     console.error(`사용자 ${submission.userId} 프로필 정보를 불러오지 못했습니다.`, error);
+                } finally {
+                    setProfileLoading(false);
                 }
             };
 
@@ -48,12 +57,16 @@ const ClubSubmissionDetail = () => {
         }
     }, [submission]);
 
-    if (loading) {
-        return <p className="text-gray-500 mt-4 text-center">로딩 중...</p>;
+    if (profileLoading || submissionLoading) {
+        return (
+            <div className="flex justify-center items-center h-64">
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+            </div>
+        );
     }
 
     if (!submission) {
-        return <p className="text-red-500 font-semibold mt-4 text-center">지원서 정보를 찾을 수 없습니다.</p>;
+        return <p className="text-warningText font-semibold mt-4 text-center">지원서 정보를 찾을 수 없습니다.</p>;
     }
 
     return (

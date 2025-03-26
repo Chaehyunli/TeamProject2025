@@ -16,10 +16,12 @@ const ClubApply = () => {
         contents: "",
     });
     const [hasApplied, setHasApplied] = useState(false);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
+            if (loading) return;
+
             setLoading(true);
             try {
                 // ✅ 1. 사용자가 이미 지원했는지 확인
@@ -48,8 +50,9 @@ const ClubApply = () => {
                 }
             } catch (error) {
                 console.error("데이터 불러오기 실패: ", error);
+            } finally {
+                setLoading(false);
             }
-            setLoading(false);
         };
 
         fetchData();
@@ -61,26 +64,50 @@ const ClubApply = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // 전화번호 유효성 검사 (숫자 11자리)
+        if (!/^01[01]\d{8}$/.test(formData.contact)) {
+            alert("유효한 전화번호를 입력해주세요.");
+            return;
+        }
+
+        // 학과 유효성 검사
+        if (!formData.department || formData.department.trim() === "") {
+            alert("학과 정보가 없습니다. 내 정보에서 학과를 먼저 입력해주세요.");
+            return;
+        }
+
+        if (loading) return;
+
+        setLoading(true);
         try {
             await submitClubApplication(clubId, formData);
             alert("지원서 제출 성공!");
             navigate(`/clubs/${clubId}/articles`); // 지원 후 이동
         } catch (error) {
             alert("지원서 제출에 실패했습니다.");
+        } finally {
+            setLoading(false);
         }
     };
+
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center h-64">
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+            </div>
+        );
+    }
 
     return (
         <div className="flex justify-center items-start py-10">
             <div className="w-[500px] p-6 bg-white shadow-lg rounded-lg">
                 <h2 className="text-2xl font-semibold text-center mb-6">
-                    <span className="text-hoverBlueColor">{clubName}</span> 동아리 지원하기
+                    <span className="text-primary">{clubName}</span> 동아리 지원하기
                 </h2>
 
-                {loading ? (
-                    <p className="text-gray-500 mt-4 text-center">로딩 중...</p>
-                ) : hasApplied ? (
-                    <p className="text-red-500 font-semibold mt-4 text-center">이미 지원하였습니다.</p>
+                {hasApplied ? (
+                    <p className="text-warningText font-semibold mt-4 text-center">이미 지원하였습니다.</p>
                 ) : (
                     <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
                         {/* 사용자 이름 - 자동 입력, 수정 불가 */}
@@ -119,7 +146,7 @@ const ClubApply = () => {
                         </div>
 
                         {/* 지원하기 버튼 */}
-                        <button type="submit" className="w-full bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600 transition duration-200">
+                        <button type="submit" className="w-full bg-primary text-white p-3 rounded-lg hover:bg-hoverBlueColor transition duration-200">
                             지원하기
                         </button>
                     </form>

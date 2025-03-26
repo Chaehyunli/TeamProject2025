@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import {getClubList, getUserClubs} from "../api/clubApi";
+import { useInView } from "react-intersection-observer";
+import { getClubList, getUserClubs } from "../api/clubApi";
 import ClubList from "../components/ClubList";
 
 const HomePage = () => {
@@ -8,7 +9,43 @@ const HomePage = () => {
     const [username] = useState(localStorage.getItem("username"));
     const [clubs, setClubs] = useState([]);
     const [userClubs, setUserClubs] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [page, setPage] = useState(1);
+    const [hasMore, setHasMore] = useState(true);
+    const [loading, setLoading] = useState(false);
+
+    const { ref, inView } = useInView();
+
+    const fetchClubs = useCallback( async () => {
+        if (loading || !hasMore) return;
+
+        setLoading(true);
+        try{
+            const limit = 12;
+            const offset = (page - 1) * limit;
+
+            const clubData = await getClubList(limit, offset);
+            if (clubData.length === 0) {
+                setHasMore(false);
+            } else {
+                setClubs(prev => [...prev, ...clubData]);
+                setPage(prev => prev + 1);
+            }
+        } catch (error) {
+            console.log("동아리 목록 불러오기 실패:", error);
+        } finally {
+            setLoading(false);
+        }
+    }, [page, loading, hasMore]);
+
+    const fetchUserClubs = async () => {
+        try {
+            const userClubData = await getUserClubs(); // 사용자의 동아리 목록 요청
+            setUserClubs(userClubData); // userClubs 상태 업데이트
+        } catch (error) {
+            console.error("사용자의 동아리 목록 불러오기 실패:", error);
+            setUserClubs([]); // 오류 발생 시 빈 배열로 설정
+        }
+    };
 
     useEffect(() => {
         if (!username) {
@@ -17,28 +54,15 @@ const HomePage = () => {
             return;
         }
 
-        const fetchClubs = async () => {
-            try {
-                const clubData = await getClubList();
-                setClubs(clubData);
-            } catch (error) {
-                console.error("동아리 목록 불러오기 실패:", error);
-            }
-        };
-
-        const fetchUserClubs = async () => {
-            try {
-                const userClubData = await getUserClubs(); // 사용자의 동아리 목록 요청
-                setUserClubs(userClubData); // userClubs 상태 업데이트
-            } catch (error) {
-                console.error("사용자의 동아리 목록 불러오기 실패:", error);
-                setUserClubs([]); // 오류 발생 시 빈 배열로 설정
-            }
-        };
-
-        fetchClubs();
+        fetchClubs(); // 첫페이지 로딩
         fetchUserClubs();
-    }, [username, navigate]);
+    }, [username]);
+
+    useEffect(() => {
+        if (inView && hasMore && !loading){
+            fetchClubs(); // 마지막 요소 보이면 다음 페이지 불러옴
+        }
+    }, [inView])
 
     return (
         <div className="container mx-auto px-8 lg:px-16">
@@ -66,7 +90,14 @@ const HomePage = () => {
                 </div>
             ) : (
                 // 동아리가 있는 경우 목록 표시
-                <ClubList clubs={clubs} userClubs={userClubs} />
+                <>
+                    <ClubList clubs={clubs} userClubs={userClubs} />
+                    { hasMore && (
+                        <div ref={ref} className="text-center py-4">
+                            <span className="text-extraText">불러오는 중...</span>
+                        </div>
+                    )}
+                </>
             )}
         </div>
     );

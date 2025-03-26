@@ -8,52 +8,62 @@ const ClubArticlesList = () => {
     const navigate = useNavigate();
     const [articles, setArticles] = useState([]);
     const [error, setError] = useState(null);
-    // const [name, setName] = useState(null);
     const [currentPage, setCurrentPage] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
     const [isClubMember, setIsClubMember] = useState(false);
     const limit = 10; // 한 페이지당 게시글 수
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-
-        const fetchArticles = async () => {
-            try {
-                const offset = currentPage * limit;
-                const response = await getClubArticles(clubId, limit, offset);
-                const role = await getUserRoleInClub(clubId);
-
-                console.log('사용자 role', role);
-                if (role === "NO_ROLE"){
-                    setIsClubMember(false);
-                }else{
-                    setIsClubMember(true);
-                }
-                console.log('role boolean', isClubMember);
-
-                // 응답 구조 확인
-                console.log('게시글 목록 응답:', response);
-                setArticles(response.articles);
-
-                setTotalPages(Math.ceil(response.pagination.total / limit));
-                setError(null);
-
-            } catch (error) {
-                console.error("게시글 목록 조회 실패:", error);
-                setError("게시글을 불러오는데 실패했습니다.");
-            }
-        };
-
         fetchArticles();
     }, [clubId, currentPage]);
+
+    const fetchArticles = async () => {
+        if (loading) return;
+
+        setLoading(true);
+        try {
+            const offset = currentPage * limit;
+            const response = await getClubArticles(clubId, limit, offset);
+            const role = await getUserRoleInClub(clubId);
+
+            console.log('사용자 role', role);
+            if (role === "NO_ROLE"){
+                setIsClubMember(false);
+            }else{
+                setIsClubMember(true);
+            }
+            console.log('role boolean', isClubMember);
+
+            // 응답 구조 확인
+            console.log('게시글 목록 응답:', response);
+            setArticles(response.articles);
+
+            setTotalPages(Math.ceil(response.pagination.total / limit));
+            setError(null);
+
+        } catch (error) {
+            console.error("게시글 목록 조회 실패:", error);
+            setError("게시글을 불러오는데 실패했습니다.");
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const handlePageChange = (newPage) => {
         setCurrentPage(newPage);
     };
 
-
-
     if (error) {
-        return <div className="text-red-500 text-center p-4">{error}</div>;
+        return <div className="text-warningText text-center p-4">{error}</div>;
+    }
+
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center h-64">
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+            </div>
+        );
     }
 
     return (
@@ -62,7 +72,7 @@ const ClubArticlesList = () => {
                 <div className="flex justify-end mb-4">
                     <button
                         onClick={() => navigate(`/clubs/${clubId}/articles/create`)}
-                        className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg"
+                        className="bg-primary hover:bg-hoverBlueColor text-white px-4 py-2 rounded-lg"
                     >
                         게시글 작성
                     </button>
@@ -103,7 +113,6 @@ const ClubArticlesList = () => {
                                     <span>작성자: ({article.author.authorName})</span>
                                 </div>
                             </div>
-
                         ))}
                     </div>
                 )}
@@ -118,7 +127,7 @@ const ClubArticlesList = () => {
                         className={`px-4 py-2 rounded ${
                             currentPage === 0
                                 ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                                : "bg-blue-500 text-white hover:bg-blue-600"
+                                : "bg-primary text-white hover:bg-hoverBlueColor"
                         }`}
                     >
                         이전
@@ -130,7 +139,7 @@ const ClubArticlesList = () => {
                                 onClick={() => handlePageChange(index)}
                                 className={`px-4 py-2 rounded ${
                                     currentPage === index
-                                        ? "bg-blue-500 text-white"
+                                        ? "bg-primary text-white"
                                         : "bg-gray-200 hover:bg-gray-300"
                                 }`}
                             >
@@ -144,7 +153,7 @@ const ClubArticlesList = () => {
                         className={`px-4 py-2 rounded ${
                             currentPage === totalPages - 1
                                 ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                                : "bg-blue-500 text-white hover:bg-blue-600"
+                                : "bg-primary text-white hover:bg-hoverBlueColor"
                         }`}
                     >
                         다음

@@ -1,5 +1,6 @@
 package com.example.teamproject2025.service.User;
 
+import com.example.teamproject2025.constant.DefaultImage;
 import com.example.teamproject2025.dto.Chat.MyChatListResDto;
 import com.example.teamproject2025.dto.Club.ClubSummaryDto;
 import com.example.teamproject2025.dto.User.UserCreateRequestDto;
@@ -70,7 +71,7 @@ public class UserServiceImpl implements UserService {
         // 기존 이미지 삭제 로직 추가(Google Cloud)
         if (dto.getProfileImage() != null
                 && !dto.getProfileImage().equals(user.getProfileImage())
-                && !dto.getProfileImage().equals("default-profileImage.png")) {
+                && !dto.getProfileImage().equals(DefaultImage.PROFILE_IMAGE)) {
             deleteImageFromGCS(user.getProfileImage()); // 기존 이미지 삭제 (기본 이미지 제외)
         }
 
@@ -89,7 +90,7 @@ public class UserServiceImpl implements UserService {
     // Google Cloud Storage에서 기존 이미지 삭제
     private void deleteImageFromGCS(String objectName) {
         if (objectName == null || objectName.trim().isEmpty()) return; // null 또는 빈 값 방지
-        if ("default-profileImage.png".equals(objectName)) return; // 기본 프로필 이미지는 삭제하지 않음
+        if (DefaultImage.PROFILE_IMAGE.equals(objectName)) return; // 기본 프로필 이미지는 삭제하지 않음
 
         boolean deleted = storage.delete(bucketName, objectName); // GCS에서 객체 삭제
         if (deleted) {
@@ -129,7 +130,7 @@ public class UserServiceImpl implements UserService {
         }
 
         // 기존 프로필 이미지 삭제 (기본 프로필 제외)
-        if (user.getProfileImage() != null && !user.getProfileImage().equals("default-profileImage.png")) {
+        if (user.getProfileImage() != null && !user.getProfileImage().equals(DefaultImage.PROFILE_IMAGE)) {
             deleteImageFromGCS(user.getProfileImage());
         }
 
@@ -187,12 +188,12 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new IllegalArgumentException("❌ 존재하지 않는 사용자"));
 
         // 기존 프로필 이미지 삭제 (기본 이미지가 아닐 때만)
-        if (user.getProfileImage() != null && !user.getProfileImage().equals("default-profileImage.png")) {
+        if (user.getProfileImage() != null && !user.getProfileImage().equals(DefaultImage.PROFILE_IMAGE)) {
             deleteImageFromGCS(user.getProfileImage());
         }
 
         // 기본 프로필 이미지로 설정
-        user.setProfileImage("default-profileImage.png");
+        user.setProfileImage(DefaultImage.PROFILE_IMAGE);
         userRepository.save(user);
     }
 

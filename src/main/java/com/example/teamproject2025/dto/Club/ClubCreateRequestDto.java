@@ -1,5 +1,6 @@
 package com.example.teamproject2025.dto.Club;
 
+import com.example.teamproject2025.constant.DefaultImage;
 import com.example.teamproject2025.entity.Club.Category;
 import com.example.teamproject2025.entity.Club.Club;
 import com.example.teamproject2025.entity.University.University;
@@ -18,7 +19,8 @@ public class ClubCreateRequestDto {
     private String category;
     private String description;
     private Long universityId;
-    private String thumbUrl;
+    @Builder.Default
+    private String thumbUrl = DefaultImage.CLUB_THUMBNAIL;
     private Long presidentId;
 
     // DTO → Entity 변환 메서드

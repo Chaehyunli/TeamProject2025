@@ -10,6 +10,7 @@ const ClubRegistrationForm = ({ presidentName, onSubmit }) => {
     const [thumbUrl, setThumbUrl] = useState(null);
     const [errorMessage, setErrorMessage] = useState("");
     const [categories, setCategories] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     // 허용되는 파일 형식
     const allowedFileTypes = ["image/png", "image/jpeg"];
@@ -18,12 +19,17 @@ const ClubRegistrationForm = ({ presidentName, onSubmit }) => {
     useEffect(() => {
         // 카테고리 가져오는 핸들러
         const fetchCategory = async() => {
+            if (loading) return;
+
+            setLoading(true);
             try {
                 const categoriesData = await getCategory();
                 setCategories(categoriesData);
             } catch (error) {
                 console.error("카테고리 정보 불러오기 실패: ", error);
                 setCategories([]);
+            } finally {
+                setLoading(false);
             }
         };
 
@@ -58,6 +64,14 @@ const ClubRegistrationForm = ({ presidentName, onSubmit }) => {
         });
     };
 
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center h-64">
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+            </div>
+        );
+    }
+
     return (
         <form onSubmit={handleSubmit} className="max-w-[600px] mx-auto space-y-4">
             {/* 동아리 회장 이름 (자동 입력, 수정 불가) */}
@@ -87,7 +101,7 @@ const ClubRegistrationForm = ({ presidentName, onSubmit }) => {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 required
-                className="w-full px-4 py-2 border rounded-md shadow-sm h-32 resize-none focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
+                className="w-full px-4 py-2 border rounded-md shadow-sm h-32 resize-none focus:outline-none focus:ring-2 focus:ring-primary"
                 placeholder="동아리 설명을 입력하세요"
             ></textarea>
 
@@ -98,7 +112,7 @@ const ClubRegistrationForm = ({ presidentName, onSubmit }) => {
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
                 required
-                className="w-full px-4 py-2 border rounded-md shadow-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
+                className="w-full px-4 py-2 border rounded-md shadow-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary"
             >
                 <option value="">카테고리를 선택하세요</option>
                 {categories.map(category => (
@@ -115,7 +129,7 @@ const ClubRegistrationForm = ({ presidentName, onSubmit }) => {
                 onFileSelect={handleFileChange}
             />
 
-            {errorMessage && <p className="text-red-500 text-sm">{errorMessage}</p>}
+            {errorMessage && <p className="text-warningText text-sm">{errorMessage}</p>}
 
             {/* 신청하기 버튼 */}
             <button

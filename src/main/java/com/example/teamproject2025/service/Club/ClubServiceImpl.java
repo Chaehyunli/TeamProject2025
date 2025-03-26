@@ -1,5 +1,6 @@
 package com.example.teamproject2025.service.Club;
 
+import com.example.teamproject2025.constant.DefaultImage;
 import com.example.teamproject2025.dto.Club.*;
 import com.example.teamproject2025.dto.Membership.UserClubResponseDto;
 import com.example.teamproject2025.entity.Club.Article;
@@ -64,6 +65,12 @@ public class ClubServiceImpl implements ClubService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
+        // PRESIDENT 역할 개수 제한
+        int presidentClubCount = userRoleRepository.countByUserAndRoleName(user, RoleType.PRESIDENT);
+        if (presidentClubCount >= 3) {
+            throw new IllegalStateException("최대 3개의 동아리만 개설할 수 있습니다.");
+        }
+
         // 2. 카테고리 찾기
         Category category = categoryRepository.findByCategoryName(categoryName)
                 .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 카테고리입니다."));
@@ -75,7 +82,7 @@ public class ClubServiceImpl implements ClubService {
         // 4. 파일명이 없으면 기본 썸네일 이미지 사용
         String storageThumbUrl = (uploadedFileName != null && !uploadedFileName.isEmpty())
                 ? uploadedFileName
-                : "default-thumbnail-mju.png"; // 기본 이미지
+                : DefaultImage.CLUB_THUMBNAIL; // 기본 이미지
 
         // 5. 동아리 엔티티 생성 후 저장
         ClubCreateRequestDto requestDto = new ClubCreateRequestDto(clubName, categoryName, description,
@@ -276,7 +283,7 @@ public class ClubServiceImpl implements ClubService {
 
         // 기존 이미지 삭제 로직 추가(Google Cloud)
         if (article.getThumbUrl() != null
-                && !article.getThumbUrl().equals("default-thumbnail-mju.png")) {
+                && !article.getThumbUrl().equals(DefaultImage.CLUB_THUMBNAIL)) {
             deleteImageFromGCS(article.getThumbUrl()); // 기존 이미지 삭제 (기본 이미지 제외)
         }
 
@@ -385,7 +392,7 @@ public class ClubServiceImpl implements ClubService {
     // Google Cloud Storage에서 기존 이미지 삭제
     private void deleteImageFromGCS(String objectName) {
         if (objectName == null || objectName.trim().isEmpty()) return; // null 또는 빈 값 방지
-        if ("default-thumbnail-mju.png".equals(objectName)) return; // 기본 프로필 이미지는 삭제하지 않음
+        if (DefaultImage.CLUB_THUMBNAIL.equals(objectName)) return; // 기본 프로필 이미지는 삭제하지 않음
 
         boolean deleted = storage.delete(bucketName, objectName); // GCS에서 객체 삭제
         if (deleted) {
@@ -408,7 +415,7 @@ public class ClubServiceImpl implements ClubService {
         }
 
         // 기존 이미지 삭제 (기본 이미지가 아니라면)
-        if (club.getThumbUrl() != null && !club.getThumbUrl().equals("default-thumbnail-mju.png")) {
+        if (club.getThumbUrl() != null && !club.getThumbUrl().equals(DefaultImage.CLUB_THUMBNAIL)) {
             deleteImageFromGCS(club.getThumbUrl());
         }
 
@@ -430,12 +437,12 @@ public class ClubServiceImpl implements ClubService {
         }
 
         // 기존 썸네일 삭제 (기본 이미지가 아닐 때만)
-        if (club.getThumbUrl() != null && !club.getThumbUrl().equals("default-thumbnail-mju.png")) {
+        if (club.getThumbUrl() != null && !club.getThumbUrl().equals(DefaultImage.CLUB_THUMBNAIL)) {
             deleteImageFromGCS(club.getThumbUrl());
         }
 
         // 기본 이미지로 설정
-        club.setThumbUrl("default-thumbnail-mju.png");
+        club.setThumbUrl(DefaultImage.CLUB_THUMBNAIL);
         clubRepository.save(club);
     }
 
@@ -498,7 +505,7 @@ public class ClubServiceImpl implements ClubService {
         clubArticleRepository.deleteAllByClubId(clubId);
 
         // 4. GCP에 저장된 썸네일 이미지 삭제 (기본 이미지가 아닐 경우)
-        if (club.getThumbUrl() != null && !club.getThumbUrl().equals("default-thumbnail-mju.png")) {
+        if (club.getThumbUrl() != null && !club.getThumbUrl().equals(DefaultImage.CLUB_THUMBNAIL)) {
             deleteImageFromGCS(club.getThumbUrl());
         }
 

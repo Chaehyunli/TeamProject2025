@@ -52,7 +52,7 @@ const ClubDetailNavbar = ({ clubId, userRole, onDeleteClub }) => {
             {/* 회장(PRESIDENT)일 때만 삭제 버튼 보이도록 추가 */}
             {userRole === "PRESIDENT" && (
                 <button
-                    className="px-4 py-2 bg-red-500 text-white rounded"
+                    className="px-4 py-2 bg-warningButton hover:bg-hoverWarningButton text-white rounded"
                     onClick={onDeleteClub} // 부모 컴포넌트에서 삭제 로직 실행
                 >
                     동아리 삭제
