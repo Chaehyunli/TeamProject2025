@@ -30,6 +30,9 @@ import CreateArticle from "./components/CreateArticle";
 import ArticleDetail from "./components/ArticleDetail";
 import DeleteArticle from "./components/DeleteArticle";
 import UpdateArticle from "./components/UpdateArticle";
+import CreateNotice from "./components/CreateNotice";
+import NoticeList from "./components/NoitceList";
+import NoticeDetail from "./components/NoticeDetail";
 
 function App() {
 
@@ -75,10 +78,15 @@ function App() {
                     <Route path="submissions/:applyId" element={<ClubSubmissionDetail />} /> {/* 지원서 상세 페이지 관리 */}
                     <Route path="members" element={<ClubMembers />} /> {/* 권한 */}
                     <Route path="apply" element={<ClubApply />} />  {/* 동아리 지원하기 */}
-                    <Route path="/clubs/:clubId/articles/create" element={<CreateArticle />} /> {/* 게시글 작성 */}
+                    <Route path="articles/create" element={<CreateArticle />} /> {/* 게시글 작성 */}
                     <Route path="articles/:articleId" element={<ArticleDetail />} />
-                    <Route path="/clubs/:clubId/articles/:articleId/delete" element={<DeleteArticle />} />
-                    <Route path="/clubs/:clubId/articles/:articleId/edit" element={<UpdateArticle />} />
+                    <Route path="articles/:articleId/delete" element={<DeleteArticle />} />
+                    <Route path="articles/:articleId/edit" element={<UpdateArticle />} />
+                    <Route path="notices/create" element={<CreateNotice />} />
+                    <Route path="notices" element={<NoticeList />} />
+                    <Route path="notices/:noticeId" element={<NoticeDetail />} />
+                    <Route path="notices/:noticeId/delete" element={<DeleteArticle />} />
+
 
                 </Route>
 
