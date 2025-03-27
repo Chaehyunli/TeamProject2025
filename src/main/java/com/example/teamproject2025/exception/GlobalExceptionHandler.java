@@ -70,6 +70,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(CommonResponseDto.error(HttpStatus.BAD_REQUEST.value(), errors.toString()));
     }
+
+    // 사용자 정의 예외 처리
+    @ExceptionHandler(CustomException.class)
+    public ResponseEntity<CommonResponseDto<Void>> handleCustomException(CustomException e) {
+        return ResponseEntity.status(e.getStatus())
+                .body(CommonResponseDto.error(e.getStatus(), e.getMessage()));
+    }
 }
 
 // 누락된 예외들이 있을거임. 추후 리팩터링 해야할 때 이것도 꼼꼼히 챙겨야 할 듯
