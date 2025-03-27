@@ -45,13 +45,13 @@ public class ClubServiceImpl implements ClubService {
     private final UserRoleRepository userRoleRepository;
     private final UserClubRepository userClubRepository;
     private final ClubArticleRepository clubArticleRepository;
+    private final ClubNoticeRepository clubNoticeRepository;
     private final ClubSubmissionRepository clubSubmissionRepository;
     private final Storage storage;
     private final ApplicationContext applicationContext;
 
     // 업로드 경로 (Spring Boot의 정적 리소스로 활용, 현재 프로젝트 루트 경로에 uploads 폴더 생성)
     private static final String UPLOAD_DIR = System.getProperty("user.dir") + "/uploads/clubs/";
-    private final ClubNoticeRepository clubNoticeRepository;
     @Value("${spring.cloud.gcp.storage.bucket}")
     private String bucketName;
 
@@ -483,36 +483,56 @@ public class ClubServiceImpl implements ClubService {
     @Override
     @Transactional
     public void deleteClub(Long clubId, Long userId) {
-        // 1. 동아리 존재 여부 확인
+        // 동아리 존재 여부 확인
         Club club = clubRepository.findById(clubId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 동아리입니다."));
 
-        // 2. 현재 사용자가 동아리 회장인지 확인
+        // 현재 사용자가 동아리 회장인지 확인
         if (!checkUserIsPresident(userId, clubId)) {
             throw new SecurityException("동아리를 삭제할 권한이 없습니다.");
         }
 
-        // 3. 가입된 멤버가 남아있는지 확인
+        // 가입된 멤버가 남아있는지 확인
         long memberCount = userClubRepository.countByClubId(clubId);
         if (memberCount > 1) {
             throw new IllegalStateException("동아리에 가입된 멤버가 있어서 삭제할 수 없습니다.");
         }
 
-        // 3. 연관된 엔티티 삭제
-        userClubRepository.deleteAllByClubId(clubId);
-        userRoleRepository.deleteAllByClubId(clubId);
-        clubSubmissionRepository.deleteAllByClubId(clubId);
-        clubArticleRepository.deleteAllByClubId(clubId);
+        // 연관된 엔티티 삭제
+        userClubRepository.deleteAllByClub_ClubId(clubId);
+        userRoleRepository.deleteAllByClub_ClubId(clubId);
+        clubSubmissionRepository.deleteAllByClub_ClubId(clubId);
 
-        // 4. GCP에 저장된 썸네일 이미지 삭제 (기본 이미지가 아닐 경우)
+        // 작성한 게시글의 이미지 삭제 + 게시글 삭제
+        List<Article> articles = clubArticleRepository.findByClub_ClubId(clubId);
+        for (Article article : articles) {
+            article.setClub(null);
+            String thumbUrl = article.getThumbUrl();
+            if(thumbUrl != null) {
+                deleteImageFromGCS(thumbUrl);
+            }
+        }
+        clubArticleRepository.saveAll(articles);
+        clubArticleRepository.deleteAllByUserId(clubId);
+
+        // 작성한 공지사항의 이미지 삭제 + 게시글 삭제
+        List<Notice> notices = clubNoticeRepository.findByClub_ClubId(clubId);
+        for (Notice notice : notices) {
+            notice.setClub(null);
+            String thumbUrl = notice.getThumbUrl();
+            if(thumbUrl != null) {
+                deleteImageFromGCS(thumbUrl);
+            }
+        }
+        clubNoticeRepository.saveAll(notices);
+        clubNoticeRepository.deleteAllByUserId(clubId);
+
+        // GCP에 저장된 썸네일 이미지 삭제 (기본 이미지가 아닐 경우)
         if (club.getThumbUrl() != null && !club.getThumbUrl().equals(DefaultImage.CLUB_THUMBNAIL)) {
             deleteImageFromGCS(club.getThumbUrl());
         }
 
-        // 5. 영속성 컨텍스트 초기화
-        entityManager.clear();  // Hibernate가 TransientObjectException을 방지하기 위해 영속성 컨텍스트를 비움
-
-        // 6. 동아리 삭제
+        // 동아리 삭제
         clubRepository.delete(club);
     }
 }
