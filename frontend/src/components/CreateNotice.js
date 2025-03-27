@@ -1,7 +1,7 @@
-import {useNavigate, useParams} from "react-router-dom";
-import React, {useState} from "react";
-import {uploadImageToGCP} from "../api/uploadApi";
-import {createNotice} from "../api/clubApi";
+import { useNavigate, useParams } from "react-router-dom";
+import React, { useState } from "react";
+import { uploadImageToGCP } from "../api/uploadApi";
+import { createNotice } from "../api/clubApi";
 import FileUpload from "./FileUpload";
 
 const CreateNotice = () => {
@@ -12,6 +12,7 @@ const CreateNotice = () => {
         noticeContents: '',
         thumbUrl: undefined
     });
+    const [actionLoading, setActionLoading] = useState(false);
 
     const handleChange = (e) => {
         const {name, value} = e.target;
@@ -22,7 +23,11 @@ const CreateNotice = () => {
     };
 
     const handleSubmit = async (e) => {
+        if (actionLoading) return;
+
         e.preventDefault();
+
+        setActionLoading(true);
 
         try {
             let thumbUrl = null;
@@ -42,6 +47,8 @@ const CreateNotice = () => {
             navigate(`/clubs/${clubId}/notices`);
         } catch (error){
             console.error("공지사항 작성 실패: ", error);
+        } finally {
+            setActionLoading(false);
         }
     };
 

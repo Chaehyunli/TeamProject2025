@@ -1,4 +1,3 @@
-// frontend/src/components/DeleteArticle.js
 import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { deleteArticle } from '../api/clubApi';
@@ -7,14 +6,20 @@ const DeleteArticle = () => {
     const navigate = useNavigate();
     const { clubId, articleId } = useParams();
     const [errorMessage, setErrorMessage] = useState("");
+    const [actionLoading, setActionLoading] = useState(false);
 
     const handleDelete = async () => {
+        if (actionLoading) return;
+
+        setActionLoading(true);
         try {
             await deleteArticle(clubId, articleId);
             navigate(`/clubs/${clubId}/articles`);
         } catch (error) {
             console.error('게시글 삭제 실패:', error);
             setErrorMessage('게시글 삭제에 실패했습니다.');
+        } finally {
+            setActionLoading(false);
         }
     };
 

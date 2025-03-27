@@ -8,8 +8,17 @@ import com.example.teamproject2025.dto.User.UserListResDto;
 import com.example.teamproject2025.dto.User.UserResponseDto;
 import com.example.teamproject2025.dto.User.UserUpdateRequestDto;
 import com.example.teamproject2025.entity.Chat.ChatRoom;
+import com.example.teamproject2025.entity.Club.Article;
+import com.example.teamproject2025.entity.Club.Notice;
 import com.example.teamproject2025.entity.User.User;
+import com.example.teamproject2025.exception.CustomException;
 import com.example.teamproject2025.repository.Chat.ChatRoomRepository;
+import com.example.teamproject2025.repository.Club.ClubArticleRepository;
+import com.example.teamproject2025.repository.Club.ClubNoticeRepository;
+import com.example.teamproject2025.repository.Club.ClubRepository;
+import com.example.teamproject2025.repository.Membership.ClubSubmissionRepository;
+import com.example.teamproject2025.repository.Membership.UserClubRepository;
+import com.example.teamproject2025.repository.Membership.UserRoleRepository;
 import com.example.teamproject2025.repository.University.UniversityRepository;
 import com.example.teamproject2025.repository.User.UserRepository;
 import com.example.teamproject2025.service.Chat.ChatService;
@@ -31,11 +40,17 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final ClubRepository clubRepository;
     private final UniversityRepository universityRepository;
     private final PasswordEncoder passwordEncoder;
     private final Storage storage;
     private final ChatService chatService;
     private final ChatRoomRepository chatRoomRepository;
+    private final UserRoleRepository userRoleRepository;
+    private final UserClubRepository userClubRepository;
+    private final ClubArticleRepository clubArticleRepository;
+    private final ClubNoticeRepository clubNoticeRepository;
+    private final ClubSubmissionRepository clubSubmissionRepository;
 
     @Value("${spring.cloud.gcp.storage.bucket}")
     private String bucketName;
@@ -110,6 +125,12 @@ public class UserServiceImpl implements UserService {
             throw new IllegalStateException("Invalid user session or unauthorized request");
         }
 
+        // 사용자가 회장인 동아리 존재 시 삭제 금지
+        boolean isPresident = clubRepository.existsByPresident_UserId(sessionUserId);
+        if (isPresident) {
+            throw new CustomException("회장은 탈퇴할 수 없습니다.", 409);
+        }
+
         if (deletedMailVerified == null || !deletedMailVerified) {
             throw new IllegalStateException("Email verification required before account deletion");
         }
@@ -128,6 +149,35 @@ public class UserServiceImpl implements UserService {
                 chatRoomRepository.delete(chatRoom);
             }
         }
+
+        // 사용자 관련 데이터 삭제 (사용자가 동아리 회장이 아닐 때만 가능)
+        userClubRepository.deleteAllByUser_UserId(sessionUserId);
+        userRoleRepository.deleteAllByUser_UserId(sessionUserId);
+        clubSubmissionRepository.deleteAllByUser_UserId(sessionUserId);
+
+        // 작성한 게시글의 이미지 삭제 + 게시글 삭제
+        List<Article> articles = clubArticleRepository.findByUser_UserId(sessionUserId);
+        for (Article article : articles) {
+            article.setUser(null);
+            String thumbUrl = article.getThumbUrl();
+            if(thumbUrl != null) {
+                deleteImageFromGCS(thumbUrl);
+            }
+        }
+        clubArticleRepository.saveAll(articles);
+        clubArticleRepository.deleteAllByUserId(sessionUserId);
+
+        // 작성한 공지사항의 이미지 삭제 + 게시글 삭제
+        List<Notice> notices = clubNoticeRepository.findByUser_UserId(sessionUserId);
+        for (Notice notice : notices) {
+            notice.setUser(null);
+            String thumbUrl = notice.getThumbUrl();
+            if(thumbUrl != null) {
+                deleteImageFromGCS(thumbUrl);
+            }
+        }
+        clubNoticeRepository.saveAll(notices);
+        clubNoticeRepository.deleteAllByUserId(sessionUserId);
 
         // 기존 프로필 이미지 삭제 (기본 프로필 제외)
         if (user.getProfileImage() != null && !user.getProfileImage().equals(DefaultImage.PROFILE_IMAGE)) {

@@ -1,4 +1,4 @@
-package com.example.teamproject2025.ExceptionHandler;
+package com.example.teamproject2025.exception;
 
 import com.example.teamproject2025.dto.Common.CommonResponseDto;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -69,6 +69,13 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(CommonResponseDto.error(HttpStatus.BAD_REQUEST.value(), errors.toString()));
+    }
+
+    // 사용자 정의 예외 처리
+    @ExceptionHandler(CustomException.class)
+    public ResponseEntity<CommonResponseDto<Void>> handleCustomException(CustomException e) {
+        return ResponseEntity.status(e.getStatus())
+                .body(CommonResponseDto.error(e.getStatus(), e.getMessage()));
     }
 }
 

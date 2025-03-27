@@ -1,17 +1,23 @@
-import {useNavigate, useParams} from "react-router-dom";
-import React from "react";
-import {deleteNotice} from "../api/clubApi";
+import React, { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { deleteNotice } from "../api/clubApi";
 
 const DeleteNotice = () => {
     const {clubId, noticeId} = useParams();
     const navigate = useNavigate();
+    const [actionLoading, setActionLoading] = useState(false);
 
     const handleDelete = async () => {
+        if (actionLoading) return;
+
+        setActionLoading(true);
         try {
             await deleteNotice(clubId, noticeId);
             navigate(`/clubs/${clubId}/notices`);
         } catch (error){
             console.error('게시글 삭제 실패: ', error);
+        } finally {
+            setActionLoading(false);
         }
     };
 
