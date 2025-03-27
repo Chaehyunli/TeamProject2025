@@ -1,0 +1,40 @@
+package com.example.teamproject2025.controller.Club;
+
+import com.example.teamproject2025.dto.Club.CommentRequestDto;
+import com.example.teamproject2025.dto.Common.CommonResponseDto;
+import com.example.teamproject2025.entity.Club.Comment;
+import com.example.teamproject2025.service.Club.CommentService;
+import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
+import java.util.Map;
+
+@RestController
+@RequestMapping("/api/v1/comment")
+@RequiredArgsConstructor
+public class CommentController {
+
+    private final CommentService commentService;
+
+    // 댓글 작성 API
+    @PostMapping("/articles/{articleId}")
+    public ResponseEntity<CommonResponseDto<Map<String, Long>>> createComment(
+            @PathVariable Long articleId,
+            @RequestBody CommentRequestDto requestDto,
+            HttpSession session
+    ) {
+        Long userId = (Long) session.getAttribute("userId");
+
+        if (userId == null) {
+            return ResponseEntity.status(401).body(CommonResponseDto.error(401, "로그인이 필요합니다."));
+        }
+
+        Long commentId = commentService.createComment(articleId, requestDto.getContent(), userId, requestDto.getParentId());
+
+        return ResponseEntity.ok(CommonResponseDto.success(200, "댓글 ID " + commentId + "번 등록 성공", Map.of("commentId", commentId)));
+    }
+}
+
