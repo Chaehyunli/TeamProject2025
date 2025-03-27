@@ -36,5 +36,28 @@ public class CommentController {
 
         return ResponseEntity.ok(CommonResponseDto.success(200, "댓글 ID " + commentId + "번 등록 성공", Map.of("commentId", commentId)));
     }
+
+    // 댓글 수정 API
+    @PatchMapping("/articles/{commentId}")
+    public ResponseEntity<CommonResponseDto<Void>> updateComment(
+            @PathVariable Long commentId,
+            @RequestBody CommentRequestDto requestDto,
+            HttpSession session
+    ) {
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            return ResponseEntity.status(401).body(CommonResponseDto.error(401, "로그인이 필요합니다."));
+        }
+
+        try {
+            commentService.updateComment(commentId, userId, requestDto.getContent());
+            return ResponseEntity.ok(CommonResponseDto.success(200, "댓글이 성공적으로 수정되었습니다."));
+        } catch (SecurityException e) {
+            return ResponseEntity.status(403).body(CommonResponseDto.error(403, e.getMessage()));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(404).body(CommonResponseDto.error(404, e.getMessage()));
+        }
+    }
+
 }
 

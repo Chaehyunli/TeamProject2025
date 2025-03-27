@@ -8,6 +8,7 @@ import com.example.teamproject2025.repository.Club.CommentRepository;
 import com.example.teamproject2025.repository.User.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -20,6 +21,7 @@ public class CommentServiceImpl implements CommentService {
     private final UserRepository userRepository;
 
     @Override
+    @Transactional
     public Long createComment(Long articleId, String content, Long userId, Long parentId) {
         Article article = articleRepository.findById(articleId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 게시물이 존재하지 않습니다."));
@@ -49,5 +51,22 @@ public class CommentServiceImpl implements CommentService {
 
         return commentRepository.save(comment).getCommentId();
     }
+
+    @Override
+    @Transactional
+    public void updateComment(Long commentId, Long userId, String newContent) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new IllegalArgumentException("댓글을 찾을 수 없습니다."));
+
+        if (!comment.getAuthor().getUserId().equals(userId)) {
+            throw new SecurityException("작성자 본인만 댓글을 수정할 수 있습니다.");
+        }
+
+        comment.setContent(newContent);
+        comment.setUpdatedAt(LocalDateTime.now());
+
+        commentRepository.save(comment); // 생략 가능
+    }
+
 }
 
