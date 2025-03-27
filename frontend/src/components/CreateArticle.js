@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { createArticle } from '../api/clubApi';
 import FileUpload from "./FileUpload";
-import {uploadImageToGCP} from "../api/uploadApi";
+import { uploadImageToGCP } from "../api/uploadApi";
 
 const CreateArticle = () => {
     const navigate = useNavigate();
@@ -25,9 +25,9 @@ const CreateArticle = () => {
     };
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
+        if (actionLoading) return;
 
-        if (actionLoading) return; // 중복 요청 방지
+        e.preventDefault();
 
         setActionLoading(true);
 
