@@ -7,7 +7,7 @@ import {uploadImageToGCP} from "../api/uploadApi";
 const CreateArticle = () => {
     const navigate = useNavigate();
     const { clubId } = useParams();
-    const [loading, setLoading] = useState(false);
+    const [actionLoading, setActionLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const [formData, setFormData] = useState({
         title: '',
@@ -27,9 +27,9 @@ const CreateArticle = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (loading) return; // 중복 요청 방지
+        if (actionLoading) return; // 중복 요청 방지
 
-        setLoading(true);
+        setActionLoading(true);
 
         try {
             let thumbUrl = null;
@@ -52,7 +52,7 @@ const CreateArticle = () => {
             console.error("게시글 작성 실패:", error);
             setErrorMessage("게시글 작성에 실패했습니다. 다시 시도해주세요.");
         } finally {
-            setLoading(false);
+            setActionLoading(false);
         }
     };
 
