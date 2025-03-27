@@ -1,4 +1,4 @@
-package com.example.teamproject2025.ExceptionHandler;
+package com.example.teamproject2025.exception;
 
 import com.example.teamproject2025.dto.Common.CommonResponseDto;
 import org.springframework.dao.DataIntegrityViolationException;
