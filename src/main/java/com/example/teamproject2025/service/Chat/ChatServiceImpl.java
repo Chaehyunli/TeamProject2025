@@ -138,7 +138,7 @@ public class ChatServiceImpl implements ChatService {
 
         // 이미 참여자인지 검증
         Optional<ChatParticipant> participant = chatParticipantRepository.findByChatRoomAndUser(chatRoom, user);
-        if(!participant.isPresent()){
+        if(participant.isEmpty()){
             addParticipantToRoom(chatRoom, user);
         }
     }
@@ -261,20 +261,32 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public void leavePrivateChatRoom(Long roomId, HttpServletRequest request){
-        ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(()-> new EntityNotFoundException("room cannot be found"));
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId)
+                .orElseThrow(()-> new EntityNotFoundException("room cannot be found"));
         User user = getSessionUser(request);
 
+        leavePrivateChatRoomInternal(chatRoom, user);
+    }
+
+    @Override
+    public void leavePrivateChatRoomInternal(ChatRoom chatRoom, User user){
         if(chatRoom.getIsGroupChat().equals(true)){
             throw new IllegalArgumentException("개인 채팅방이 아닙니다.");
         }
-        ChatParticipant c = chatParticipantRepository.findByChatRoomAndUser(chatRoom, user).orElseThrow(()->new EntityNotFoundException("참여자를 찾을 수 없습니다."));
-        chatParticipantRepository.delete(c);
+
+        ChatParticipant participant = chatParticipantRepository
+                .findByChatRoomAndUser(chatRoom, user)
+                .orElseThrow(() -> new EntityNotFoundException("참여자를 찾을 수 없습니다."));
+
+        chatParticipantRepository.delete(participant);
 
         List<ChatParticipant> chatParticipants = chatParticipantRepository.findByChatRoom(chatRoom);
         if(chatParticipants.isEmpty()){
             chatRoomRepository.delete(chatRoom);
         }
     }
+
+
 
     @Override
     public Long getOrCreatePrivateRoom(Long otherUserId, HttpServletRequest request){
@@ -288,6 +300,13 @@ public class ChatServiceImpl implements ChatService {
         if(chatRoom.isPresent()){
             return chatRoom.get().getId();
         }
+
+        // ChatRoom 있는걸 알아차리는 건, User-OtherUser 관계가 동시에 만족할 떄.
+        // 즉, 재입장 로직에서 문제가 터진다.
+        // 아 왜 나에게 이런 시련이
+        // 좀 하드한 코딩 방식이면, otherUserId 기반으로 ChatRoom 을 찾은 후 이름이 Youcu-Hooby 이런 식이니까
+        // 채팅방 이름에서 사용자 본인 이름이 들어가면 기존 방이라고 간주하고 추가하는 방법이 존재
+        // 근데 이건 너무 하드하고, 유연한 방식으로 갈려면 DB 구조를 뜯어야 한다. 아...ㅐㅁㄴㅇ라훼ㅑㅐ미ㅓㄴㅇ후ㅑㅐㅔㅁ녕
 
         // 만약에 1:1채팅방이 없을경우 기존 채팅방 개설
         ChatRoom newRoom = ChatRoom.builder()
