@@ -25,8 +25,10 @@ public interface ClubArticleRepository extends JpaRepository<Article, Long> {
     @EntityGraph(attributePaths = "user")
     Optional<Article> findByArticleId(Long articleId);
 
+    List<Article> findByUser_UserId(Long userId);
+
     @Modifying
     @Transactional
-    @Query("DELETE FROM Article a WHERE a.club.clubId = :clubId")
-    void deleteAllByClubId(@Param("clubId") Long clubId);
+    @Query("DELETE FROM Notice n WHERE n.user.userId = :userId")
+    void deleteAllByUserId(@Param("userId") Long userId);
 }
