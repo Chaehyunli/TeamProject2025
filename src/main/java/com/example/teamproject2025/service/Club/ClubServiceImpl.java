@@ -502,30 +502,13 @@ public class ClubServiceImpl implements ClubService {
         userClubRepository.deleteAllByClub_ClubId(clubId);
         userRoleRepository.deleteAllByClub_ClubId(clubId);
         clubSubmissionRepository.deleteAllByClub_ClubId(clubId);
+        clubArticleRepository.deleteAllByClub_ClubId(clubId);
+        clubNoticeRepository.deleteAllByClub_ClubId(clubId);
 
-        // 작성한 게시글의 이미지 삭제 + 게시글 삭제
-        List<Article> articles = clubArticleRepository.findByClub_ClubId(clubId);
-        for (Article article : articles) {
-            article.setClub(null);
-            String thumbUrl = article.getThumbUrl();
-            if(thumbUrl != null) {
-                deleteImageFromGCS(thumbUrl);
-            }
+        // 4. GCP에 저장된 썸네일 이미지 삭제 (기본 이미지가 아닐 경우)
+        if (club.getThumbUrl() != null && !club.getThumbUrl().equals(DefaultImage.CLUB_THUMBNAIL)) {
+            deleteImageFromGCS(club.getThumbUrl());
         }
-        clubArticleRepository.saveAll(articles);
-        clubArticleRepository.deleteAllByUserId(clubId);
-
-        // 작성한 공지사항의 이미지 삭제 + 게시글 삭제
-        List<Notice> notices = clubNoticeRepository.findByClub_ClubId(clubId);
-        for (Notice notice : notices) {
-            notice.setClub(null);
-            String thumbUrl = notice.getThumbUrl();
-            if(thumbUrl != null) {
-                deleteImageFromGCS(thumbUrl);
-            }
-        }
-        clubNoticeRepository.saveAll(notices);
-        clubNoticeRepository.deleteAllByUserId(clubId);
 
         // GCP에 저장된 썸네일 이미지 삭제 (기본 이미지가 아닐 경우)
         if (club.getThumbUrl() != null && !club.getThumbUrl().equals(DefaultImage.CLUB_THUMBNAIL)) {

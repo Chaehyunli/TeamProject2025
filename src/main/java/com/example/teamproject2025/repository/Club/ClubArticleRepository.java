@@ -29,6 +29,10 @@ public interface ClubArticleRepository extends JpaRepository<Article, Long> {
 
     @Modifying
     @Transactional
+    void deleteAllByClub_ClubId(Long clubId);
+
+    @Modifying
+    @Transactional
     @Query("DELETE FROM Notice n WHERE n.user.userId = :userId")
     void deleteAllByUserId(@Param("userId") Long userId);
 }
