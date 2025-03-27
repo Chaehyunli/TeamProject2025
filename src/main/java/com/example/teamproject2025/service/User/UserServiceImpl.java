@@ -119,7 +119,7 @@ public class UserServiceImpl implements UserService {
     public void deleteUser(HttpSession session) {
         // 현재 로그인한 사용자 확인
         Long sessionUserId = (Long) session.getAttribute("userId");
-//        Boolean deletedMailVerified = (Boolean) session.getAttribute("deleted_mail_verified"); // Ref4
+        Boolean deletedMailVerified = (Boolean) session.getAttribute("deleted_mail_verified"); // Ref4
 
         if (sessionUserId == null) {
             throw new IllegalStateException("Invalid user session or unauthorized request");
@@ -131,9 +131,9 @@ public class UserServiceImpl implements UserService {
             throw new CustomException("회장은 탈퇴할 수 없습니다.", 409);
         }
 
-//        if (deletedMailVerified == null || !deletedMailVerified) {
-//            throw new IllegalStateException("Email verification required before account deletion");
-//        }
+        if (deletedMailVerified == null || !deletedMailVerified) {
+            throw new IllegalStateException("Email verification required before account deletion");
+        }
 
         // 유저 존재 여부 확인
         User user = userRepository.findById(sessionUserId)
