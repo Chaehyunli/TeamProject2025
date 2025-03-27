@@ -1,5 +1,6 @@
 package com.example.teamproject2025.service.Club;
 
+import com.example.teamproject2025.dto.Club.CommentResponseDto;
 import com.example.teamproject2025.entity.Club.Article;
 import com.example.teamproject2025.entity.Club.Comment;
 import com.example.teamproject2025.entity.User.User;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -95,6 +97,43 @@ public class CommentServiceImpl implements CommentService {
         comment.setDeleted(true);
         comment.setContent("삭제된 댓글입니다");
         comment.setUpdatedAt(LocalDateTime.now());
+    }
+
+    // 댓글 조회
+    @Override
+    @Transactional(readOnly = true)
+    public List<CommentResponseDto> getCommentsByArticle(Long articleId) {
+        Article article = articleRepository.findById(articleId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 게시물이 존재하지 않습니다."));
+
+        List<Comment> allComments = commentRepository.findByArticle(article);
+
+        // 루트 댓글만 필터링 (parent == null)
+        List<Comment> rootComments = allComments.stream()
+                .filter(c -> c.getParent() == null)
+                .toList();
+
+        // 트리로 변환
+        return rootComments.stream()
+                .map(this::convertToDtoTree)
+                .toList();
+    }
+
+    private CommentResponseDto convertToDtoTree(Comment comment) {
+        String content = comment.isDeleted() ? "삭제된 댓글입니다" : comment.getContent();
+
+        return CommentResponseDto.builder()
+                .commentId(comment.getCommentId())
+                .content(content)
+                .userId(comment.getAuthor().getUserId()) // ← 닉네임 안 넘김!
+                .createdAt(comment.getCreatedAt())
+                .updatedAt(comment.getUpdatedAt())
+                .deleted(comment.isDeleted())
+                .children(comment.getChildren().stream()
+                        .map(this::convertToDtoTree)
+                        .toList()
+                )
+                .build();
     }
 
 }

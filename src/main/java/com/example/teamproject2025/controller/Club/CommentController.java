@@ -1,6 +1,7 @@
 package com.example.teamproject2025.controller.Club;
 
 import com.example.teamproject2025.dto.Club.CommentRequestDto;
+import com.example.teamproject2025.dto.Club.CommentResponseDto;
 import com.example.teamproject2025.dto.Common.CommonResponseDto;
 import com.example.teamproject2025.entity.Club.Comment;
 import com.example.teamproject2025.service.Club.CommentService;
@@ -10,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -78,6 +80,16 @@ public class CommentController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(404).body(CommonResponseDto.error(404, e.getMessage()));
         }
+    }
+
+    // 댓글 조회 API
+    @GetMapping("/articles/{articleId}/comments")
+    public ResponseEntity<CommonResponseDto<List<CommentResponseDto>>> getComments(
+            @PathVariable Long articleId
+    ) {
+        List<CommentResponseDto> comments = commentService.getCommentsByArticle(articleId);
+
+        return ResponseEntity.ok(CommonResponseDto.success(200, "댓글 목록 조회 성공", comments));
     }
 
 }
