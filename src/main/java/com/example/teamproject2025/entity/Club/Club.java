@@ -59,6 +59,6 @@ public class Club {
                 .collect(Collectors.toList());
     }
 
-    @OneToMany(mappedBy = "club", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Article> articles;
 }

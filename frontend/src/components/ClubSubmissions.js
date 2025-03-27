@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getClubSubmissions, approveSubmission, rejectSubmission, getUserClubRole } from "../api/clubApi";
 import { ProtectedImage } from "../api/uploadApi";
-import {getParticularUserProfile} from "../api/userApi";
+import { getParticularUserProfile } from "../api/userApi";
 
 const ClubSubmissions = () => {
     const { clubId } = useParams(); // URL에서 동아리 ID 가져오기

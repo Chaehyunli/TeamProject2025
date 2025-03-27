@@ -190,6 +190,90 @@ public class ClubController {
 
     }
 
+    // 동아리 공지사항 작성
+    @PostMapping("/{clubId}/notices")
+    public ResponseEntity<CommonResponseDto<NoticeCreateResponseDto>> createNotice(
+            @PathVariable Long clubId,
+            @RequestBody NoticeCreateRequestDto requestDto,
+            HttpSession session
+    ){
+        Long userId = (Long) session.getAttribute("userId");
+
+        NoticeCreateResponseDto clubNotice = clubService.createNotice(
+                clubId, userId, requestDto
+        );
+
+        return ResponseEntity.ok(
+                CommonResponseDto.success(200, "Notice created successfully", clubNotice)
+        );
+    }
+
+    // 동아리 공지사항 조회
+    @GetMapping("/{clubId}/notices")
+    public ResponseEntity<CommonResponseDto<NoticeListResponseDto>> NoticeList(
+            @PathVariable Long clubId,
+            @RequestParam(defaultValue = "10") int limit,
+            @RequestParam(defaultValue = "0") int offset
+    ) {
+        NoticeListResponseDto noticeList = clubService.getNoticeList(clubId, limit, offset);
+
+        return ResponseEntity.ok(
+                CommonResponseDto.success(200, "Notice list retrieved successfully", noticeList)
+        );
+    }
+
+    // 동아리 공지사항 삭제
+    @DeleteMapping("/{clubId}/notices/{noticeId}")
+    public CommonResponseDto<String> deleteNotice(
+            @PathVariable Long clubId,
+            @PathVariable Long noticeId,
+            HttpSession session
+    ){
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            return CommonResponseDto.error(401, "로그인이 필요합니다.");
+        }
+
+        boolean isDelete = clubService.deleteNotice(clubId, noticeId, userId);
+
+        if (!isDelete) {
+            return CommonResponseDto.error(403, "해당 게시물 삭제할 권한이 없습니다.");
+        }
+
+        return CommonResponseDto.success(200, "공지사항을 성공적으로 삭제했습니다.", null);
+    }
+
+    // 동아리 공지사항 수정
+    @PutMapping("/{clubId}/notices/{noticeId}")
+    public ResponseEntity<CommonResponseDto<NoticeModifyResponseDto>> updateNotice(
+            @PathVariable Long clubId,
+            @PathVariable Long noticeId,
+            HttpSession session,
+            @RequestBody NoticeModifyRequestDto requestDto
+    ){
+        Long userId = (Long) session.getAttribute("userId");
+
+        NoticeModifyResponseDto modification = clubService.updateNotice(userId, clubId, noticeId, requestDto);
+
+        return ResponseEntity.ok(
+                CommonResponseDto.success(200, "공지사항 수정을 성공적으로 했습니다.", modification)
+        );
+    }
+
+    // 동아리 특정 공지사항 조회
+    @GetMapping("/{clubId}/notices/{noticeId}")
+    public ResponseEntity<CommonResponseDto<SpecificNoticeResponseDto>> getNoticeDetail(
+            @PathVariable Long clubId,
+            @PathVariable Long noticeId
+    ){
+
+        SpecificNoticeResponseDto notice = clubService.getNoticeDetail(clubId, noticeId);
+
+        return ResponseEntity.ok(
+                CommonResponseDto.success(200, "특정 게시물을 성공적으로 조회습니다.", notice)
+        );
+    }
+
     // 동아리 thumbnail 수정
     @PatchMapping("/{clubId}/thumbnail")
     public ResponseEntity<CommonResponseDto<String>> updateClubThumbnail(

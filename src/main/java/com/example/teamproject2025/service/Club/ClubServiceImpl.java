@@ -6,6 +6,7 @@ import com.example.teamproject2025.dto.Membership.UserClubResponseDto;
 import com.example.teamproject2025.entity.Club.Article;
 import com.example.teamproject2025.entity.Club.Category;
 import com.example.teamproject2025.entity.Club.Club;
+import com.example.teamproject2025.entity.Club.Notice;
 import com.example.teamproject2025.entity.Membership.RoleType;
 import com.example.teamproject2025.entity.Membership.UserClub;
 import com.example.teamproject2025.entity.Membership.UserRole;
@@ -13,6 +14,7 @@ import com.example.teamproject2025.entity.University.University;
 import com.example.teamproject2025.entity.User.User;
 import com.example.teamproject2025.repository.Club.CategoryRepository;
 import com.example.teamproject2025.repository.Club.ClubArticleRepository;
+import com.example.teamproject2025.repository.Club.ClubNoticeRepository;
 import com.example.teamproject2025.repository.Club.ClubRepository;
 import com.example.teamproject2025.repository.Membership.ClubSubmissionRepository;
 import com.example.teamproject2025.repository.Membership.UserClubRepository;
@@ -43,6 +45,7 @@ public class ClubServiceImpl implements ClubService {
     private final UserRoleRepository userRoleRepository;
     private final UserClubRepository userClubRepository;
     private final ClubArticleRepository clubArticleRepository;
+    private final ClubNoticeRepository clubNoticeRepository;
     private final ClubSubmissionRepository clubSubmissionRepository;
     private final Storage storage;
     private final ApplicationContext applicationContext;
@@ -233,6 +236,7 @@ public class ClubServiceImpl implements ClubService {
     // 동아리 게시물 수정
     @Override
     public ClubArticleResponseDto updateArticle(Long userId, Long clubId, Long articleId, ArticleModificationRequestDto requestDto) {
+        // clubId를 사용해야 되는지 아니면 사용을 굳이 안해야 되는지 몰라서 일단 남겨둠,,,
 
         Article article = clubArticleRepository.findByArticleId(articleId)
                 .orElseThrow(() -> new NoSuchElementException("해당 ID의 게시물이 존재하지 않습니다."));
@@ -250,6 +254,7 @@ public class ClubServiceImpl implements ClubService {
         return ClubArticleResponseDto.fromEntity(article);
     }
 
+    // 동아리 특정 게시물 조회
     @Override
     public SpecificArticleResponseDto getArticleDetail(Long clubId, Long articleId) {
 //        authorDto author = new authorDto(userId, username);
@@ -284,6 +289,104 @@ public class ClubServiceImpl implements ClubService {
 
         clubArticleRepository.delete(article);
         return true;
+    }
+
+    // 동아리 공지사항 작성
+    @Override
+    public NoticeCreateResponseDto createNotice(Long clubId, Long userId, NoticeCreateRequestDto requestDto) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다. userId: " + userId));
+
+        Club club = clubRepository.findByIdWithThumbUrl(clubId)
+                .orElseThrow(() -> new IllegalArgumentException("동아리를 찾을 수 없습니다."));
+
+        String storageThumbUrl = (requestDto.getThumbUrl() != null && !requestDto.getThumbUrl().isEmpty())
+                ? requestDto.getThumbUrl()
+                : null;
+
+        NoticeCreateRequestDto noticeRequestDto = new NoticeCreateRequestDto(requestDto.getNoticeTitle(),
+                requestDto.getNoticeContents(), storageThumbUrl);
+
+        Notice newNotice = noticeRequestDto.toEntity(club, user);
+        clubNoticeRepository.save(newNotice);
+
+        return NoticeCreateResponseDto.fromEntity(newNotice);
+    }
+
+    // 동아리 공지사항 조회
+    @Override
+    public NoticeListResponseDto getNoticeList(Long clubId, int limit, int offset) {
+        List<Notice> noticeList = clubNoticeRepository.findByClub_ClubId(clubId);
+
+        int total = noticeList.size();
+
+        List<Notice> paginatedNotices = noticeList.stream()
+                .skip(offset)
+                .limit(limit)
+                .collect(Collectors.toList());
+
+        return NoticeListResponseDto.fromEntity(paginatedNotices, total, limit, offset);
+
+    }
+
+    // 동아리 공지사항 수정
+    @Override
+    @Transactional
+    public NoticeModifyResponseDto updateNotice(Long userId, Long clubId, Long noticeId, NoticeModifyRequestDto requestDto) {
+
+        Notice notice = clubNoticeRepository.findByNoticeId(noticeId)
+                .orElseThrow(() -> new NoSuchElementException("해당 공지사항이 없습니다."));
+
+        if(!notice.getUser().getUserId().equals(userId)) {
+            throw new IllegalArgumentException("이 공지사항을 수정할 권한이 없습니다.");
+        }
+
+
+        notice.setNoticeTitle(requestDto.getNoticeTitle());
+        notice.setNoticeContents(requestDto.getNoticeContents());
+        notice.setThumbUrl(requestDto.getThumbUrl());
+
+        clubNoticeRepository.save(notice);
+
+        return NoticeModifyResponseDto.fromEntity(notice);
+
+    }
+
+    // 동아리 공지사항 삭제
+    @Override
+    public boolean deleteNotice(Long clubId, Long noticeId, Long userId) {
+
+        Notice notice = clubNoticeRepository.findByClubIdAndNoticeIdAndThumbUrl(clubId, noticeId)
+                .orElseThrow(() -> new NoSuchElementException("해당 클럽에 공지사항이 존재하지 않습니다."));
+
+        if(!notice.getUser().getUserId().equals(userId)&& !checkUserPermission(userId, noticeId)) {
+            return false;
+        }
+
+        // 기존 이미지 삭제 로직 추가(Google Cloud)
+        if (notice.getThumbUrl() != null
+                && !notice.getThumbUrl().equals("default-thumbnail.png")) {
+            deleteImageFromGCS(notice.getThumbUrl()); // 기존 이미지 삭제 (기본 이미지 제외)
+        }
+
+        clubNoticeRepository.delete(notice);
+        return true;
+
+    }
+
+    // 동아리 특정 공지사항 조회
+    @Override
+    public SpecificNoticeResponseDto getNoticeDetail(Long clubId, Long noticeId) {
+
+        boolean check = clubArticleRepository.existsByClub_ClubId(clubId);
+        if(!check) {
+            throw new NoSuchElementException("존재 하지 않는 동아리입니다.");
+        }
+
+        Notice notice = clubNoticeRepository.findByNoticeId(noticeId)
+                .orElseThrow(() -> new NoSuchElementException("해당 ID의 공지사항이 존재하지 않습니다."));
+
+        return SpecificNoticeResponseDto.fromEntity(notice);
     }
 
     // Google Cloud Storage에서 기존 이미지 삭제
@@ -380,36 +483,56 @@ public class ClubServiceImpl implements ClubService {
     @Override
     @Transactional
     public void deleteClub(Long clubId, Long userId) {
-        // 1. 동아리 존재 여부 확인
+        // 동아리 존재 여부 확인
         Club club = clubRepository.findById(clubId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 동아리입니다."));
 
-        // 2. 현재 사용자가 동아리 회장인지 확인
+        // 현재 사용자가 동아리 회장인지 확인
         if (!checkUserIsPresident(userId, clubId)) {
             throw new SecurityException("동아리를 삭제할 권한이 없습니다.");
         }
 
-        // 3. 가입된 멤버가 남아있는지 확인
+        // 가입된 멤버가 남아있는지 확인
         long memberCount = userClubRepository.countByClubId(clubId);
         if (memberCount > 1) {
             throw new IllegalStateException("동아리에 가입된 멤버가 있어서 삭제할 수 없습니다.");
         }
 
-        // 3. 연관된 엔티티 삭제
-        userClubRepository.deleteAllByClubId(clubId);
-        userRoleRepository.deleteAllByClubId(clubId);
-        clubSubmissionRepository.deleteAllByClubId(clubId);
-        clubArticleRepository.deleteAllByClubId(clubId);
+        // 연관된 엔티티 삭제
+        userClubRepository.deleteAllByClub_ClubId(clubId);
+        userRoleRepository.deleteAllByClub_ClubId(clubId);
+        clubSubmissionRepository.deleteAllByClub_ClubId(clubId);
 
-        // 4. GCP에 저장된 썸네일 이미지 삭제 (기본 이미지가 아닐 경우)
+        // 작성한 게시글의 이미지 삭제 + 게시글 삭제
+        List<Article> articles = clubArticleRepository.findByClub_ClubId(clubId);
+        for (Article article : articles) {
+            article.setClub(null);
+            String thumbUrl = article.getThumbUrl();
+            if(thumbUrl != null) {
+                deleteImageFromGCS(thumbUrl);
+            }
+        }
+        clubArticleRepository.saveAll(articles);
+        clubArticleRepository.deleteAllByUserId(clubId);
+
+        // 작성한 공지사항의 이미지 삭제 + 게시글 삭제
+        List<Notice> notices = clubNoticeRepository.findByClub_ClubId(clubId);
+        for (Notice notice : notices) {
+            notice.setClub(null);
+            String thumbUrl = notice.getThumbUrl();
+            if(thumbUrl != null) {
+                deleteImageFromGCS(thumbUrl);
+            }
+        }
+        clubNoticeRepository.saveAll(notices);
+        clubNoticeRepository.deleteAllByUserId(clubId);
+
+        // GCP에 저장된 썸네일 이미지 삭제 (기본 이미지가 아닐 경우)
         if (club.getThumbUrl() != null && !club.getThumbUrl().equals(DefaultImage.CLUB_THUMBNAIL)) {
             deleteImageFromGCS(club.getThumbUrl());
         }
 
-        // 5. 영속성 컨텍스트 초기화
-        entityManager.clear();  // Hibernate가 TransientObjectException을 방지하기 위해 영속성 컨텍스트를 비움
-
-        // 6. 동아리 삭제
+        // 동아리 삭제
         clubRepository.delete(club);
     }
 }

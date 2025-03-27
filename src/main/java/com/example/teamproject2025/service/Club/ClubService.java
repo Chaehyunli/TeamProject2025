@@ -1,6 +1,7 @@
 package com.example.teamproject2025.service.Club;
 
 import com.example.teamproject2025.dto.Club.*;
+import com.example.teamproject2025.dto.Membership.ClubMemberResponseDto;
 import com.example.teamproject2025.dto.Membership.UserClubResponseDto;
 
 import java.io.IOException;
@@ -28,6 +29,16 @@ public interface ClubService {
     SpecificArticleResponseDto getArticleDetail(Long clubId, Long articleId);
 
     ArticleListResponseDto getArticlesList(Long clubId, int limit, int offset);
+
+    NoticeCreateResponseDto createNotice(Long clubId, Long userId, NoticeCreateRequestDto requestDto);
+
+    NoticeListResponseDto getNoticeList(Long clubId, int limit, int offset);
+
+    NoticeModifyResponseDto updateNotice(Long userId, Long clubId, Long noticeId, NoticeModifyRequestDto requestDto );
+
+    boolean deleteNotice(Long clubId, Long noticeId, Long userId);
+
+    SpecificNoticeResponseDto getNoticeDetail(Long clubId, Long noticeId);
 
     void updateClubThumbnail(String username, Long clubId, String objectName);
 
