@@ -260,6 +260,80 @@ export const getUserRoleInClub = async (clubId) => {
     }
 };
 
+export const createNotice = async (clubId, noticeData) => {
+    try{
+        const response = await axios.post(`${API_BASE_URL}/${clubId}/notices`,
+            noticeData,
+            {withCredentials: true}
+        );
+        return response.data;
+    } catch (error) {
+        console.error('공지사항 작성 실패: ', error)
+        throw error;
+    }
+};
+
+export const getNoticeDetail = async (clubId, noticeId) => {
+
+    try {
+        const response = await axios.get(
+            `${API_BASE_URL}/${clubId}/notices/${noticeId}`,
+            { withCredentials: true }
+        );
+        console.log('clubApi authorId', response.data.data);
+        return response.data.data;
+    } catch (error) {
+        console.error('공지사항 상세 조회 실패:', error);
+        throw error;
+    }
+};
+
+export const getNoticeList = async (clubId, limit = 10, offset = 0) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/${clubId}/notices`, {
+            params: {
+                limit,
+                offset
+            },
+            withCredentials: true,
+        });
+        return response.data.data;
+    } catch (error){
+        console.log('동아리 공지사항 조회 실패: ', error);
+        throw error;
+    }
+};
+
+export const deleteNotice = async (clubId, noticeId) => {
+    try {
+        const response = await axios.delete(
+            `${API_BASE_URL}/${clubId}/notices/${noticeId}`,
+            { withCredentials: true }
+        );
+        return response.data;
+    } catch (error) {
+        console.error('공지사항 삭제 실패:', error);
+        throw error;
+    }
+};
+
+export const updateNotice = async (clubId, noticeId, noticeData) => {
+
+    try {
+        const response = await axios.put(
+            `${API_BASE_URL}/${clubId}/notices/${noticeId}`,
+            noticeData,
+            { withCredentials: true }
+        );
+        return response.data;
+    } catch (error) {
+        console.error('공지사항 수정 실패:', error);
+        throw error;
+    }
+}
+
+
+
 // 특정 동아리 Thumbnail 수정
 export const updateClubThumbnail = async (clubId, objectName) => {
     try {

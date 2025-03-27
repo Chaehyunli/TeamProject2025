@@ -1,23 +1,20 @@
-import React, { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { createArticle } from '../api/clubApi';
-import FileUpload from "./FileUpload";
+import {useNavigate, useParams} from "react-router-dom";
+import React, {useState} from "react";
 import {uploadImageToGCP} from "../api/uploadApi";
+import {createNotice} from "../api/clubApi";
+import FileUpload from "./FileUpload";
 
-const CreateArticle = () => {
+const CreateNotice = () => {
     const navigate = useNavigate();
-    const { clubId } = useParams();
-    const [actionLoading, setActionLoading] = useState(false);
-    const [errorMessage, setErrorMessage] = useState("");
+    const {clubId} = useParams();
     const [formData, setFormData] = useState({
-        title: '',
-        contents: '',
-        is_notice: false,
+        noticeTitle: '',
+        noticeContents: '',
         thumbUrl: undefined
     });
 
     const handleChange = (e) => {
-        const { name, value, type, checked } = e.target;
+        const {name, value} = e.target;
         setFormData(prev => ({
             ...prev,
             [name] : value
@@ -27,10 +24,6 @@ const CreateArticle = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (actionLoading) return; // 중복 요청 방지
-
-        setActionLoading(true);
-
         try {
             let thumbUrl = null;
 
@@ -38,39 +31,35 @@ const CreateArticle = () => {
                 thumbUrl = await uploadImageToGCP(formData.thumbUrl);
             }
 
-            const articleData = {
-                title: formData.title,
-                contents: formData.contents,
-                is_notice: false,
+            const noticeData = {
+                noticeTitle: formData.noticeTitle,
+                noticeContents: formData.noticeContents,
                 thumbUrl: thumbUrl || undefined
             };
 
-            await createArticle(clubId, articleData);
+            await createNotice(clubId, noticeData);
 
-            navigate(`/clubs/${clubId}/articles`);
-        } catch (error) {
-            console.error("게시글 작성 실패:", error);
-            setErrorMessage("게시글 작성에 실패했습니다. 다시 시도해주세요.");
-        } finally {
-            setActionLoading(false);
+            navigate(`/clubs/${clubId}/notices`);
+        } catch (error){
+            console.error("공지사항 작성 실패: ", error);
         }
     };
 
-
     const allowedFileTypes = ["image/png", "image/jpeg"];
-    const maxFileSize = 10 * 1024 * 1024; // 10MB 제한
+    const maxFileSize = 10 * 1024 * 1024;
 
-    const handleFileChange = (file) => {
-        if (file) {
-            if (!allowedFileTypes.includes(file.type)) {
-                setErrorMessage("PNG 또는 JPEG 파일만 업로드할 수 있습니다.");
+    const handlefilechange = (file) => {
+        if(file){
+            if(!allowedFileTypes.includes(file.type)){
+                console.log("PNG 또는 JPEG 파일만 업로드할 수 있습니다.");
                 return;
             }
-            if (file.size > maxFileSize) {
-                setErrorMessage("파일 크기는 최대 10MB까지 업로드 가능합니다.");
+
+            if(file.size > maxFileSize){
+                console.log("파일 크기는 최대 10MB까지 업로드 가능합니다.");
                 return;
             }
-            setErrorMessage(""); // 오류 메시지 초기화
+
             setFormData(prev => ({
                 ...prev,
                 thumbUrl: file
@@ -81,22 +70,22 @@ const CreateArticle = () => {
     return (
         <div className="container mx-auto px-4 py-8">
             <div className="max-w-2xl mx-auto">
-                <h2 className="text-2xl font-bold mb-6">게시글 작성</h2>
+                <h2 className="text-2xl font-bold mb-6">공지사항 작성</h2>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     {/* 제목 입력 */}
                     <div>
                         <label
-                            htmlFor="title"
+                            htmlFor="noticeTitle"
                             className="block text-sm font-medium text-gray-700 mb-2"
                         >
                             제목
                         </label>
                         <input
-                            id="title"
+                            id="noticeTitle"
                             type="text"
-                            name="title"
-                            value={formData.title}
+                            name="noticeTitle"
+                            value={formData.noticeTitle}
                             onChange={handleChange}
                             required
                             className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
@@ -107,15 +96,15 @@ const CreateArticle = () => {
                     {/* 내용 입력 */}
                     <div>
                         <label
-                            htmlFor="contents"
+                            htmlFor="noticeContents"
                             className="block text-sm font-medium text-gray-700 mb-2"
                         >
                             내용
                         </label>
                         <textarea
-                            id="contents"
-                            name="contents"
-                            value={formData.contents}
+                            id="noticeContents"
+                            name="noticeContents"
+                            value={formData.noticeContents}
                             onChange={handleChange}
                             required
                             rows="10"
@@ -129,7 +118,7 @@ const CreateArticle = () => {
                         <FileUpload
                             label="이미지 (선택사항)"
                             name="thumbUrl"
-                            onFileSelect={handleFileChange}
+                            onFileSelect={handlefilechange}
                         />
                     </div>
 
@@ -137,7 +126,7 @@ const CreateArticle = () => {
                     <div className="flex justify-end space-x-4 pt-4">
                         <button
                             type="button"
-                            onClick={() => navigate(`/clubs/${clubId}/articles`)}
+                            onClick={() => navigate(`/clubs/${clubId}/notices`)}
                             className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md"
                         >
                             취소
@@ -153,7 +142,8 @@ const CreateArticle = () => {
                 </form>
             </div>
         </div>
-    );
+    )
 };
 
-export default CreateArticle;
+export default  CreateNotice;
+

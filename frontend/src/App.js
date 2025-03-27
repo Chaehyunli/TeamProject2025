@@ -36,6 +36,11 @@ import EmailVerificationForm from "./components/EmailVerificationForm";
 import FindPasswordForm from "./components/FindPasswordForm";
 import UpdatePasswordPage from "./pages/UpdatePasswordPage";
 
+import CreateNotice from "./components/CreateNotice";
+import NoticeList from "./components/NoitceList";
+import NoticeDetail from "./components/NoticeDetail";
+import UpdateNotice from "./components/UpdateNotice";
+import DeleteNotice from "./components/DeleteNotice";
 
 function App() {
     return (
@@ -87,7 +92,14 @@ function App() {
                     <Route path="articles/:articleId" element={<ProtectedRoute><ArticleDetail /></ProtectedRoute>} />
                     <Route path="/clubs/:clubId/articles/:articleId/delete" element={<ProtectedRoute><DeleteArticle /></ProtectedRoute>} />
                     <Route path="/clubs/:clubId/articles/:articleId/edit" element={<ProtectedRoute><UpdateArticle /></ProtectedRoute>} />
+                    <Route path="notices/create" element={<ProtectedRoute><CreateNotice /></ProtectedRoute>} />
+                    <Route path="notices" element={<ProtectedRoute><NoticeList /></ProtectedRoute>} />
+                    <Route path="notices/:noticeId" element={<ProtectedRoute><NoticeDetail /></ProtectedRoute>} />
+                    <Route path="notices/:noticeId/delete" element={<ProtectedRoute><DeleteNotice /></ProtectedRoute>} />
+                    <Route path="notices/:noticeId/edit" element={<ProtectedRoute><UpdateNotice /></ProtectedRoute>} />
+
                 </Route>
+
             </Routes>
         </Router>
     );

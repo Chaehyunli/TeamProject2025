@@ -17,6 +17,7 @@ const ClubApply = () => {
     });
     const [hasApplied, setHasApplied] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [actionLoading, setActionLoading] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -77,9 +78,9 @@ const ClubApply = () => {
             return;
         }
 
-        if (loading) return;
+        if (actionLoading) return;
 
-        setLoading(true);
+        setActionLoading(true);
         try {
             await submitClubApplication(clubId, formData);
             alert("지원서 제출 성공!");
