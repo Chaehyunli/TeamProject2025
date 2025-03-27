@@ -20,6 +20,7 @@ public class CommentServiceImpl implements CommentService {
     private final ClubArticleRepository articleRepository;
     private final UserRepository userRepository;
 
+    // 댓글 작성
     @Override
     @Transactional
     public Long createComment(Long articleId, String content, Long userId, Long parentId) {
@@ -52,6 +53,7 @@ public class CommentServiceImpl implements CommentService {
         return commentRepository.save(comment).getCommentId();
     }
 
+    // 댓글 수정
     @Override
     @Transactional
     public void updateComment(Long commentId, Long userId, String newContent) {
@@ -66,6 +68,33 @@ public class CommentServiceImpl implements CommentService {
         comment.setUpdatedAt(LocalDateTime.now());
 
         commentRepository.save(comment); // 생략 가능
+    }
+
+    // 댓글 삭제(실제 삭제x, 논리적 삭제만)
+    @Override
+    @Transactional
+    public void deleteComment(Long commentId, Long userId) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new IllegalArgumentException("댓글을 찾을 수 없습니다."));
+
+        User requestUser = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        // 댓글의 작성자
+        User author = comment.getAuthor();
+
+        // 댓글 → 게시글 → 동아리 → 회장
+        User president = comment.getArticle().getClub().getPresident();
+
+        // 삭제 권한 확인
+        if (!requestUser.equals(author) && !requestUser.equals(president)) {
+            throw new SecurityException("댓글 삭제 권한이 없습니다.");
+        }
+
+        // 논리적 삭제 처리
+        comment.setDeleted(true);
+        comment.setContent("삭제된 댓글입니다");
+        comment.setUpdatedAt(LocalDateTime.now());
     }
 
 }

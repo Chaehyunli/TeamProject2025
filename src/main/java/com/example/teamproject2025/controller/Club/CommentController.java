@@ -59,5 +59,26 @@ public class CommentController {
         }
     }
 
+    // 댓글 삭제 API(실제 삭제 x, 논리적 삭제만)
+    @DeleteMapping("/articles/{commentId}")
+    public ResponseEntity<CommonResponseDto<Void>> deleteComment(
+            @PathVariable Long commentId,
+            HttpSession session
+    ) {
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            return ResponseEntity.status(401).body(CommonResponseDto.error(401, "로그인이 필요합니다."));
+        }
+
+        try {
+            commentService.deleteComment(commentId, userId);
+            return ResponseEntity.ok(CommonResponseDto.success(200, "댓글이 성공적으로 삭제되었습니다."));
+        } catch (SecurityException e) {
+            return ResponseEntity.status(403).body(CommonResponseDto.error(403, e.getMessage()));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(404).body(CommonResponseDto.error(404, e.getMessage()));
+        }
+    }
+
 }
 

@@ -28,7 +28,6 @@ public class Comment {
     @JoinColumn(name = "user_id", nullable = false)
     private User author; // 작성자
 
-
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
