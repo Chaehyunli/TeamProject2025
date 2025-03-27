@@ -79,10 +79,10 @@ const HomePage = () => {
                 <div className="text-center mt-10">
                     <p className="text-lg text-gray-600">아직 등록된 동아리가 없습니다.</p>
                     <p className="text-xl font-semibold text-gray-800 mt-2">
-                        🏆 <span className="text-blue-500">최초의 동아리 등록자가 되어보세요!</span>
+                        🏆 <span className="text-primary">최초의 동아리 등록자가 되어보세요!</span>
                     </p>
                     <button
-                        className="mt-4 px-6 py-2 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600"
+                        className="mt-4 px-6 py-2 bg-primary text-white rounded-lg shadow-md hover:bg-hoverBlueColor"
                         onClick={() => navigate("/club-register")}
                     >
                         동아리 등록하기
