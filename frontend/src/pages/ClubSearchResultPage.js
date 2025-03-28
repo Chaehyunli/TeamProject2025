@@ -75,8 +75,16 @@ const ClubSearchResultPage = () => {
             </div>
             {loading ? (
                 <div className="text-center py-20 text-gray-500 text-lg">🔍 검색 결과 불러오는 중...</div>
+            ) : clubs.length === 0 ? (
+                <div className="text-center py-20 text-gray-500 text-lg">
+                    😥 <strong>{searchQuery}</strong> 관련 동아리를 찾을 수 없습니다
+                </div>
             ) : (
-                <ClubList clubs={clubs} userClubs={userClubs} userClubsLoading={userClubsLoading} />
+                <ClubList
+                    clubs={clubs}
+                    userClubs={userClubs}
+                    userClubsLoading={userClubsLoading}
+                />
             )}
         </div>
     );
