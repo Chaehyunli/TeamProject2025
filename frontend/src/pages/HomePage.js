@@ -12,6 +12,7 @@ const HomePage = () => {
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
     const [loading, setLoading] = useState(false);
+    const [userClubsLoading, setUserClubsLoading] = useState(false);
 
     const { ref, inView } = useInView();
 
@@ -38,12 +39,16 @@ const HomePage = () => {
     }, [page, loading, hasMore]);
 
     const fetchUserClubs = async () => {
+        setUserClubsLoading(true);
+
         try {
             const userClubData = await getUserClubs(); // 사용자의 동아리 목록 요청
             setUserClubs(userClubData); // userClubs 상태 업데이트
         } catch (error) {
             console.error("사용자의 동아리 목록 불러오기 실패:", error);
             setUserClubs([]); // 오류 발생 시 빈 배열로 설정
+        } finally {
+            setUserClubsLoading(false);
         }
     };
 
@@ -54,7 +59,7 @@ const HomePage = () => {
             return;
         }
 
-        fetchClubs(); // 첫페이지 로딩
+        if (page === 1) fetchClubs(); // 첫페이지 로딩
         fetchUserClubs();
     }, [username]);
 
@@ -91,12 +96,12 @@ const HomePage = () => {
             ) : (
                 // 동아리가 있는 경우 목록 표시
                 <>
-                    <ClubList clubs={clubs} userClubs={userClubs} />
+                    <ClubList clubs={clubs} userClubs={userClubs} userClubsLoading={userClubsLoading} />
                     { hasMore && (
                         <div ref={ref} className="text-center py-4">
                             <span className="text-extraText">불러오는 중...</span>
                         </div>
-                    )}
+                    ) }
                 </>
             )}
         </div>
