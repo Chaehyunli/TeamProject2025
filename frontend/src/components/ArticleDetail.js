@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
     getArticleDetail,
-    deleteArticle,
     getUserClubRole
 } from '../api/clubApi';
 import { ProtectedImage } from "../api/uploadApi";
@@ -61,7 +60,7 @@ const ArticleDetail = () => {
     const handleDelete = async () => {
         if (window.confirm('정말로 이 게시글을 삭제하시겠습니까?')) {
             try {
-                await deleteArticle(clubId, articleId);
+                // await deleteArticle(clubId, articleId);
                 alert('게시글이 삭제되었습니다.');
                 navigate(`/clubs/${clubId}/articles`);
             } catch (error) {

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getClubArticles, getUserRoleInClub } from "../api/clubApi";
 import { ProtectedImage } from "../api/uploadApi";
+import UserNameFine from "./UserNameFine";
 
 const ClubArticlesList = () => {
     const { clubId } = useParams();
@@ -12,6 +13,7 @@ const ClubArticlesList = () => {
     const [totalPages, setTotalPages] = useState(0);
     const [isClubMember, setIsClubMember] = useState(false);
     const limit = 10; // 한 페이지당 게시글 수
+    const [profile, setProfile] = useState(null);
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
@@ -27,6 +29,7 @@ const ClubArticlesList = () => {
             const response = await getClubArticles(clubId, limit, offset);
             const role = await getUserRoleInClub(clubId);
 
+
             console.log('사용자 role', role);
             if (role === "NO_ROLE"){
                 setIsClubMember(false);
@@ -38,6 +41,8 @@ const ClubArticlesList = () => {
             // 응답 구조 확인
             console.log('게시글 목록 응답:', response);
             setArticles(response.articles);
+
+            console.log('article list', articles);
 
             setTotalPages(Math.ceil(response.pagination.total / limit));
             setError(null);
@@ -110,7 +115,9 @@ const ClubArticlesList = () => {
                                     </span>
                                 </div>
                                 <div className="flex items-center text-sm text-gray-600">
-                                    <span>작성자: ({article.author.authorName})</span>
+                                    <span>작성자 :&nbsp;</span>
+                                    <span><UserNameFine articles={article} /></span>
+                                    <span>({article.author.authorName})</span>
                                 </div>
                             </div>
                         ))}

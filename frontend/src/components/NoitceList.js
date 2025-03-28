@@ -2,6 +2,7 @@ import {useNavigate, useParams} from "react-router-dom";
 import React, {useEffect, useState} from "react";
 import {getClubList, getNoticeList, getUserRoleInClub} from "../api/clubApi";
 import {ProtectedImage} from "../api/uploadApi";
+import UserNameFine from "./UserNameFine";
 
 const NoticeList = () => {
     const {clubId} = useParams();
@@ -82,7 +83,9 @@ const NoticeList = () => {
                                     </span>
                                 </div>
                                 <div className="flex items-center text-sm text-gray-600">
-                                    <span>작성자: ({notice.author.authorName})</span>
+                                    <span>작성자: &nbsp;</span>
+                                    <span><UserNameFine articles={notice} /></span>
+                                    <span>({notice.author.authorName})</span>
                                 </div>
                             </div>
 

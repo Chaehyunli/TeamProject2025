@@ -1,6 +1,6 @@
 import {useNavigate, useParams} from "react-router-dom";
 import React, {useEffect, useState} from "react";
-import {deleteNotice, getNoticeDetail, getUserClubRole} from "../api/clubApi";
+import {getNoticeDetail, getUserClubRole} from "../api/clubApi";
 import {ProtectedImage} from "../api/uploadApi";
 
 const NoticeDetail = () => {
@@ -38,7 +38,7 @@ const NoticeDetail = () => {
     const handleDelete = async () => {
         if(window.confirm('정말로 이 공지사항을 삭제하시겠습니까?')){
             try {
-                await deleteNotice(clubId, noticeId);
+                // await deleteNotice(clubId, noticeId);
                 alert('공지사항이 삭제되었습니다.');
                 navigate(`/clubs/${clubId}/notices`);
             }catch (error) {
