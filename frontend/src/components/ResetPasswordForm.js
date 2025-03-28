@@ -8,6 +8,7 @@ const ResetPasswordForm = () => {
     const location = useLocation();
     const [message, setMessage] = useState("");
     const isRedirected = useRef(false);
+    const [actionLoading, setActionLoading] = useState(false);
 
     // 이전 페이지에서 전달받은 formData (username, email, isEmailVerified)
     const [formData, setFormData] = useState({
@@ -62,6 +63,7 @@ const ResetPasswordForm = () => {
             return ;
         }
 
+        setActionLoading(true);
         console.log("서버에 보낼 데이터: ", formData); // 데이터 확인
 
         try{
@@ -72,7 +74,9 @@ const ResetPasswordForm = () => {
 
             window.location.href = "/login"; // 로그인 페이지로 이동
         } catch (error) {
-            setMessage("비밀번호 재설정 실패 : " + error.message);
+            setMessage("비밀번호 재설정 실패: " + error.message);
+        } finally {
+            setActionLoading(false);
         }
     };
 
@@ -104,6 +108,7 @@ const ResetPasswordForm = () => {
             <button
                 type="submit"
                 className="w-full bg-primary text-white py-2 rounded-md font-medium hover:text-hoverBlueColor transition duration-300"
+                disabled={actionLoading}
             >
                 비밀번호 변경
             </button>
