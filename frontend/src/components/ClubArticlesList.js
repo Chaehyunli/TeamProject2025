@@ -13,8 +13,8 @@ const ClubArticlesList = () => {
     const [totalPages, setTotalPages] = useState(0);
     const [isClubMember, setIsClubMember] = useState(false);
     const limit = 10; // 한 페이지당 게시글 수
-    const [profile, setProfile] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [total, setTotal] = useState(0);
 
     useEffect(() => {
         fetchArticles();
@@ -45,6 +45,7 @@ const ClubArticlesList = () => {
             console.log('article list', articles);
 
             setTotalPages(Math.ceil(response.pagination.total / limit));
+            setTotal(response.pagination.total);
             setError(null);
 
         } catch (error) {
@@ -92,7 +93,7 @@ const ClubArticlesList = () => {
                     </div>
                 ) : (
                     <div className="divide-y divide-gray-200">
-                        {articles.map((article) => (
+                        {articles.toReversed().map((article) => (
                             <div
                                 key={article.articleId}
                                 onClick={() => navigate(`/clubs/${clubId}/articles/${article.articleId}`)}
