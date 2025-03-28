@@ -7,6 +7,7 @@ import {verifyUsername} from "../api/authApi";
 const FindPasswordForm = () => {
     const navigate = useNavigate();
     const [message, setMessage] = useState("");
+    const [actionLoading, setActionLoading] = useState(false);
 
     const [formData, setFormData] = useState({
         username: "",
@@ -32,7 +33,11 @@ const FindPasswordForm = () => {
     };
 
     const handleSubmit = async (e) => {
+        if (actionLoading) return;
+
         e.preventDefault();
+
+        setActionLoading(true);
         try {
             // 이메일 인증 확인
             if (!formData.isEmailVerified) {
@@ -46,6 +51,8 @@ const FindPasswordForm = () => {
             navigate("/account/reset-pw", { state: formData });
         } catch (error){
             setMessage(error.message);
+        } finally {
+            setActionLoading(false);
         }
     };
 
