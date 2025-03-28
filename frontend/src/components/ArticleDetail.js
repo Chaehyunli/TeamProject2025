@@ -104,7 +104,7 @@ const ArticleDetail = () => {
                     </div>
                 </div>
 
-                {/* 하단 버튼 섹션 */}n
+                {/* 하단 버튼 섹션 */}
                 <div className="p-6 border-t border-gray-200 flex justify-between">
                     <button
                         onClick={() => navigate(`/clubs/${clubId}/articles`)}
