@@ -6,7 +6,7 @@ import {
     getUserClubRole
 } from '../api/clubApi';
 import { ProtectedImage } from "../api/uploadApi";
-import {createComment, getCommentsByArticle} from "../api/commentApi";
+import {createComment, deleteComment, getCommentsByArticle} from "../api/commentApi";
 import InputField from "../components/InputField";
 import {getParticularUserProfile} from "../api/userApi";
 
@@ -148,6 +148,18 @@ const ArticleDetail = () => {
         }
     };
 
+    const handleCommentDelete = async (commentId) => {
+        const confirmed = window.confirm("댓글을 삭제하시겠습니까?");
+        if (!confirmed) return;
+
+        try {
+            await deleteComment(commentId);
+            fetchComments();
+        } catch (e) {
+            console.error("댓글 삭제 실패", e);
+        }
+    };
+
     const renderComments = (commentList) => {
         if (!Array.isArray(commentList)) return null;
 
@@ -156,15 +168,32 @@ const ArticleDetail = () => {
                 {commentList.map((c) => (
                     <li
                         key={c.commentId}
-                        className={`border p-3 rounded cursor-pointer ${selectedCommentId === c.commentId ? 'border-2 border-primary' : ''}`}
+                        className={`relative border p-3 rounded cursor-pointer ${selectedCommentId === c.commentId ? 'border-2 border-primary' : ''}`}
                         onClick={() => handleReplyClick(c.commentId)}
                     >
                         <div className={`font-medium ${c.deleted ? 'text-gray-400' : ''}`}>
-                            {c.content}
+                            {c.content} {c.updatedAt && !c.deleted && '(수정됨)'}
                         </div>
                         <div className="text-sm text-gray-500">
                             작성자: {userProfiles[c.userId]?.name}({userProfiles[c.userId]?.username})
                         </div>
+                        <div className="text-xs text-gray-400 mt-1">
+                            {c.updatedAt
+                                ? `최근 수정일자: ${new Date(c.updatedAt).toLocaleString()}`
+                                : `댓글 작성일자: ${new Date(c.createdAt).toLocaleString()}`}
+                        </div>
+
+                        {(String(c.userId) === currentUserId || userRole === 'PRESIDENT') && !c.deleted && (
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleCommentDelete(c.commentId);
+                                }}
+                                className="absolute top-2 right-2 px-2 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600"
+                            >
+                                삭제
+                            </button>
+                        )}
 
                         {c.children && c.children.length > 0 && (
                             <div className="ml-6 mt-2">
@@ -172,7 +201,6 @@ const ArticleDetail = () => {
                             </div>
                         )}
                     </li>
-
                 ))}
             </ul>
         );
