@@ -182,7 +182,7 @@ const StompChatPage = () => {
         <div className="flex flex-col items-center justify-center py-40">
             <div className="w-full max-w-lg bg-white rounded-2xl shadow-lg flex flex-col overflow-hidden">
                 <div
-                    className="p-4 border-blue-500 border-b border-b-white flex relative justify-center items-center bg-blue-900 text-white font-semibold text-lg rounded-t-2xl">
+                    className="p-4 border-primary border-b border-b-white flex relative justify-center items-center bg-hoverBlueColor text-white font-semibold text-lg rounded-t-2xl">
                     <button onClick={handleBack} className="absolute left-4">
                         <img src={String(backIcon)} alt="뒤로가기" className="w-5 h-5"/>
                     </button>
@@ -214,7 +214,7 @@ const StompChatPage = () => {
                                                     <div className="text-sm">{msg.message}</div>
                                                 </div>
                                                 <span
-                                                    className="text-xs text-gray-500">{formatTimeFromISO(msg.createdAt)}</span>
+                                                    className="text-xs text-extraText">{formatTimeFromISO(msg.createdAt)}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -225,7 +225,7 @@ const StompChatPage = () => {
                                         <span
                                             className="text-xs text-gray-500">{formatTimeFromISO(msg.createdAt)}</span>
                                         <div
-                                            className="bg-blue-500 text-white rounded-xl p-3 w-fit max-w-xs break-words shadow">
+                                            className="bg-hoverBlueColor text-white rounded-xl p-3 w-fit max-w-xs break-words shadow">
                                             <div className="text-sm">{msg.message}</div>
                                         </div>
                                     </div>
@@ -245,7 +245,7 @@ const StompChatPage = () => {
                         className="flex-1 border border-gray-300 rounded-lg p-2 focus:outline-none"
                         onKeyDown={(e) => e.key === "Enter" && sendMessage()}
                     />
-                    <button onClick={sendMessage} className="ml-3 bg-blue-500 text-white px-4 py-2 rounded-lg">전송
+                    <button onClick={sendMessage} className="ml-3 bg-primary text-white px-4 py-2 rounded-lg">전송
                     </button>
                 </div>
             </div>
