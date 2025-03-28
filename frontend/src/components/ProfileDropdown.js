@@ -9,7 +9,15 @@ const ProfileDropdown = ({ username, userImage, onLogout }) => {
     const navigate = useNavigate();
     const dropdownRef = useRef(null);
 
+    const [logoutLoading, setLogoutLoading] = useState(false);
+
     const handleLogout = async () => {
+        if(logoutLoading) return;
+
+        const confirmLogout = window.confirm("정말로 로그아웃 하시겠습니까?");
+        if (!confirmLogout) return;
+
+        setLogoutLoading(true);
         try {
             await logout();
             localStorage.removeItem("userId");  // userId 삭제
@@ -21,6 +29,7 @@ const ProfileDropdown = ({ username, userImage, onLogout }) => {
             window.location.href = "/login";
         } catch (error) {
             console.error("로그아웃 실패", error);
+            setLogoutLoading(false); // 실패 시 다시 활성화
         }
     };
 
@@ -65,7 +74,7 @@ const ProfileDropdown = ({ username, userImage, onLogout }) => {
                         <li className="px-4 py-2 hover:bg-gray-200 cursor-pointer"
                             onClick={() => navigate("/users/submissions")}>나의 지원서
                         </li>
-                        <li className="px-4 py-2 hover:bg-gray-200 cursor-pointer" onClick={handleLogout}>로그아웃</li>
+                        <li className="px-4 py-2 hover:bg-gray-200 cursor-pointer" onClick={logoutLoading ? null : handleLogout}>로그아웃</li>
                     </ul>
                 </div>
             )}
