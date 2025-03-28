@@ -20,4 +20,6 @@ public interface ClubNoticeRepository extends JpaRepository<Notice, Long> {
 
     @Query("SELECT a FROM Notice a WHERE a.club.clubId = :clubId AND a.noticeId = :noticeId")
     Optional<Notice> findByClubIdAndNoticeIdAndThumbUrl(Long clubId, Long noticeId);
+
+    boolean existsByClub_ClubId(Long clubId);
 }
