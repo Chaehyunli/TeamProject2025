@@ -27,7 +27,6 @@ import MySubmissionsUpdatePage from "./pages/MySubmissionsUpdatePage";
 import MyClubsPage from "./pages/MyClubPage";
 import CreateArticle from "./components/CreateArticle";
 import ArticleDetail from "./components/ArticleDetail";
-import DeleteArticle from "./components/DeleteArticle";
 import UpdateArticle from "./components/UpdateArticle";
 import ClubSearchResultPage from "./pages/ClubSearchResultPage";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -35,12 +34,10 @@ import ResetPasswordForm from "./components/ResetPasswordForm";
 import EmailVerificationForm from "./components/EmailVerificationForm";
 import FindPasswordForm from "./components/FindPasswordForm";
 import UpdatePasswordPage from "./pages/UpdatePasswordPage";
-
 import CreateNotice from "./components/CreateNotice";
 import NoticeList from "./components/NoitceList";
 import NoticeDetail from "./components/NoticeDetail";
 import UpdateNotice from "./components/UpdateNotice";
-import DeleteNotice from "./components/DeleteNotice";
 
 function App() {
     return (
@@ -90,12 +87,10 @@ function App() {
                     <Route path="apply" element={<ProtectedRoute><ClubApply /></ProtectedRoute>} />
                     <Route path="/clubs/:clubId/articles/create" element={<ProtectedRoute><CreateArticle /></ProtectedRoute>} />
                     <Route path="articles/:articleId" element={<ProtectedRoute><ArticleDetail /></ProtectedRoute>} />
-                    <Route path="/clubs/:clubId/articles/:articleId/delete" element={<ProtectedRoute><DeleteArticle /></ProtectedRoute>} />
                     <Route path="/clubs/:clubId/articles/:articleId/edit" element={<ProtectedRoute><UpdateArticle /></ProtectedRoute>} />
                     <Route path="notices/create" element={<ProtectedRoute><CreateNotice /></ProtectedRoute>} />
                     <Route path="notices" element={<ProtectedRoute><NoticeList /></ProtectedRoute>} />
                     <Route path="notices/:noticeId" element={<ProtectedRoute><NoticeDetail /></ProtectedRoute>} />
-                    <Route path="notices/:noticeId/delete" element={<ProtectedRoute><DeleteNotice /></ProtectedRoute>} />
                     <Route path="notices/:noticeId/edit" element={<ProtectedRoute><UpdateNotice /></ProtectedRoute>} />
 
                 </Route>

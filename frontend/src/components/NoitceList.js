@@ -1,7 +1,8 @@
 import { useNavigate, useParams } from "react-router-dom";
 import React, { useEffect, useState } from "react";
-import { getNoticeList, getUserRoleInClub } from "../api/clubApi";
+import { getClubList, getNoticeList, getUserRoleInClub } from "../api/clubApi";
 import { ProtectedImage } from "../api/uploadApi";
+import UserNameFine from "./UserNameFine";
 
 const NoticeList = () => {
     const {clubId} = useParams();
@@ -85,13 +86,16 @@ const NoticeList = () => {
                                         {notice.noticeTitle}
                                     </h3>
                                     <span className="text-sm text-gray-500">
-                            {new Date(notice.createdAt).toLocaleDateString()}
-                        </span>
+                                        {new Date(notice.createdAt).toLocaleDateString()}
+                                    </span>
                                 </div>
                                 <div className="flex items-center text-sm text-gray-600">
-                                    <span>작성자: ({notice.author.authorName})</span>
+                                    <span>작성자: &nbsp;</span>
+                                    <span><UserNameFine articles={notice} /></span>
+                                    <span>({notice.author.authorName})</span>
                                 </div>
                             </div>
+
                         ))}
                     </div>
                 )}
