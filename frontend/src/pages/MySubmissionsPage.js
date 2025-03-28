@@ -102,7 +102,7 @@ const MySubmissionsPage = () => {
                     ))}
                 </div>
             ) : (
-                <p className="text-center text-gray-500 mt-4">현재 제출한 지원서가 없습니다.</p>
+                <p className="text-center text-extraText mt-4">현재 제출한 지원서가 없습니다</p>
             )}
         </div>
     );
