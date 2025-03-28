@@ -49,7 +49,7 @@ const NoticeList = () => {
                 <div className="flex justify-end mb-4">
                     <button
                         onClick={() => navigate(`/clubs/${clubId}/notices/create`)}
-                        className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg"
+                        className="bg-primary hover:bg-hoverBlueColor text-white px-4 py-2 rounded-lg"
                     >
                         공지사항 작성
                     </button>
@@ -105,8 +105,8 @@ const NoticeList = () => {
                         disabled={currentPage === 0}
                         className={`px-4 py-2 rounded ${
                             currentPage === 0
-                                ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                                : "bg-blue-500 text-white hover:bg-blue-600"
+                                ? "bg-gray-200 text-extraText cursor-not-allowed"
+                                : "bg-primary text-white hover:bg-hoverBlueColor"
                         }`}
                     >
                         이전
@@ -118,7 +118,7 @@ const NoticeList = () => {
                                 onClick={() => handlePageChange(index)}
                                 className={`px-4 py-2 rounded ${
                                     currentPage === index
-                                        ? "bg-blue-500 text-white"
+                                        ? "bg-primary text-white"
                                         : "bg-gray-200 hover:bg-gray-300"
                                 }`}
                             >
@@ -131,8 +131,8 @@ const NoticeList = () => {
                         disabled={currentPage === totalPages - 1}
                         className={`px-4 py-2 rounded ${
                             currentPage === totalPages - 1
-                                ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                                : "bg-blue-500 text-white hover:bg-blue-600"
+                                ? "bg-gray-200 text-extraText cursor-not-allowed"
+                                : "bg-primary text-white hover:bg-hoverBlueColor"
                         }`}
                     >
                         다음
