@@ -1,7 +1,7 @@
-import {useNavigate, useParams} from "react-router-dom";
-import React, {useEffect, useState} from "react";
-import {getClubList, getNoticeList, getUserRoleInClub} from "../api/clubApi";
-import {ProtectedImage} from "../api/uploadApi";
+import { useNavigate, useParams } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { getNoticeList, getUserRoleInClub } from "../api/clubApi";
+import { ProtectedImage } from "../api/uploadApi";
 
 const NoticeList = () => {
     const {clubId} = useParams();
@@ -12,8 +12,11 @@ const NoticeList = () => {
     const [isLeadership, setIsLeadership] = useState(false);
     const limit = 10;
 
+    const [loading, setLoading] = useState(true);
+
     useEffect(() => {
         const fetchNotices = async () => {
+            setLoading(true);
             try {
                 const offset = currentPage * limit;
                 const response = await getNoticeList(clubId, limit, offset);
@@ -28,6 +31,8 @@ const NoticeList = () => {
                 setTotalPage(Math.ceil(response.pagination.total / limit));
             } catch (error) {
                 console.error("공지사항 목록 조회 실패: ", error);
+            } finally {
+                setLoading(false);
             }
         };
 
@@ -53,7 +58,9 @@ const NoticeList = () => {
 
             {/* 공지사항 목록 */}
             <div className="bg-white shadow-md rounded-lg">
-                {notices.length === 0 ? (
+                {loading ? (
+                    <div className="text-center py-8 text-gray-500">불러오는 중...</div>
+                ) : notices.length === 0 ? (
                     <div className="text-center py-8 text-gray-500">
                         공지사항이 없습니다.
                     </div>
@@ -78,14 +85,13 @@ const NoticeList = () => {
                                         {notice.noticeTitle}
                                     </h3>
                                     <span className="text-sm text-gray-500">
-                                        {new Date(notice.createdAt).toLocaleDateString()}
-                                    </span>
+                            {new Date(notice.createdAt).toLocaleDateString()}
+                        </span>
                                 </div>
                                 <div className="flex items-center text-sm text-gray-600">
                                     <span>작성자: ({notice.author.authorName})</span>
                                 </div>
                             </div>
-
                         ))}
                     </div>
                 )}
