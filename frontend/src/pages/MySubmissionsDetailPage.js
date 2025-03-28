@@ -58,7 +58,7 @@ const MySubmissionsDetailPage = () => {
     }
 
     if (!submission) {
-        return <p className="text-red-500 font-semibold mt-4 text-center">지원서 정보를 찾을 수 없습니다.</p>;
+        return <p className="text-warningText font-semibold mt-4 text-center">지원서 정보를 찾을 수 없습니다.</p>;
     }
 
     return (
@@ -100,7 +100,7 @@ const MySubmissionsDetailPage = () => {
                             ? "bg-yellow-500 text-white"
                             : submission.status === "APPROVED"
                                 ? "bg-green-500 text-white"
-                                : "bg-red-500 text-white"}`}>
+                                : "bg-warningText text-white"}`}>
                             {submission.status === "PENDING"
                                 ? "심사 중"
                                 : submission.status === "APPROVED"
@@ -117,7 +117,7 @@ const MySubmissionsDetailPage = () => {
                     <button
                         type="button"
                         onClick={() => navigate(`/users/submissions/${applyId}/edit`)} // 수정 페이지로 이동
-                        className="mt-4 w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-200"
+                        className="mt-4 w-full bg-primary hover:bg-hoverBlueColor text-white font-semibold py-2 px-4 rounded-lg transition duration-200"
                     >
                         지원서 수정하기
                     </button>
