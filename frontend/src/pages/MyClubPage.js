@@ -9,6 +9,7 @@ const MyClubsPage = () => {
     const [username, setUsername] = useState(localStorage.getItem("username"));
     const [userClubs, setUserClubs] = useState([]);
     const [allClubs, setAllClubs] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         if (!username) {
@@ -17,17 +18,28 @@ const MyClubsPage = () => {
         }
 
         const fetchUserClubs = async () => {
+            setLoading(true);
             try {
                 const userClubData = await getUserClubs(); // 사용자의 동아리 목록 가져오기
                 setUserClubs(userClubData);
             } catch (error) {
                 console.error("사용자의 동아리 목록 불러오기 실패:", error);
                 setUserClubs([]);
+            } finally {
+                setLoading(false);
             }
         };
 
         fetchUserClubs();
     }, [username, navigate]);
+
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center h-96">
+                <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-primary"></div>
+            </div>
+        );
+    }
 
     return (
         <div className="container mx-auto px-8 lg:px-16">

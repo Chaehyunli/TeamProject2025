@@ -10,9 +10,11 @@ const MySubmissionsDetailPage = () => {
     const [submission, setSubmission] = useState(null);
     const [loading, setLoading] = useState(true);
     const [name, setName] = useState("");
+    const [nameLoading, setNameLoading] = useState(false);
 
     useEffect(() => {
         const fetchSubmissionDetail = async () => {
+            setLoading(true);
             try {
                 const response = await getMySubmissionDetail(applyId);
                 setSubmission(response.data);
@@ -30,6 +32,7 @@ const MySubmissionsDetailPage = () => {
     useEffect(() => {
         if (submission && submission.userId) {
             const fetchUserName = async () => {
+                setNameLoading(true);
                 try {
                     const userResponse = await getParticularUserProfile(submission.userId);
                     if (userResponse && userResponse.data) {
@@ -37,6 +40,8 @@ const MySubmissionsDetailPage = () => {
                     }
                 } catch (error) {
                     console.error(`사용자 ${submission.userId}의 정보를 불러오지 못했습니다.`, error);
+                } finally {
+                    setNameLoading(false);
                 }
             };
 
@@ -45,7 +50,11 @@ const MySubmissionsDetailPage = () => {
     }, [submission]);
 
     if (loading) {
-        return <p className="text-gray-500 mt-4 text-center">로딩 중...</p>;
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-primary"></div>
+            </div>
+        );
     }
 
     if (!submission) {
@@ -62,7 +71,7 @@ const MySubmissionsDetailPage = () => {
                     <InputField label="동아리 이름" type="text" value={submission.clubName} disabled={true}/>
 
                     {/* 지원자 이름 */}
-                    <InputField label="이름" type="text" value={name} disabled={true} />
+                    <InputField label="이름" type="text" value={nameLoading ? "불러오는 중..." : name} disabled={true} />
 
                     {/* 학번 */}
                     <InputField label="학번" type="text" value={submission.studentId} disabled={true}/>
