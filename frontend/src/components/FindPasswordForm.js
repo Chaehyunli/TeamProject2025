@@ -80,7 +80,7 @@ const FindPasswordForm = () => {
             </button>
 
             {/* 오류 메시지 출력 */}
-            {message && <p className="text-red-500 text-center mt-3 text-sm">{message}</p>}
+            {message && <p className="text-warningText text-center mt-3 text-sm">{message}</p>}
         </form>
     );
 };
