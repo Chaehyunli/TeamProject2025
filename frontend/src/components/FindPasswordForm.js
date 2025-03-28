@@ -67,7 +67,7 @@ const FindPasswordForm = () => {
             {/* 비밀번호 찾기 버튼 */}
             <button
                 type="submit"
-                className="w-full bg-[#65A3FF] text-white py-2 rounded-md font-medium hover:bg-blue-500 transition duration-300"
+                className="w-full bg-primary text-white py-2 rounded-md font-medium hover:bg-hoverBlueColor transition duration-300"
             >
                 비밀번호 찾기
             </button>
