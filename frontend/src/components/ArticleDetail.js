@@ -6,6 +6,9 @@ import {
     getUserClubRole
 } from '../api/clubApi';
 import { ProtectedImage } from "../api/uploadApi";
+import {createComment, getCommentsByArticle} from "../api/commentApi";
+import InputField from "../components/InputField";
+import {getParticularUserProfile} from "../api/userApi";
 
 const ArticleDetail = () => {
     const {clubId, articleId} = useParams();
@@ -17,6 +20,11 @@ const ArticleDetail = () => {
     const [articleUserId, setArticleUserId] = useState();
     const currentUserId = localStorage.getItem('userId'); // 현재 로그인한 사용자 ID
     const [loading, setLoading] = useState(false);
+    const [comments, setComments] = useState([]); // 댓글 불러오기
+    const [newComment, setNewComment] = useState(''); // 새로 작성하는 댓글
+    const [parentId, setParentId] = useState(null); // 대댓글의 부모 id
+    const [selectedCommentId, setSelectedCommentId] = useState(null); // 대댓글을 작성할 댓글 선택
+    const [userProfiles, setUserProfiles] = useState({});
 
     useEffect(() => {
         const fetchArticleDetail = async () => {
@@ -69,6 +77,105 @@ const ArticleDetail = () => {
                 setErrorMessage('게시글 삭제에 실패했습니다.');
             }
         }
+    };
+
+    useEffect(() => {
+        if (articleId) {
+            fetchComments();
+        }
+    }, [articleId]);
+
+    const fetchComments = async () => {
+        try {
+            const res = await getCommentsByArticle(articleId);
+            setComments(res);
+
+            // 유저 정보 캐싱 요청
+            const userIdSet = new Set();
+            const collectUserIds = (commentList) => {
+                commentList.forEach(c => {
+                    userIdSet.add(c.userId);
+                    if (c.children) collectUserIds(c.children);
+                });
+            };
+            collectUserIds(res);
+
+            const newProfiles = { ...userProfiles };
+            for (const userId of userIdSet) {
+                if (!newProfiles[userId]) {
+                    try {
+                        const profileRes = await getParticularUserProfile(userId);
+                        newProfiles[userId] = {
+                            name: profileRes.data.name,
+                            username: profileRes.data.username,
+                        };
+                    } catch (e) {
+                        console.error("프로필 조회 실패", e);
+                    }
+                }
+            }
+            setUserProfiles(newProfiles);
+        } catch (e) {
+            console.error("댓글 조회 실패", e);
+        }
+    };
+
+    const handleCommentSubmit = async () => {
+        if (!newComment.trim()) return;
+
+        const confirmed = window.confirm("댓글을 등록하시겠습니까?");
+        if (!confirmed) return;
+
+        try {
+            await createComment(articleId, newComment, parentId);
+            setNewComment('');
+            setParentId(null);
+            setSelectedCommentId(null);
+            fetchComments(); // 새로고침
+        } catch (e) {
+            console.error("댓글 작성 실패", e);
+        }
+    };
+
+
+    const handleReplyClick = (commentId) => {
+        if (selectedCommentId === commentId) {
+            setParentId(null);
+            setSelectedCommentId(null);
+        } else {
+            setParentId(commentId);
+            setSelectedCommentId(commentId);
+        }
+    };
+
+    const renderComments = (commentList) => {
+        if (!Array.isArray(commentList)) return null;
+
+        return (
+            <ul className="ml-2 space-y-3">
+                {commentList.map((c) => (
+                    <li
+                        key={c.commentId}
+                        className={`border p-3 rounded cursor-pointer ${selectedCommentId === c.commentId ? 'border-2 border-primary' : ''}`}
+                        onClick={() => handleReplyClick(c.commentId)}
+                    >
+                        <div className={`font-medium ${c.deleted ? 'text-gray-400' : ''}`}>
+                            {c.content}
+                        </div>
+                        <div className="text-sm text-gray-500">
+                            작성자: {userProfiles[c.userId]?.name}({userProfiles[c.userId]?.username})
+                        </div>
+
+                        {c.children && c.children.length > 0 && (
+                            <div className="ml-6 mt-2">
+                                {renderComments(c.children)}
+                            </div>
+                        )}
+                    </li>
+
+                ))}
+            </ul>
+        );
     };
 
     if (errorMessage) {
@@ -155,6 +262,36 @@ const ArticleDetail = () => {
                         </div>
                     </div>
                 </div>
+                {/* 댓글 작성 */}
+                <div className="mt-8 p-6">
+                    <h2 className="text-xl font-semibold mb-2">댓글</h2>
+                    {parentId && (
+                        <div className="mb-2 text-sm text-primary font-semibold">
+                            대댓글 작성 중입니다. 선택한 댓글을 다시 누르면 취소됩니다.
+                        </div>
+                    )}
+                    <div className="flex flex-1 space-x-2 mb-4 items-end">
+                        <div className="flex-1">
+                            <InputField
+                                label={""}
+                                type="text"
+                                name="comment"
+                                value={newComment}
+                                onChange={(e) => setNewComment(e.target.value)}
+                                placeholder={parentId ? "대댓글을 입력하세요" : "댓글을 입력하세요"}
+                            />
+                        </div>
+                        <button
+                            onClick={handleCommentSubmit}
+                            className="px-4 py-2 bg-primary text-white rounded hover:bg-hoverBlueColor"
+                        >
+                            등록
+                        </button>
+                    </div>
+
+                    {renderComments(comments)}
+                </div>
+
             </div>
         </div>
     );
