@@ -105,7 +105,7 @@ const TopNavbar = () => {
                         setSelectedMenu("/home");
                     }}
                     className={`text-base font-bold ${
-                        selectedMenu === "/home" ? "text-black" : "text-[#727272] hover:text-gray-700"
+                        selectedMenu === "/home" ? "text-black" : "text-extraText hover:text-hoverGrayColor"
                     }`}
                 >
                     홈
@@ -116,7 +116,7 @@ const TopNavbar = () => {
                         setSelectedMenu("/club-register");
                     }}
                     className={`text-base font-bold ${
-                        selectedMenu === "/club-register" ? "text-black" : "text-[#727272] hover:text-gray-700"
+                        selectedMenu === "/club-register" ? "text-black" : "text-extraText hover:text-hoverGrayColor"
                     }`}
                 >
                     등록신청
@@ -127,7 +127,7 @@ const TopNavbar = () => {
                         setSelectedMenu("/my-chatpage");
                     }}
                     className={`text-base font-bold ${
-                        selectedMenu === "/my-chatpage" ? "text-black" : "text-[#727272] hover:text-gray-700"
+                        selectedMenu === "/my-chatpage" ? "text-black" : "text-extraText hover:hoverGrayColor"
                     }`}
                 >
                     채팅
