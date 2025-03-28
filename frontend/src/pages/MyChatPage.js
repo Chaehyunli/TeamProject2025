@@ -6,6 +6,8 @@ import backIcon from "../assets/backIcon.png";
 const MyChatPage = () => {
     const [chatList, setChatList] = useState([]);
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
+    const [leavingRoomId, setLeavingRoomId] = useState(null);
 
     console.log("😎 두둥 태현이 등장! ");
 
@@ -15,6 +17,7 @@ const MyChatPage = () => {
 
     // ✅ 내 채팅방 목록 불러오기
     const loadMyChatRooms = async () => {
+        setLoading(true);
         try {
             const chatRooms = await fetchMyChatRooms();
 
@@ -26,6 +29,8 @@ const MyChatPage = () => {
             console.log(sortedChatRooms);
         } catch (error) {
             console.error("❌ 내 채팅방 목록 불러오기 실패", error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -36,11 +41,14 @@ const MyChatPage = () => {
 
     // ✅ 채팅방 나가기
     const handleLeaveChatRoom = async (roomId) => {
+        setLeavingRoomId(roomId);
         try {
             await leaveChatRoom(roomId);
             setChatList(chatList.filter((chat) => chat.roomId !== roomId)); // 채팅방 목록 업데이트
         } catch (error) {
             console.error("❌ 채팅방 나가기 실패", error);
+        } finally {
+            setLeavingRoomId(null);
         }
     };
 
@@ -76,7 +84,11 @@ const MyChatPage = () => {
                 </div>
 
                 <div className="h-[600px] overflow-y-auto p-4 space-y-3">
-                    {chatList.length === 0 ? (
+                    {loading ? (
+                        <div className="grid place-items-center h-[500px]">
+                            <span className="font-bold text-extraText text-3xl">채팅 목록 불러오는 중...</span>
+                        </div>
+                    ) : chatList.length === 0 ? (
                         <div className="grid place-items-center h-[500px]">
                             <span className="font-bold text-extraText text-3xl">Empty Room</span>
                         </div>
@@ -100,6 +112,7 @@ const MyChatPage = () => {
                                     <button
                                         onClick={() => handleLeaveChatRoom(chat.roomId)}
                                         className="bg-warningButton hover:bg-hoverWarningButton text-white px-4 py-1 rounded"
+                                        disabled={leavingRoomId === chat.roomId}
                                     >
                                         나가기
                                     </button>
