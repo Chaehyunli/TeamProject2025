@@ -15,17 +15,21 @@ const ArticleDetail = () => {
     const [errorMessage, setErrorMessage] = useState('');
     const [userRole, setUserRole] = useState('');
     const [isLeadership, setIsLeadership] = useState(false);
+    const [articleUserId, setArticleUserId] = useState();
     const currentUserId = localStorage.getItem('userId');
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         const fetchArticleDetail = async () => {
+            if (loading) return;
+
             setLoading(true);
             try {
                 const response = await getArticleDetail(clubId, articleId);
+                console.log('서버 응답:', response); // 서버 응답 확인용 로그
                 setArticle(response);
             } catch (error) {
-                console.error('게시글 조회 실패:', error);
+                console.error('게시글 상세 정보 조회 실패:', error);
                 setErrorMessage('게시글을 불러오는데 실패했습니다.');
             } finally {
                 setLoading(false);
@@ -33,12 +37,18 @@ const ArticleDetail = () => {
         };
 
         const checkUserRole = async () => {
+            if (loading) return;
+
             try {
                 const role = await getUserClubRole(clubId);
                 setUserRole(role);
+                console.log('현재 사용자 역할: ', role);
                 setIsLeadership(role === 'PRESIDENT' || role === 'VICE_PRESIDENT');
+                console.log('isLeadership: ', isLeadership);
             } catch (error) {
                 console.error('역할 확인 실패:', error);
+            } finally {
+                setLoading(false);
             }
         };
 
@@ -74,22 +84,28 @@ const ArticleDetail = () => {
     return (
         <div className="container mx-auto px-4 py-8">
             <div className="max-w-3xl mx-auto bg-white rounded-lg shadow-md">
-                {/* 제목 */}
+                {/* 헤더 섹션 */}
                 <div className="p-6 border-b border-gray-200">
                     <h1 className="text-2xl font-bold">{article.title}</h1>
                 </div>
 
-                {/* 본문 */}
+                {/* 본문 섹션 */}
                 <div className="p-6">
+                    {/* 썸네일이 있을 때만 이미지 로딩 */}
                     {article.thumbUrl && (
                         <div className="mb-4">
                             <ProtectedImage objectName={article.thumbUrl} alt={article.title} />
                         </div>
                     )}
-                    <div className="whitespace-pre-wrap">{article.contents}</div>
+                    {/* 본문 내용 */}
+                    <div className="prose max-w-none">
+                        <div className="whitespace-pre-wrap">
+                            {article.contents}
+                        </div>
+                    </div>
                 </div>
 
-                {/* 버튼 */}
+                {/* 하단 버튼 섹션 */}n
                 <div className="p-6 border-t border-gray-200 flex justify-between">
                     <button
                         onClick={() => navigate(`/clubs/${clubId}/articles`)}
