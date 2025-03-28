@@ -34,6 +34,9 @@ public class ChatMessage{
     @Column(nullable = false, length = 500)
     private String content;
 
+    @Column(nullable = false)
+    private Boolean isBadWord;
+
     @CreationTimestamp
     private LocalDateTime createdAt;
 
