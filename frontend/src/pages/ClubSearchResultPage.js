@@ -11,6 +11,9 @@ const ClubSearchResultPage = () => {
     const [userClubs, setUserClubs] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
 
+    const [loading, setLoading] = useState(false);
+    const [userClubsLoading, setUserClubsLoading] = useState(false);
+
     // 쿼리 파라메터의 검색어 넘겨받기
     useEffect(() => {
         const params = new URLSearchParams(location.search);
@@ -29,6 +32,7 @@ const ClubSearchResultPage = () => {
         }
 
         const fetchClubs = async () => {
+            setLoading(true);
             try {
                 console.log("searchQuery 값:", searchQuery);
                 if (searchQuery) {
@@ -38,16 +42,21 @@ const ClubSearchResultPage = () => {
                 }
             } catch (error) {
                 console.error("동아리 검색 결과 불러오기 실패:", error);
+            } finally {
+                setLoading(false);
             }
         };
 
         const fetchUserClubs = async () => {
+            setUserClubsLoading(true);
             try {
                 const userClubData = await getUserClubs(); // 사용자의 동아리 목록 요청
                 setUserClubs(userClubData); // userClubs 상태 업데이트
             } catch (error) {
                 console.error("사용자의 동아리 검색 결과 불러오기 실패:", error);
                 setUserClubs([]); // 오류 발생 시 빈 배열로 설정
+            } finally {
+                setUserClubsLoading(false);
             }
         };
 
@@ -64,7 +73,19 @@ const ClubSearchResultPage = () => {
                     <h1 className="text-white text-3xl font-bold">동아리를 찾아보세요!</h1>
                 </div>
             </div>
-            <ClubList clubs={clubs} userClubs={userClubs} />
+            {loading ? (
+                <div className="text-center py-20 text-gray-500 text-lg">🔍 검색 결과 불러오는 중...</div>
+            ) : clubs.length === 0 ? (
+                <div className="text-center py-20 text-gray-500 text-lg">
+                    😥 <strong>{searchQuery}</strong> 관련 동아리를 찾을 수 없습니다
+                </div>
+            ) : (
+                <ClubList
+                    clubs={clubs}
+                    userClubs={userClubs}
+                    userClubsLoading={userClubsLoading}
+                />
+            )}
         </div>
     );
 };

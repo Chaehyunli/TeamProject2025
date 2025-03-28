@@ -14,6 +14,7 @@ const EmailVerificationForm = ({
     const [message, setMessage] = useState("");
     const [timer, setTimer] = useState(300);
     const [intervalId, setIntervalId] = useState(null);
+    const [isVerifying, setIsVerifying] = useState(false);
 
     // `initialEmail` 값이 변경되면 자동으로 `email` 상태에 반영
     useEffect(() => {
@@ -70,6 +71,9 @@ const EmailVerificationForm = ({
 
     // 인증 코드 검증 요청
     const handleVerifyCode = async () => {
+        if (isVerifying) return;
+
+        setIsVerifying(true);
         try {
             await verifyCode(email, String(verificationCode));
             setMessage("✅ 이메일 인증이 완료되었습니다.");
@@ -80,6 +84,8 @@ const EmailVerificationForm = ({
         } catch (error) {
             setMessage("❌ 인증 코드가 올바르지 않거나 만료되었습니다.");
             console.error(error);
+        } finally {
+            setIsVerifying(false);
         }
     };
 
@@ -111,6 +117,7 @@ const EmailVerificationForm = ({
                     type="button"
                     onClick={handleRequestVerificationCode}
                     className="px-4 py-2 text-sm border border-gray-300 rounded-full hover:bg-hoverWhiteColor transition"
+                    disabled={isCodeSent}
                 >
                     인증번호 발송
                 </button>
@@ -132,7 +139,7 @@ const EmailVerificationForm = ({
                             type="button"
                             onClick={handleVerifyCode}
                             className="px-4 py-2 text-sm border border-gray-300 rounded-full hover:bg-hoverWhiteColor transition"
-                            disabled={timer === 0}
+                            disabled={timer === 0 || isVerifying}
                         >
                             인증
                         </button>

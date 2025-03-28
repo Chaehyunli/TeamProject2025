@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-// import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../api/authApi";
 import { getUserProfile } from "../api/userApi";
@@ -8,10 +7,11 @@ import { useAuth } from "../context/AuthContext";
 
 const LoginForm = () => {
     const navigate = useNavigate(); // 페이지 이동을 위한 훅
-    // const [storedUsername, setStoredUsername] = useState(localStorage.getItem("username") || null); // 초기값을 null로 설정
     const { loginUser } = useAuth();
     const [formData, setFormData] = useState({ username: "", password: "" });
     const [message, setMessage] = useState("");
+
+    const [actionLoading, setActionLoading] = useState(false);
 
     const handleChange = (e) => {
         setFormData({
@@ -21,7 +21,11 @@ const LoginForm = () => {
     };
 
     const handleSubmit = async (e) => {
+        if (actionLoading) return;
+
         e.preventDefault();
+
+        setActionLoading(true);
         try {
             const result = await login(formData);
             setMessage(result.message);
@@ -42,15 +46,10 @@ const LoginForm = () => {
             navigate("/home");
         } catch (error) {
             setMessage("오류 발생: " + error.message);
+        } finally {
+            setActionLoading(false);
         }
     };
-
-    // useEffect(() => {
-    //     // 로그인 상태 확인 후 자동 이동
-    //     if (storedUsername) {
-    //         navigate("/home");
-    //     }
-    // }, [storedUsername]);
 
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -77,13 +76,14 @@ const LoginForm = () => {
             {/* 로그인 버튼 */}
             <button
                 type="submit"
-                className="w-full bg-[#65A3FF] text-white py-2 rounded-md font-medium hover:bg-blue-500 transition duration-300"
+                className="w-full bg-primary text-white py-2 rounded-md font-medium hover:bg-hoverBlueColor transition duration-300"
+                disabled={actionLoading}
             >
                 로그인
             </button>
 
             {/* 오류 메시지 출력 */}
-            {message && <p className="text-red-500 text-center mt-3 text-sm">{message}</p>}
+            {message && <p className="text-warningText text-center mt-3 text-sm">{message}</p>}
         </form>
     );
 };

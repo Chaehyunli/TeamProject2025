@@ -13,6 +13,8 @@ const UpdatePasswordForm = ({ universityName , username}) => {
         isEmailVerified: false,
     });
 
+    const [actionLoading, setActionLoading] = useState(false);
+
     // ✅ username이 props로 들어오면 formData에 반영
     useEffect(() => {
         if (username) {
@@ -50,19 +52,23 @@ const UpdatePasswordForm = ({ universityName , username}) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        try {
-            // 이메일 인증 확인
-            if (!formData.isEmailVerified) {
-                alert("이메일 인증을 완료해주세요.");
-                return;
-            }
 
+        // 이메일 인증 확인
+        if (!formData.isEmailVerified) {
+            alert("이메일 인증을 완료해주세요.");
+            return;
+        }
+
+        setActionLoading(true);
+        try {
             await verifyUsername(formData);
 
             // 비밀번호 변경 페이지로 이동 (데이터 유지)
             navigate("/account/reset-pw", { state: formData });
         } catch (error){
             setMessage(error.message);
+        } finally {
+            setActionLoading(false);
         }
     };
 
@@ -78,6 +84,7 @@ const UpdatePasswordForm = ({ universityName , username}) => {
             <button
                 type="submit"
                 className="w-full bg-[#65A3FF] text-white py-2 rounded-md font-medium hover:bg-blue-500 transition duration-300"
+                disabled={actionLoading}
             >
                 비밀번호 변경
             </button>

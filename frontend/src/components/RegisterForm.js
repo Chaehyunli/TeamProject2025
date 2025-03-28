@@ -19,6 +19,7 @@ const RegisterForm = ({ onSubmit }) => {
         profileImage: "default-profileImage.png"
     });
     const [message, setMessage] = useState("");
+    const [actionLoading, setActionLoading] = useState(false);
 
     const handleChange = (e) => {
         setFormData({
@@ -46,7 +47,8 @@ const RegisterForm = ({ onSubmit }) => {
             return;
         }
 
-        console.log("서버에 보낼 데이터:", formData); // 데이터 확인
+        setActionLoading(true);
+        console.log("서버에 보낼 데이터: ", formData); // 데이터 확인
 
         try {
             await register(formData); // API 호출
@@ -54,6 +56,8 @@ const RegisterForm = ({ onSubmit }) => {
             navigate("/login"); // 로그인 페이지로 이동
         } catch (error) {
             setMessage("오류 발생: " + error.response.data.message);
+        } finally {
+            setActionLoading(false);
         }
     };
 
@@ -119,6 +123,7 @@ const RegisterForm = ({ onSubmit }) => {
             <button
                 type="submit"
                 className="w-full bg-primary text-white py-2 rounded-md font-medium hover:bg-hoverBlueColor transition duration-300"
+                disabled={actionLoading}
             >
                 회원가입
             </button>

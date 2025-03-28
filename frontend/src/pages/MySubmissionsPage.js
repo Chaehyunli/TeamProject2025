@@ -6,7 +6,7 @@ const MySubmissionsPage = () => {
     const [submissions, setSubmissions] = useState([]);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
-    const [deleting, setDeleting] = useState(false);
+    const [deletingApplyId, setDeletingApplyId] = useState(null);
 
     useEffect(() => {
         const fetchSubmissions = async () => {
@@ -27,7 +27,7 @@ const MySubmissionsPage = () => {
     const handleDelete = async (applyId) => {
         if (!window.confirm("정말 이 지원서를 삭제하시겠습니까?")) return;
 
-        setDeleting(true);
+        setDeletingApplyId(applyId);
         try {
             await deleteMySubmission(applyId); // 삭제 API 호출
             setSubmissions(submissions.filter(submission => submission.applyId !== applyId)); // 목록에서 제거
@@ -36,11 +36,17 @@ const MySubmissionsPage = () => {
             console.error("지원서 삭제 실패:", error);
             alert("지원서 삭제에 실패했습니다.");
         } finally {
-            setDeleting(false);
+            setDeletingApplyId(null);
         }
     };
 
-    if (loading) return <p className="text-center mt-10">⏳ 로딩 중...</p>;
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-primary"></div>
+            </div>
+        );
+    }
 
     return (
         <div className="w-full max-w-4xl mx-auto pt-28 p-6 bg-white shadow-md rounded-lg">
@@ -61,15 +67,15 @@ const MySubmissionsPage = () => {
                             <div className="flex items-center gap-4">
                                 {/* 내 지원서 삭제 버튼 */}
                                 <button
-                                    className="px-3 py-1 border rounded-lg text-red-500 hover:bg-red-100 transition"
+                                    className="px-3 py-1 border rounded-lg text-white bg-warningButton hover:bg-hoverWarningButton transition"
                                     onClick={() => handleDelete(submission.applyId)}
-                                    disabled={deleting} // 삭제 중이면 비활성화
+                                    disabled={deletingApplyId === submission.applyId} // 삭제 중이면 비활성화
                                 >
-                                    {deleting ? "삭제 중..." : "삭제"}
+                                    삭제
                                 </button>
                                 {/* 내 지원서 보기 버튼 */}
                                 <button
-                                    className="px-3 py-1 border rounded-lg text-blue-500 hover:bg-blue-100 transition"
+                                    className="px-3 py-1 border rounded-lg text-white bg-primary hover:bg-hoverBlueColor transition"
                                     onClick={() => navigate(`/users/submissions/${submission.applyId}`)}
                                 >
                                     내 지원서 보기
@@ -82,7 +88,7 @@ const MySubmissionsPage = () => {
                                             ? "bg-yellow-500 text-white"
                                             : submission.status === "APPROVED"
                                                 ? "bg-green-500 text-white"
-                                                : "bg-red-500 text-white"
+                                                : "bg-warningText text-white"
                                     }`}
                                 >
                                     {submission.status === "PENDING"
@@ -96,7 +102,7 @@ const MySubmissionsPage = () => {
                     ))}
                 </div>
             ) : (
-                <p className="text-center text-gray-500 mt-4">현재 제출한 지원서가 없습니다.</p>
+                <p className="text-center text-extraText mt-4">현재 제출한 지원서가 없습니다</p>
             )}
         </div>
     );

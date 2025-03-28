@@ -1,8 +1,7 @@
-import {useNavigate, useParams} from "react-router-dom";
-import React, {useEffect, useState} from "react";
-import {getNoticeDetail, getUserClubRole} from "../api/clubApi";
-import {ProtectedImage} from "../api/uploadApi";
-
+import { useNavigate, useParams } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { getNoticeDetail, getUserClubRole } from "../api/clubApi";
+import { ProtectedImage } from "../api/uploadApi";
 const NoticeDetail = () => {
     const {clubId, noticeId} = useParams();
     const navigate = useNavigate();

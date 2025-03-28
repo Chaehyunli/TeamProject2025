@@ -1,7 +1,7 @@
-import {useNavigate, useParams} from "react-router-dom";
-import React, {useEffect, useState} from "react";
-import {getClubList, getNoticeList, getUserRoleInClub} from "../api/clubApi";
-import {ProtectedImage} from "../api/uploadApi";
+import { useNavigate, useParams } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { getClubList, getNoticeList, getUserRoleInClub } from "../api/clubApi";
+import { ProtectedImage } from "../api/uploadApi";
 import UserNameFine from "./UserNameFine";
 
 const NoticeList = () => {
@@ -13,8 +13,11 @@ const NoticeList = () => {
     const [isLeadership, setIsLeadership] = useState(false);
     const limit = 10;
 
+    const [loading, setLoading] = useState(true);
+
     useEffect(() => {
         const fetchNotices = async () => {
+            setLoading(true);
             try {
                 const offset = currentPage * limit;
                 const response = await getNoticeList(clubId, limit, offset);
@@ -29,6 +32,8 @@ const NoticeList = () => {
                 setTotalPage(Math.ceil(response.pagination.total / limit));
             } catch (error) {
                 console.error("공지사항 목록 조회 실패: ", error);
+            } finally {
+                setLoading(false);
             }
         };
 
@@ -45,7 +50,7 @@ const NoticeList = () => {
                 <div className="flex justify-end mb-4">
                     <button
                         onClick={() => navigate(`/clubs/${clubId}/notices/create`)}
-                        className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg"
+                        className="bg-primary hover:bg-hoverBlueColor text-white px-4 py-2 rounded-lg"
                     >
                         공지사항 작성
                     </button>
@@ -54,7 +59,9 @@ const NoticeList = () => {
 
             {/* 공지사항 목록 */}
             <div className="bg-white shadow-md rounded-lg">
-                {notices.length === 0 ? (
+                {loading ? (
+                    <div className="text-center py-8 text-gray-500">불러오는 중...</div>
+                ) : notices.length === 0 ? (
                     <div className="text-center py-8 text-gray-500">
                         공지사항이 없습니다.
                     </div>
@@ -102,8 +109,8 @@ const NoticeList = () => {
                         disabled={currentPage === 0}
                         className={`px-4 py-2 rounded ${
                             currentPage === 0
-                                ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                                : "bg-blue-500 text-white hover:bg-blue-600"
+                                ? "bg-gray-200 text-extraText cursor-not-allowed"
+                                : "bg-primary text-white hover:bg-hoverBlueColor"
                         }`}
                     >
                         이전
@@ -115,7 +122,7 @@ const NoticeList = () => {
                                 onClick={() => handlePageChange(index)}
                                 className={`px-4 py-2 rounded ${
                                     currentPage === index
-                                        ? "bg-blue-500 text-white"
+                                        ? "bg-primary text-white"
                                         : "bg-gray-200 hover:bg-gray-300"
                                 }`}
                             >
@@ -128,8 +135,8 @@ const NoticeList = () => {
                         disabled={currentPage === totalPages - 1}
                         className={`px-4 py-2 rounded ${
                             currentPage === totalPages - 1
-                                ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                                : "bg-blue-500 text-white hover:bg-blue-600"
+                                ? "bg-gray-200 text-extraText cursor-not-allowed"
+                                : "bg-primary text-white hover:bg-hoverBlueColor"
                         }`}
                     >
                         다음

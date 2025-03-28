@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { ProtectedImage } from "../api/uploadApi";
 
-const ClubCard = ({ club, isMember }) => {
+const ClubCard = ({ club, isMember, userClubsLoading }) => {
     const navigate = useNavigate();
     const president = club.leaders?.find(leader => leader.roleName === "PRESIDENT");
     const vicePresident = club.leaders?.find(leader => leader.roleName === "VICE_PRESIDENT");
@@ -20,8 +20,9 @@ const ClubCard = ({ club, isMember }) => {
             {vicePresident && <p className="text-gray-600 text-sm"><strong>부회장:</strong> {vicePresident.name}</p>}
 
             {/* 설명 */}
-            <p className="text-gray-500 text-sm mt-2 break-words max-h-16 overflow-hidden">
-                {club.description}
+            <p className="text-extraText text-sm mt-2 break-words line-clamp-2">
+                { /* entity에서는 nullable false이긴 한데 나중에 혹시 모르니까 일단 추가 */ }
+                {club.description || "동아리 설명이 없습니다"}
             </p>
 
             {/* 버튼 그룹 */}
@@ -35,7 +36,9 @@ const ClubCard = ({ club, isMember }) => {
                 </button>
 
                 {/* 지원하기 버튼 */}
-                {!isMember && (
+                {userClubsLoading ? (
+                    <div className="flex-1 py-2 text-center text-sm text-gray-400">가입 여부 확인 중...</div>
+                ) : !isMember && (
                     <button
                         onClick={() => navigate(`/clubs/${club.clubId}/apply`)}
                         className="flex-1 py-2 rounded-lg bg-primary text-white hover:bg-hoverBlueColor whitespace-normal text-center"

@@ -7,6 +7,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -49,5 +51,8 @@ public class Article {
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;    // 게시물 수정 시간
+
+    @OneToMany(mappedBy = "article", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments = new ArrayList<>(); // 댓글 필드 추가
 
 }

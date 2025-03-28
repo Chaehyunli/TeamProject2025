@@ -70,7 +70,7 @@ public class User {
         this.updatedAt = LocalDateTime.now();
     }
 
-    // ✅ 기존 객체 수정 (새로운 객체 생성 X)
+    // 기존 객체 수정 (새로운 객체 생성 X)
     public void updatePassword(String newEncodedPassword) {
         this.password = newEncodedPassword;
         this.updatedAt = LocalDateTime.now(); // updated_at 갱신

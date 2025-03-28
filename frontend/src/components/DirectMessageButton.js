@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { createPrivateChatRoom } from "../api/chatApi";
 import { useNavigate } from "react-router-dom";
 
@@ -38,6 +38,14 @@ const DirectMessageButton = ({ presidentId, receiverName}) => {
             setLoading(false);
         }
     };
+
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center h-64">
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+            </div>
+        );
+    }
 
     return (
         <div className="mt-4">

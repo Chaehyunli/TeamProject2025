@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { createArticle } from '../api/clubApi';
 import FileUpload from "./FileUpload";
-import {uploadImageToGCP} from "../api/uploadApi";
+import { uploadImageToGCP } from "../api/uploadApi";
 
 const CreateArticle = () => {
     const navigate = useNavigate();
     const { clubId } = useParams();
-    const [loading, setLoading] = useState(false);
+    const [actionLoading, setActionLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const [formData, setFormData] = useState({
         title: '',
@@ -25,11 +25,11 @@ const CreateArticle = () => {
     };
 
     const handleSubmit = async (e) => {
+        if (actionLoading) return;
+
         e.preventDefault();
 
-        if (loading) return; // 중복 요청 방지
-
-        setLoading(true);
+        setActionLoading(true);
 
         try {
             let thumbUrl = null;
@@ -52,7 +52,7 @@ const CreateArticle = () => {
             console.error("게시글 작성 실패:", error);
             setErrorMessage("게시글 작성에 실패했습니다. 다시 시도해주세요.");
         } finally {
-            setLoading(false);
+            setActionLoading(false);
         }
     };
 

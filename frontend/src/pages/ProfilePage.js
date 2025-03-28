@@ -41,6 +41,9 @@ const ProfilePage = () => {
             window.location.href = "/"; // 탈퇴 후 홈 화면 이동
         } catch (error) {
             console.error("회원 탈퇴 실패", error);
+            const errorMessage =
+                error.response?.data?.message || "회원 탈퇴 중 알 수 없는 오류가 발생했습니다.";
+            alert("회원 탈퇴 실패: " + errorMessage);
         }
     }; // 추후 추가, 메일 인증
 

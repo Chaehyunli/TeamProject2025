@@ -14,8 +14,13 @@ module.exports = {
                 warningText: '#EF4444', // 경고 텍스트
                 warningButton: '#FF5050', // 경고 버튼
                 hoverWarningButton: '#DC2626' // 경고 버튼 hover 시 더 진한 빨간색
+            },
+            fontFamily: {
+                sans: ['Pretendard', 'sans-serif'], // 전체 기본 폰트
             }
         },
     },
-    plugins: [],
+    plugins: [
+        require('@tailwindcss/line-clamp'),
+    ],
 }

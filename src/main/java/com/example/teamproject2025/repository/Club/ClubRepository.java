@@ -23,4 +23,6 @@ public interface ClubRepository extends JpaRepository<Club, Long> {
     Optional<Club> findByIdWithThumbUrl(@Param("clubId") Long clubId);
 
     List<Club> findByUniversity_UniversityIdAndClubNameContaining(Long universityId, String search);
+
+    boolean existsByPresident_UserId(Long userId);
 }

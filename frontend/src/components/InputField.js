@@ -1,6 +1,6 @@
 import React from "react";
 
-const InputField = ({ label, type, name, value, onChange, placeholder, required, pattern, accept, disabled }) => {
+const InputField = ({ label, type, name, value, onChange, placeholder, required, pattern, accept, disabled, onKeyDown }) => {
     return (
         <div>
             <label className="block text-sm font-medium text-gray-700">{label}</label>
@@ -14,7 +14,8 @@ const InputField = ({ label, type, name, value, onChange, placeholder, required,
                 placeholder={placeholder}
                 accept={accept} // 파일 업로드의 경우 확장자 필터 적용
                 disabled={disabled} // 비활성화 속성 적용
-                className="w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
+                onKeyDown={onKeyDown}
+                className="w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
             />
         </div>
     );

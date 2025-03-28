@@ -7,6 +7,7 @@ import {verifyUsername} from "../api/authApi";
 const FindPasswordForm = () => {
     const navigate = useNavigate();
     const [message, setMessage] = useState("");
+    const [actionLoading, setActionLoading] = useState(false);
 
     const [formData, setFormData] = useState({
         username: "",
@@ -32,7 +33,11 @@ const FindPasswordForm = () => {
     };
 
     const handleSubmit = async (e) => {
+        if (actionLoading) return;
+
         e.preventDefault();
+
+        setActionLoading(true);
         try {
             // 이메일 인증 확인
             if (!formData.isEmailVerified) {
@@ -46,6 +51,8 @@ const FindPasswordForm = () => {
             navigate("/account/reset-pw", { state: formData });
         } catch (error){
             setMessage(error.message);
+        } finally {
+            setActionLoading(false);
         }
     };
 
@@ -67,13 +74,13 @@ const FindPasswordForm = () => {
             {/* 비밀번호 찾기 버튼 */}
             <button
                 type="submit"
-                className="w-full bg-[#65A3FF] text-white py-2 rounded-md font-medium hover:bg-blue-500 transition duration-300"
+                className="w-full bg-primary text-white py-2 rounded-md font-medium hover:bg-hoverBlueColor transition duration-300"
             >
                 비밀번호 찾기
             </button>
 
             {/* 오류 메시지 출력 */}
-            {message && <p className="text-red-500 text-center mt-3 text-sm">{message}</p>}
+            {message && <p className="text-warningText text-center mt-3 text-sm">{message}</p>}
         </form>
     );
 };
