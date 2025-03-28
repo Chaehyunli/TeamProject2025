@@ -49,7 +49,7 @@ const ClubDetailPage = () => {
     }, []);
 
     if (!club) {
-        return <div className="text-center text-red-500 py-10">❌ 클럽 정보를 불러올 수 없습니다.</div>;
+        return <div className="text-center text-warningText py-10">❌ 동아리 정보를 불러올 수 없습니다.</div>;
     }
 
     // 회장 및 부회장 정보 가져오기
@@ -146,13 +146,13 @@ const ClubDetailPage = () => {
                                          style={{ minWidth: "150px", whiteSpace: "nowrap" }}
                                     >
                                         <button
-                                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
+                                            className="block px-4 py-2 text-sm text-extraText hover:bg-gray-200 w-full text-left"
                                             onClick={handleButtonClick}
                                         >
                                             이미지 수정
                                         </button>
                                         <button
-                                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
+                                            className="block px-4 py-2 text-sm text-extraText hover:bg-gray-200 w-full text-left"
                                             onClick={handleResetThumbnail}
                                         >
                                             기본 이미지로 설정
@@ -181,7 +181,7 @@ const ClubDetailPage = () => {
                                     <strong>회장:</strong> {president ? president.name : "미정"}
                                 </p>
                                 {vicePresident && (
-                                    <p className="text-lg text-gray-300">
+                                    <p className="text-lg text-gray-200">
                                         <strong>부회장:</strong> {vicePresident.name}
                                     </p>
                                 )}
