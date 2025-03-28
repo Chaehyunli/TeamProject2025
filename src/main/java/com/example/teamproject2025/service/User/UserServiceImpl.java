@@ -1,16 +1,19 @@
 package com.example.teamproject2025.service.User;
 
 import com.example.teamproject2025.constant.DefaultImage;
+import com.example.teamproject2025.dto.Chat.ChatRoomParticipantsReqDto;
 import com.example.teamproject2025.dto.Chat.MyChatListResDto;
 import com.example.teamproject2025.dto.Club.ClubSummaryDto;
 import com.example.teamproject2025.dto.User.UserCreateRequestDto;
 import com.example.teamproject2025.dto.User.UserListResDto;
 import com.example.teamproject2025.dto.User.UserResponseDto;
 import com.example.teamproject2025.dto.User.UserUpdateRequestDto;
+import com.example.teamproject2025.entity.Chat.ChatParticipant;
 import com.example.teamproject2025.entity.Chat.ChatRoom;
 import com.example.teamproject2025.entity.Club.Article;
 import com.example.teamproject2025.entity.Club.Notice;
 import com.example.teamproject2025.entity.User.User;
+import com.example.teamproject2025.repository.Chat.ChatParticipantRepository;
 import com.example.teamproject2025.exception.CustomException;
 import com.example.teamproject2025.repository.Chat.ChatRoomRepository;
 import com.example.teamproject2025.repository.Club.ClubArticleRepository;
@@ -34,6 +37,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -46,6 +50,7 @@ public class UserServiceImpl implements UserService {
     private final Storage storage;
     private final ChatService chatService;
     private final ChatRoomRepository chatRoomRepository;
+    private final ChatParticipantRepository chatParticipantRepository;
     private final UserRoleRepository userRoleRepository;
     private final UserClubRepository userClubRepository;
     private final ClubArticleRepository clubArticleRepository;
@@ -140,13 +145,23 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         // 사용자가 참여한 모든 개인 채팅방에서 나가기
+
+        // ❶ Mining Delete User's Chat Room
         List<MyChatListResDto> myChatRooms = chatService.getMyChatRoomsByUser(user);
         for (MyChatListResDto chatRoomDto : myChatRooms) {
-            if (!chatRoomDto.getIsGroupChat()) { // 그룹 채팅은 제외하고 개인 채팅방만 처리
-                ChatRoom chatRoom = chatRoomRepository.findById(
-                    chatRoomDto.getRoomId())
-                    .orElseThrow(()-> new EntityNotFoundException("room cannot be found"));
-                chatRoomRepository.delete(chatRoom);
+            if (!chatRoomDto.getIsGroupChat()) {
+
+                // ❷ Mining Private Room of User's
+                ChatRoom chatRoom = chatRoomRepository.findById(chatRoomDto.getRoomId())
+                        .orElseThrow(() -> new EntityNotFoundException("room cannot be found"));
+
+                // ❸ Mining Participants of User's Private Room
+                List<ChatParticipant> chatParticipants = chatParticipantRepository.findByChatRoom(chatRoom);
+
+                // ❹ All Participants Leave ChatRooms → All Delete ChatRooms by Cascading Condition
+                for (ChatParticipant p : chatParticipants){
+                    chatService.leavePrivateChatRoomInternal(chatRoom, p.getUser());
+                }
             }
         }
 
