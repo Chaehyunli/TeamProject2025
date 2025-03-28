@@ -101,8 +101,11 @@ const MyChatPage = () => {
                                     <span className="text-sm text-gray-500">{formatTimeFromISO(chat.updatedAt)}</span>
                                 </div>
                                 <div className="flex items-center space-x-3">
-                                    <span
-                                        className="bg-warningButton text-white text-xs font-bold px-2 py-1 rounded-full">{chat.unReadCount}</span>
+                                    {chat.unReadCount > 0 && (
+                                        <span className="bg-warningButton text-white text-xs font-bold px-2 py-1 rounded-full">
+                                            {chat.unReadCount}
+                                        </span>
+                                    )}
                                     <button
                                         onClick={() => enterChatRoom(chat.roomId, chat.roomName)}
                                         className="bg-primary hover:bg-hoverBlueColor text-white px-4 py-1 rounded"
