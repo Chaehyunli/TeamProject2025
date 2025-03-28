@@ -11,6 +11,8 @@ const LoginForm = () => {
     const [formData, setFormData] = useState({ username: "", password: "" });
     const [message, setMessage] = useState("");
 
+    const [actionLoading, setActionLoading] = useState(false);
+
     const handleChange = (e) => {
         setFormData({
             ...formData,
@@ -19,7 +21,11 @@ const LoginForm = () => {
     };
 
     const handleSubmit = async (e) => {
+        if (actionLoading) return;
+
         e.preventDefault();
+
+        setActionLoading(true);
         try {
             const result = await login(formData);
             setMessage(result.message);
@@ -40,6 +46,8 @@ const LoginForm = () => {
             navigate("/home");
         } catch (error) {
             setMessage("오류 발생: " + error.message);
+        } finally {
+            setActionLoading(false);
         }
     };
 
@@ -69,6 +77,7 @@ const LoginForm = () => {
             <button
                 type="submit"
                 className="w-full bg-primary text-white py-2 rounded-md font-medium hover:bg-hoverBlueColor transition duration-300"
+                disabled={actionLoading}
             >
                 로그인
             </button>
