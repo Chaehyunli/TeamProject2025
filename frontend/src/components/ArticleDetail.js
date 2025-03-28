@@ -6,7 +6,7 @@ import {
     getUserClubRole
 } from '../api/clubApi';
 import { ProtectedImage } from "../api/uploadApi";
-import {createComment, deleteComment, getCommentsByArticle} from "../api/commentApi";
+import {createComment, deleteComment, getCommentsByArticle, updateComment} from "../api/commentApi";
 import InputField from "../components/InputField";
 import {getParticularUserProfile} from "../api/userApi";
 
@@ -24,6 +24,9 @@ const ArticleDetail = () => {
     const [newComment, setNewComment] = useState(''); // 새로 작성하는 댓글
     const [parentId, setParentId] = useState(null); // 대댓글의 부모 id
     const [selectedCommentId, setSelectedCommentId] = useState(null); // 대댓글을 작성할 댓글 선택
+    const [editingCommentId, setEditingCommentId] = useState(null); // 수정된 댓글
+    const [editingContent, setEditingContent] = useState(''); // 수정 중인 댓글
+    const [originalContent, setOriginalContent] = useState(''); // 댓글 수정 여부 판단
     const [userProfiles, setUserProfiles] = useState({});
 
     useEffect(() => {
@@ -160,6 +163,61 @@ const ArticleDetail = () => {
         }
     };
 
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (editingCommentId !== null) {
+                const confirmed = window.confirm("댓글 수정을 취소하시겠습니까?");
+                if (confirmed) {
+                    setEditingCommentId(null);
+                    setEditingContent('');
+                    setOriginalContent('');
+                }
+            }
+        };
+
+        document.addEventListener('click', handleClickOutside);
+        return () => {
+            document.removeEventListener('click', handleClickOutside);
+        };
+    }, [editingCommentId]);
+
+    const handleEditClick = (commentId, currentContent) => {
+        setEditingCommentId(commentId);
+        setEditingContent(currentContent);
+        setOriginalContent(currentContent);
+    };
+
+    const handleEditCancel = () => {
+        const confirmed = window.confirm("댓글 수정을 취소하시겠습니까?");
+        if (!confirmed) return;
+        setEditingCommentId(null);
+        setEditingContent('');
+        setOriginalContent('');
+    };
+
+    const handleEditSubmit = async () => {
+        if (!editingContent.trim() || editingContent === originalContent) return;
+        const confirmed = window.confirm("댓글을 수정하시겠습니까?");
+        if (!confirmed) return;
+
+        try {
+            await updateComment(editingCommentId, editingContent);
+            fetchComments();
+            setEditingCommentId(null);
+            setEditingContent('');
+            setOriginalContent('');
+        } catch (e) {
+            console.error("댓글 수정 실패", e);
+        }
+    };
+
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            handleCommentSubmit();
+        }
+    };
+
     const renderComments = (commentList) => {
         if (!Array.isArray(commentList)) return null;
 
@@ -168,31 +226,79 @@ const ArticleDetail = () => {
                 {commentList.map((c) => (
                     <li
                         key={c.commentId}
-                        className={`relative border p-3 rounded cursor-pointer ${selectedCommentId === c.commentId ? 'border-2 border-primary' : ''}`}
+                        className={`relative border p-3 pr-24 rounded cursor-pointer ${selectedCommentId === c.commentId ? 'border-2 border-primary' : ''}`}
                         onClick={() => handleReplyClick(c.commentId)}
                     >
-                        <div className={`font-medium ${c.deleted ? 'text-gray-400' : ''}`}>
-                            {c.content} {c.updatedAt && !c.deleted && '(수정됨)'}
-                        </div>
-                        <div className="text-sm text-gray-500">
-                            작성자: {userProfiles[c.userId]?.name}({userProfiles[c.userId]?.username})
-                        </div>
-                        <div className="text-xs text-gray-400 mt-1">
-                            {c.updatedAt
-                                ? `최근 수정일자: ${new Date(c.updatedAt).toLocaleString()}`
-                                : `댓글 작성일자: ${new Date(c.createdAt).toLocaleString()}`}
-                        </div>
+                        {editingCommentId === c.commentId ? (
+                            <div>
+                                <input
+                                    type="text"
+                                    className="w-full border px-2 py-1 rounded mb-2"
+                                    value={editingContent}
+                                    onChange={(e) => setEditingContent(e.target.value)}
+                                />
+                                <div className="flex gap-2">
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleEditSubmit();
+                                        }}
+                                        className="px-2 py-1 text-xs bg-primary text-white rounded hover:bg-hoverBlueColor"
+                                    >
+                                        저장
+                                    </button>
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleEditCancel();
+                                        }}
+                                        className="px-2 py-1 text-xs bg-gray-300 text-black rounded hover:bg-gray-400"
+                                    >
+                                        취소
+                                    </button>
+                                </div>
+                            </div>
+                        ) : (
+                            <>
+                                <div className={`font-medium ${c.deleted ? 'text-gray-400' : ''}`}>
+                                    {c.content} {c.updatedAt && !c.deleted && '(수정됨)'}
+                                </div>
+                                <div className="text-sm text-gray-500">
+                                    작성자: {userProfiles[c.userId]?.name}({userProfiles[c.userId]?.username})
+                                </div>
+                                <div className="text-xs text-gray-400 mt-1">
+                                    {c.updatedAt
+                                        ? `최근 수정일자: ${new Date(c.updatedAt).toLocaleString()}`
+                                        : `댓글 작성일자: ${new Date(c.createdAt).toLocaleString()}`}
+                                </div>
+                            </>
+                        )}
 
-                        {(String(c.userId) === currentUserId || userRole === 'PRESIDENT') && !c.deleted && (
-                            <button
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleCommentDelete(c.commentId);
-                                }}
-                                className="absolute top-2 right-2 px-2 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600"
-                            >
-                                삭제
-                            </button>
+                        {!c.deleted && (
+                            <div className="absolute top-2 right-2 flex space-x-2">
+                                {String(c.userId) === currentUserId && (
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleEditClick(c.commentId, c.content);
+                                        }}
+                                        className="px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
+                                    >
+                                        수정
+                                    </button>
+                                )}
+                                {(String(c.userId) === currentUserId || userRole === 'PRESIDENT') && (
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleCommentDelete(c.commentId);
+                                        }}
+                                        className="px-2 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600"
+                                    >
+                                        삭제
+                                    </button>
+                                )}
+                            </div>
                         )}
 
                         {c.children && c.children.length > 0 && (
@@ -307,6 +413,7 @@ const ArticleDetail = () => {
                                 value={newComment}
                                 onChange={(e) => setNewComment(e.target.value)}
                                 placeholder={parentId ? "대댓글을 입력하세요" : "댓글을 입력하세요"}
+                                onKeyDown={handleKeyDown}
                             />
                         </div>
                         <button
