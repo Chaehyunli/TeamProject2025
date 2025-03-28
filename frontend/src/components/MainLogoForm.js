@@ -5,7 +5,7 @@ export default function MainLogoForm() {
             <div className="w-6 h-6 bg-gray-800 rounded-full"></div>
 
             {/* 텍스트 */}
-            <span className="text-2xl font-bold text-black">동아리 모아</span>
+            <span className="text-2xl font-bold text-black">동아리모아</span>
         </div>
     );
 }
