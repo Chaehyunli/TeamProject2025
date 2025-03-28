@@ -14,6 +14,8 @@ const UpdateArticle = () => {
         thumbUrl: ''
     });
 
+    const [actionLoading, setActionLoading] = useState(false);
+
     // 기존 게시글 정보 불러오기
     useEffect(() => {
         const fetchArticle = async () => {
@@ -42,6 +44,8 @@ const UpdateArticle = () => {
     };
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        setActionLoading(true);
 
         try {
             let imageUrl = formData.thumbUrl;
@@ -72,6 +76,8 @@ const UpdateArticle = () => {
         } catch (error) {
             console.error('게시글 수정 실패:', error);
             setErrorMessage('게시글 수정에 실패했습니다. 다시 시도해주세요.');
+        } finally {
+            setActionLoading(false);
         }
     };
 
@@ -180,6 +186,7 @@ const UpdateArticle = () => {
                         <button
                             type="submit"
                             className="px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-md hover:bg-blue-600"
+                            disabled={actionLoading}
                         >
                             수정하기
                         </button>

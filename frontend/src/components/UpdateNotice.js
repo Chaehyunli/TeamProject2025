@@ -13,6 +13,8 @@ const UpdateNotice = () => {
         thumbUrl: ''
     });
 
+    const [actionLoading, setActionLoading] = useState(false);
+
     useEffect(() => {
         const fetchNotice = async () => {
             try {
@@ -41,6 +43,7 @@ const UpdateNotice = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        setActionLoading(true);
         try{
             let imageUrl = formData.thumbUrl;
 
@@ -68,6 +71,8 @@ const UpdateNotice = () => {
 
         } catch (error) {
             console.error('공지사항 수정 실패:', error);
+        } finally {
+            setActionLoading(false);
         }
     };
 
@@ -167,6 +172,7 @@ const UpdateNotice = () => {
                         <button
                             type="submit"
                             className="px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-md hover:bg-blue-600"
+                            disabled={actionLoading}
                         >
                             수정하기
                         </button>
