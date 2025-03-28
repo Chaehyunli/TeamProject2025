@@ -1,7 +1,7 @@
-import {useNavigate, useParams} from "react-router-dom";
-import React, {useEffect, useState} from "react";
-import {deleteNotice, getNoticeDetail, getUserClubRole} from "../api/clubApi";
-import {ProtectedImage} from "../api/uploadApi";
+import { useNavigate, useParams } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { deleteNotice, getNoticeDetail, getUserClubRole } from "../api/clubApi";
+import { ProtectedImage } from "../api/uploadApi";
 
 const NoticeDetail = () => {
     const {clubId, noticeId} = useParams();
@@ -50,7 +50,7 @@ const NoticeDetail = () => {
     if(!notices){
         return (
             <div className="flex justify-center items-center h-64">
-                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
             </div>
         );
     }
@@ -99,13 +99,13 @@ const NoticeDetail = () => {
                                         <div className="justify-center">
                                             <button
                                                 onClick={() => navigate(`/clubs/${clubId}/notices/${noticeId}/edit`)}
-                                                className="px-4 py-2 text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 rounded-md"
+                                                className="px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-hoverBlueColor rounded-md"
                                             >
                                                 수정
                                             </button>
                                             <button
                                                 onClick={handleDelete}
-                                                className="px-4 py-2 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-md"
+                                                className="px-4 py-2 text-sm font-medium text-white bg-warningButton hover:bg-hoverWarningButton rounded-md"
                                             >
                                                 삭제
                                             </button>
