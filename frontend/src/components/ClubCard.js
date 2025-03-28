@@ -20,8 +20,9 @@ const ClubCard = ({ club, isMember, userClubsLoading }) => {
             {vicePresident && <p className="text-gray-600 text-sm"><strong>부회장:</strong> {vicePresident.name}</p>}
 
             {/* 설명 */}
-            <p className="text-gray-500 text-sm mt-2 break-words max-h-16 overflow-hidden">
-                {club.description}
+            <p className="text-extraText text-sm mt-2 break-words line-clamp-2">
+                { /* entity에서는 nullable false이긴 한데 나중에 혹시 모르니까 일단 추가 */ }
+                {club.description || "동아리 설명이 없습니다"}
             </p>
 
             {/* 버튼 그룹 */}
