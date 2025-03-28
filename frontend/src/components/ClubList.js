@@ -1,7 +1,7 @@
 import React from "react";
 import ClubCard from "./ClubCard";
 
-const ClubList = ({ clubs, userClubs}) => {
+const ClubList = ({ clubs, userClubs, userClubsLoading }) => {
     console.log("userClubs 데이터:", userClubs);
 
     return (
@@ -10,7 +10,7 @@ const ClubList = ({ clubs, userClubs}) => {
                 {clubs.map((club) => {
                     const isMember = userClubs.some(userClub => userClub.clubId === club.clubId);
 
-                    return <ClubCard key={club.clubId} club={club} isMember={isMember} />;
+                    return <ClubCard key={club.clubId} club={club} isMember={isMember} userClubsLoading={userClubsLoading} />;
                 })}
             </div>
         </div>

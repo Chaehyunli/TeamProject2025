@@ -15,6 +15,8 @@ const ClubDetailPage = () => {
     const fileInputRef = useRef(null); // 파일 입력창을 트리거하기 위한 ref
     const dropdownRef = useRef(null); // 드롭다운 위치 조정용
     const navigate = useNavigate();
+    const [deleteLoading, setDeleteLoading] = useState(false);
+    const [defaultUploading, setDefaultUploading] = useState(false);
 
     const fetchClubData = async () => {
         try {
@@ -61,8 +63,10 @@ const ClubDetailPage = () => {
         const file = event.target.files[0];
         if (!file) return;
 
+        if (uploading) return;
+
+        setUploading(true);
         try {
-            setUploading(true);
             const objectName = await uploadImageToGCP(file);
             await updateClubThumbnail(clubId, objectName);
             setClub({ ...club, thumbUrl: objectName });
@@ -83,6 +87,9 @@ const ClubDetailPage = () => {
 
         if(!window.confirm("정말 기본 이미지로 설정하시겠습니까?")) return;
 
+        if (defaultUploading) return;
+
+        setDefaultUploading(true);
         try {
             await resetClubThumbnail(clubId);
 
@@ -94,6 +101,8 @@ const ClubDetailPage = () => {
             setShowOptions(false);
         } catch (error) {
             console.error("❌ 기본 썸네일 설정 실패:", error);
+        } finally {
+            setDefaultUploading(false);
         }
     };
 
@@ -108,12 +117,17 @@ const ClubDetailPage = () => {
     const handleDeleteClub = async () => {
         if (!window.confirm("정말로 동아리를 삭제하시겠습니까? 회원이 없는 상태여야 합니다.")) return;
 
+        if (deleteLoading) return;
+
+        setDeleteLoading(true);
         try {
             await deleteClub(clubId);
             alert("동아리가 삭제되었습니다.");
             navigate("/home"); // 삭제 후 동아리 목록으로 이동
         } catch (error) {
             alert(error.response?.data?.message || "❌ 삭제에 실패했습니다.");
+        } finally {
+            setDeleteLoading(false);
         }
     };
 

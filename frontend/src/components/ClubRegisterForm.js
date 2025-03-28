@@ -3,7 +3,7 @@ import FileUpload from "./FileUpload";
 import InputField from "./InputField";
 import { getCategory } from "../api/categoryApi";
 
-const ClubRegistrationForm = ({ presidentName, onSubmit }) => {
+const ClubRegistrationForm = ({ presidentName, onSubmit, actionLoading }) => {
     const [clubName, setClubName] = useState("");
     const [description, setDescription] = useState("");
     const [category, setCategory] = useState("");
@@ -135,6 +135,7 @@ const ClubRegistrationForm = ({ presidentName, onSubmit }) => {
             <button
                 type="submit"
                 className="bg-primary text-white w-full mt-6 py-2 rounded-md hover:bg-hoverBlueColor transition duration-300"
+                disabled={actionLoading}
             >
                 신청하기
             </button>

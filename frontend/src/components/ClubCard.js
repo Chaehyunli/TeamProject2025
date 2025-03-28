@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { ProtectedImage } from "../api/uploadApi";
 
-const ClubCard = ({ club, isMember }) => {
+const ClubCard = ({ club, isMember, userClubsLoading }) => {
     const navigate = useNavigate();
     const president = club.leaders?.find(leader => leader.roleName === "PRESIDENT");
     const vicePresident = club.leaders?.find(leader => leader.roleName === "VICE_PRESIDENT");
@@ -35,7 +35,9 @@ const ClubCard = ({ club, isMember }) => {
                 </button>
 
                 {/* 지원하기 버튼 */}
-                {!isMember && (
+                {userClubsLoading ? (
+                    <div className="flex-1 py-2 text-center text-sm text-gray-400">가입 여부 확인 중...</div>
+                ) : !isMember && (
                     <button
                         onClick={() => navigate(`/clubs/${club.clubId}/apply`)}
                         className="flex-1 py-2 rounded-lg bg-primary text-white hover:bg-hoverBlueColor whitespace-normal text-center"
