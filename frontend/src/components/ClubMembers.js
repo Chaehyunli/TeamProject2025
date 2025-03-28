@@ -162,7 +162,7 @@ const ClubMembers = () => {
                                                 className="w-full h-full object-cover"/>
                             </div>
                             <span className="text-lg font-medium">
-                                {member.username} (ID: {member.name})
+                                {member.name} (ID: {member.username})
                             </span>
                         </div>
 
