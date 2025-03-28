@@ -68,7 +68,7 @@ const MyChatPage = () => {
         <div className="flex flex-col items-center justify-center py-40">
             <div className="w-full max-w-lg bg-white rounded-2xl shadow-lg flex flex-col overflow-hidden">
                 <div
-                    className="p-4 border-blue-500 border-b border-b-white flex relative justify-center items-center bg-blue-900 text-white font-semibold text-lg rounded-t-2xl">
+                    className="p-4 border-primary border-b border-b-white flex relative justify-center items-center bg-hoverBlueColor text-white font-semibold text-lg rounded-t-2xl">
                     <button onClick={() => window.history.back()} className="absolute left-4">
                         <img src={String(backIcon)} alt="뒤로가기" className="w-5 h-5"/>
                     </button>
@@ -78,7 +78,7 @@ const MyChatPage = () => {
                 <div className="h-[600px] overflow-y-auto p-4 space-y-3">
                     {chatList.length === 0 ? (
                         <div className="grid place-items-center h-[500px]">
-                            <span className="font-bold text-gray-500 text-3xl">Empty Room</span>
+                            <span className="font-bold text-extraText text-3xl">Empty Room</span>
                         </div>
                     ) : (
                         chatList.map((chat) => (
@@ -90,16 +90,16 @@ const MyChatPage = () => {
                                 </div>
                                 <div className="flex items-center space-x-3">
                                     <span
-                                        className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">{chat.unReadCount}</span>
+                                        className="bg-warningButton text-white text-xs font-bold px-2 py-1 rounded-full">{chat.unReadCount}</span>
                                     <button
                                         onClick={() => enterChatRoom(chat.roomId, chat.roomName)}
-                                        className="bg-blue-500 text-white px-4 py-1 rounded"
+                                        className="bg-primary hover:bg-hoverBlueColor text-white px-4 py-1 rounded"
                                     >
                                         입장
                                     </button>
                                     <button
                                         onClick={() => handleLeaveChatRoom(chat.roomId)}
-                                        className="bg-red-500 text-white px-4 py-1 rounded"
+                                        className="bg-warningButton hover:bg-hoverWarningButton text-white px-4 py-1 rounded"
                                     >
                                         나가기
                                     </button>
