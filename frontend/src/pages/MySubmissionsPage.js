@@ -61,7 +61,7 @@ const MySubmissionsPage = () => {
                             <div className="flex items-center gap-4">
                                 {/* 내 지원서 삭제 버튼 */}
                                 <button
-                                    className="px-3 py-1 border rounded-lg text-red-500 hover:bg-red-100 transition"
+                                    className="px-3 py-1 border rounded-lg text-white bg-warningButton hover:bg-hoverWarningButton transition"
                                     onClick={() => handleDelete(submission.applyId)}
                                     disabled={deleting} // 삭제 중이면 비활성화
                                 >
@@ -69,7 +69,7 @@ const MySubmissionsPage = () => {
                                 </button>
                                 {/* 내 지원서 보기 버튼 */}
                                 <button
-                                    className="px-3 py-1 border rounded-lg text-blue-500 hover:bg-blue-100 transition"
+                                    className="px-3 py-1 border rounded-lg text-white bg-primary hover:bg-hoverBlueColor transition"
                                     onClick={() => navigate(`/users/submissions/${submission.applyId}`)}
                                 >
                                     내 지원서 보기
@@ -82,7 +82,7 @@ const MySubmissionsPage = () => {
                                             ? "bg-yellow-500 text-white"
                                             : submission.status === "APPROVED"
                                                 ? "bg-green-500 text-white"
-                                                : "bg-red-500 text-white"
+                                                : "bg-warningText text-white"
                                     }`}
                                 >
                                     {submission.status === "PENDING"
