@@ -19,6 +19,7 @@ const MySubmissionsUpdatePage = () => {
 
     useEffect(() => {
         const fetchSubmissionDetail = async () => {
+            setLoading(true);
             try {
                 const response = await getMySubmissionDetail(applyId);
                 setSubmission(response.data);
@@ -64,7 +65,11 @@ const MySubmissionsUpdatePage = () => {
     };
 
     if (loading) {
-        return <p className="text-gray-500 mt-4 text-center">로딩 중...</p>;
+        return (
+            <div className="flex justify-center items-center h-64">
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+            </div>
+        );
     }
 
     if (!submission) {
@@ -141,6 +146,3 @@ const MySubmissionsUpdatePage = () => {
 };
 
 export default MySubmissionsUpdatePage;
-
-
-
