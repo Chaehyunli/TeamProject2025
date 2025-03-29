@@ -13,7 +13,10 @@ module.exports = {
                 hoverGrayColor: '#374151', // text-extraText hover 시
                 warningText: '#EF4444', // 경고 텍스트
                 warningButton: '#FF5050', // 경고 버튼
-                hoverWarningButton: '#DC2626' // 경고 버튼 hover 시 더 진한 빨간색
+                hoverWarningButton: '#DC2626', // 경고 버튼 hover 시 더 진한 빨간색
+                pendingColor: '#EAB308', // 대기 상태
+                approvedTrueColor: '#22C55E', // 승인 상태
+                approvedFalseColor: '#EF4444', // 승인 거부 상태
             },
             fontFamily: {
                 sans: ['Pretendard', 'sans-serif'], // 전체 기본 폰트
