@@ -15,5 +15,5 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
     List<ChatMessage> findByChatRoomOrderByCreatedAtAsc(ChatRoom chatRoom);
 
     @Query("SELECT COUNT(m) FROM ChatMessage m WHERE m.user = :user AND m.isBadWord = true")
-    Integer countBadWordMessagesByUser(@Param("user") User user);
+    Integer countBadMessagesByUser(@Param("user") User user);
 }
