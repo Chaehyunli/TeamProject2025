@@ -11,7 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 
 public interface ChatService {
-    void saveMessage(Long roomId, ChatMessageReqDto chatMessageReqDto);
+    void saveMessage(Long roomId, ChatMessageReqDto chatMessageReqDto, Boolean isBadWord);
     void createGroupRoom(String chatRoomName , HttpServletRequest request);
     List<ChatRoomListResDto> getGroupchatRooms();
     void addParticipantToGroupChat(Long roomId, HttpServletRequest request);
