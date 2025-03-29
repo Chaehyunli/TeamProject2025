@@ -23,31 +23,36 @@ public class ProfanityFilterTest {
         System.out.println("\n\n===== 단일 실행 성능 테스트 =====");
         System.out.println("ProfanityFilterService: " + profanityFilterService); // Bean 주입 확인
 
-        // 어디서 긁어온 텍스트입니다.
-        String text = "씨발병신좆같은개시발련이너나그렇잖아좆병신시발호로개병신머저리호구련아시발니가나한테해준게뭐가있다고날그렇게판단해서말해병신아";
-//        String text = "고르곤졸라";
-//        String text = "이거 해달라고 졸라봤어요";
-//        String text = "근데 싫다길래 목을 졸라봤어요";
-//        String text = "리조또";
-//        String text = "조또마떼구다사이";
-//        String text = "빌게이츠";
-//        String text = "고추바사삭, 고추장, 풋고추";
-//        String text = "보지마세요";
-//        String text = "도망가";
+        String[] texts = {
+                "씨발병신좆같은개시발련이너나그렇잖아좆병신시발호로개병신머저리호구련아시발니가나한테해준게뭐가있다고날그렇게판단해서말해병신아",
+                "고르곤졸라",
+                "이거 해달라고 졸라봤어요",
+                "근데 싫다길래 목을 졸라봤어요",
+                "리조또",
+                "조또마떼구다사이",
+                "빌게이츠",
+                "고추바사삭, 고추장, 풋고추",
+                "보지마세요",
+                "도망가"
+        };
 
-        // 탐지 테스트
-        long startTime = System.nanoTime();
-        List<String> detectedWords = profanityFilterService.detectProfanity(text);
-        long endTime = System.nanoTime();
-        System.out.println("탐지 시간: " + (endTime - startTime) + " ns");
-        System.out.println("탐지된 단어들: " + detectedWords);
+        for (String text : texts) {
+            System.out.println("\n=== 테스트 문장: " + text);
 
-        // 마스킹 테스트
-        startTime = System.nanoTime();
-        String maskedText = profanityFilterService.maskProfanity(text);
-        endTime = System.nanoTime();
-        System.out.println("마스킹 시간: " + (endTime - startTime) + " ns");
-        System.out.println("마스킹된 텍스트: " + maskedText);
+            // 탐지 테스트
+            long startTime = System.nanoTime();
+            List<String> detectedWords = profanityFilterService.detectProfanity(text);
+            long endTime = System.nanoTime();
+            System.out.println("탐지 시간: " + (endTime - startTime) + " ns");
+            System.out.println("탐지된 단어들: " + detectedWords);
+
+            // 마스킹 테스트
+            startTime = System.nanoTime();
+            String maskedText = profanityFilterService.maskProfanity(text);
+            endTime = System.nanoTime();
+            System.out.println("마스킹 시간: " + (endTime - startTime) + " ns");
+            System.out.println("마스킹된 텍스트: " + maskedText);
+        }
     }
 
     @Test

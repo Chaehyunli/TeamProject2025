@@ -3,18 +3,27 @@ package com.example.teamproject2025.service.ProfanityFilter;
 import lombok.RequiredArgsConstructor;
 import org.ahocorasick.trie.Emit;
 import org.ahocorasick.trie.Trie;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
-@RequiredArgsConstructor
 public class ProfanityFilterServiceImpl implements ProfanityFilterService {
 
-    private final Trie trie; // ProfanityConfig 에 Bean 등록해뒀음 => buildTrie 되어있는 상황
+    private final Trie badWordTrie;
+    private final Trie allowedWordTrie;
     private final Map<String, String> normalizationDict;
+
+    public ProfanityFilterServiceImpl(
+            @Qualifier("badWordTrie") Trie badWordTrie,
+            @Qualifier("allowedWordTrie") Trie allowedWordTrie,
+            Map<String, String> normalizationDict
+    ) {
+        this.badWordTrie = badWordTrie;
+        this.allowedWordTrie = allowedWordTrie;
+        this.normalizationDict = normalizationDict;
+    }
 
     private String normalize(String input) {
         for (Map.Entry<String, String> entry : normalizationDict.entrySet()) {
@@ -26,13 +35,23 @@ public class ProfanityFilterServiceImpl implements ProfanityFilterService {
     @Override
     public List<String> detectProfanity(String input) {
         String normalized = normalize(input);
-        List<String> detected = new ArrayList<>();
 
-        for (Emit emit : trie.parseText(normalized)) {
-            detected.add(emit.getKeyword());
+        List<Emit> badWords = new ArrayList<>(badWordTrie.parseText(normalized));
+        List<Emit> allowedWords = new ArrayList<>(allowedWordTrie.parseText(normalized));
+
+        Set<String> allowedWordsSet = new HashSet<>();
+        for (Emit allowedWord : allowedWords) {
+            allowedWordsSet.add(allowedWord.getKeyword());
         }
 
-        return detected;
+        List<String> detectedWords = new ArrayList<>();
+        for (Emit badWord : badWords) {
+            if (!allowedWordsSet.contains(badWord.getKeyword())) {
+                detectedWords.add(badWord.getKeyword());
+            }
+        }
+
+        return detectedWords;
     }
 
     @Override
@@ -40,14 +59,32 @@ public class ProfanityFilterServiceImpl implements ProfanityFilterService {
         String normalized = normalize(input);
         char[] chars = normalized.toCharArray();
 
-        for (Emit emit : trie.parseText(normalized)) {
-            int start = emit.getStart();
-            int end = emit.getEnd();
+        List<Emit> badWords = new ArrayList<>(badWordTrie.parseText(normalized));
+        List<Emit> allowedWords = new ArrayList<>(allowedWordTrie.parseText(normalized));
 
-            for (int i = start; i <= end; i++) {
-                chars[i] = '*';
+        Set<Integer> allowedPositions = new HashSet<>();
+        for (Emit allowedWord : allowedWords) {
+            for (int i = allowedWord.getStart(); i <= allowedWord.getEnd(); i++) {
+                allowedPositions.add(i);
             }
         }
+
+        for (Emit badWord : badWords) {
+            boolean isAllowed = true;
+            for (int i = badWord.getStart(); i <= badWord.getEnd(); i++) {
+                if (!allowedPositions.contains(i)) {
+                    isAllowed = false;
+                    break;
+                }
+            }
+            if (!isAllowed) {
+                for (int i = badWord.getStart(); i <= badWord.getEnd(); i++) {
+                    chars[i] = '*';
+                }
+            }
+        }
+
         return new String(chars);
     }
 }
+
