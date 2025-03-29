@@ -24,6 +24,7 @@ const ProfileDropdown = ({ username, userImage, onLogout }) => {
             localStorage.removeItem("username");  // username 삭제
             localStorage.removeItem("profileImage");  // profileImage 삭제
             localStorage.removeItem("name");  // 사용자 이름 삭제
+            localStorage.removeItem("email");  // 사용자 이메일 삭제
 
             alert("로그아웃 되었습니다.");
             window.location.href = "/login";
