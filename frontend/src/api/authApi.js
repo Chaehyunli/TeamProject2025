@@ -35,11 +35,11 @@ export const login = async (formData) => {
             credentials: "include", // 세션 로그인 유지
         });
 
-        if (!response.ok) {
-            throw new Error("로그인 실패: 잘못된 아이디 또는 비밀번호");
-        }
-
         const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message);
+        }
 
         localStorage.setItem("userId", result.data.userId);
         localStorage.setItem("username", result.data.username);
