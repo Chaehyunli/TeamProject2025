@@ -6,50 +6,75 @@ import com.example.teamproject2025.entity.User.User;
 import com.example.teamproject2025.repository.Chat.ChatMessageRepository;
 import com.example.teamproject2025.repository.User.BanUserRepository;
 import com.example.teamproject2025.repository.User.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class BanUserServiceImpl implements BanUserService{
+@Transactional
+public class BanUserServiceImpl implements BanUserService {
+
     private final UserRepository userRepository;
     private final BanUserRepository banUserRepository;
-    private final ChatMessageRepository chatmessageRepository;
+    private final ChatMessageRepository chatMessageRepository;
+
+//    @PersistenceContext
+//    private EntityManager entityManager;
 
     @Override
-    public BanUserResponseDto updateBanUserInfo(Long userId){
+    public BanUserResponseDto updateBanUserInfo(Long userId) {
         // 1-step: Define User
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        // 2-step: Count Bad messages User Sent
-        Integer curBadMessagesCnt = chatmessageRepository.countBadMessagesByUser(user);
+        // 2-step: Count Bad messages
+        int curBadMessages = chatMessageRepository.countBadMessagesByUser(user);
 
-        // 3-step: Define Ban User
-        Optional<BanUser> checkBanUser = banUserRepository.findByUser(user); // 없다고 에러 내서는 안됨
-        if (checkBanUser.isEmpty()){ return new BanUserResponseDto(); }
-        BanUser banUser = checkBanUser.get();
+        // 3-step: Define banUser
+        BanUser banUser = banUserRepository.findByUser(user).orElse(null);
 
-        Integer prevBadMessages = banUser.getPrevBadMessagesCnt();
-        int newBadMessages = curBadMessagesCnt - prevBadMessages;
-
-        // 4-step: Calc Ban Days;
-        int banDays = 0;
+        // 4-step: Count newBadMessages
         LocalDate today = LocalDate.now();
-        // test set: 2,4,6
-        if (newBadMessages >= 6){ banDays = 30;}
-        else if (newBadMessages >= 4){ banDays = 21;}
-        else if (newBadMessages >= 2){ banDays = 14;}
+        if (banUser != null && today.isBefore(banUser.getAllowedLoginDate())) {
+            System.out.println("✅ 기존 제재가 유효하므로 업데이트 없이 정보 반환");
+            return BanUserResponseDto.toDTO(banUser.getId(), banUser.getAllowedLoginDate(), banUser.getPrevBadMessagesCnt());
+        }
+        int prevBadMessages = (banUser != null) ? banUser.getPrevBadMessagesCnt() : 0;
+        int newBadMessages = curBadMessages - prevBadMessages;
 
-        // 5-step: toEntity, toDTO
-        BanUserResponseDto banUserDto = BanUserResponseDto.toDTO(user, today.plusDays(banDays), curBadMessagesCnt);
-        BanUser banUserEntity = BanUserResponseDto.toEntity(user, today.plusDays(banDays), curBadMessagesCnt);
+        // 5-step: Calc Ban Days
+        int banDays = calculateBanDays(newBadMessages);
+        LocalDate allowedLoginDate = LocalDate.now().plusDays(banDays);
 
-        // 6-step: Save and Return
-        banUserRepository.save(banUserEntity);
-        return banUserDto;
+
+        // ✅ 새로운 제재일이 오늘 이후일 때만 저장
+        if (banDays > 0) {
+            BanUser banUserEntity = BanUserResponseDto.toEntity(
+                    (banUser != null) ? banUser.getId() : null,
+                    user,
+                    allowedLoginDate,
+                    curBadMessages
+            );
+            banUserRepository.save(banUserEntity);
+            System.out.println("✅ BanUser 저장 또는 업데이트 완료");
+            return BanUserResponseDto.toDTO(banUserEntity.getId(), allowedLoginDate, curBadMessages);
+        } else {
+            System.out.println("❌ 제재 대상이 아니므로 BanUser 저장하지 않음");
+            return BanUserResponseDto.toDTO(
+                    (banUser != null) ? banUser.getId() : null,  // ✅ null 안전 처리
+                    today,
+                    curBadMessages
+            );
+        }
+    }
+
+    private int calculateBanDays(int newBadMessages) {
+        if (newBadMessages >= 6) return 30;
+        if (newBadMessages >= 4) return 21;
+        if (newBadMessages >= 2) return 14;
+        return 0;
     }
 }

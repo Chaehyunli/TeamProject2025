@@ -14,16 +14,19 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BanUserResponseDto {
+    private Long id;
     private User user;
     private LocalDate allowedLoginDate;
     private int prevBadMessagesCnt;
 
     public static BanUser toEntity(
+            Long id,
             User user,
             LocalDate allowedLoginDate,
             int prevBadMessagesCnt
     ){
         return BanUser.builder()
+                .id(id)
                 .user(user)
                 .allowedLoginDate(allowedLoginDate)
                 .prevBadMessagesCnt(prevBadMessagesCnt)
@@ -31,12 +34,12 @@ public class BanUserResponseDto {
     }
 
     public static BanUserResponseDto toDTO(
-        User user,
+        Long id,
         LocalDate allowedLoginDate,
         int prevBadMessagesCnt
     ){
         return BanUserResponseDto.builder()
-                .user(user)
+                .id(id)
                 .allowedLoginDate(allowedLoginDate)
                 .prevBadMessagesCnt(prevBadMessagesCnt)
                 .build();

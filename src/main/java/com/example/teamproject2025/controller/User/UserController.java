@@ -100,6 +100,7 @@ public class UserController {
 
     @PutMapping("/ban-user/{userId}")
     public ResponseEntity<CommonResponseDto<BanUserResponseDto>> updateBanUserInfo(@PathVariable Long userId){
+        System.out.println("\n\nTEST is Well?\n\n");
         BanUserResponseDto banUserDto = banUserService.updateBanUserInfo(userId);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(CommonResponseDto.success(HttpStatus.OK.value(), "Complete Ban User Info", banUserDto));
