@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 @NoArgsConstructor
@@ -23,8 +23,8 @@ public class BanUser {
     private User user;
 
     @Column(nullable = false)
-    private LocalDateTime allowedLoginDate;  // 제재 해제 일자
+    private LocalDate allowedLoginDate;  // 제재 해제 일자
 
     @Column(nullable = false)
-    private int prevBadWordsCnt;  // 누적 비속어 메시지 수
+    private Integer prevBadMessagesCnt;  // 누적 비속어 메시지 수
 }
