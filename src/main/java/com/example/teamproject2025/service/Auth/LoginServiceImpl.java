@@ -1,24 +1,31 @@
 package com.example.teamproject2025.service.Auth;
 
+import com.example.teamproject2025.dto.User.BanUserResponseDto;
 import com.example.teamproject2025.dto.User.UserLoginRequestDto;
 import com.example.teamproject2025.dto.User.UserLoginResponseDto;
 import com.example.teamproject2025.entity.Chat.ChatMessage;
+import com.example.teamproject2025.entity.User.BanUser;
 import com.example.teamproject2025.entity.User.User;
 import com.example.teamproject2025.repository.Chat.ChatMessageRepository;
+import com.example.teamproject2025.repository.User.BanUserRepository;
 import com.example.teamproject2025.repository.User.UserRepository;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class LoginServiceImpl implements LoginService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final ChatMessageRepository chatMessageRepository;
+    private final BanUserRepository banUserRepository;
 
     @Override
     public UserLoginResponseDto login(UserLoginRequestDto dto, HttpSession session) {
@@ -38,18 +45,19 @@ public class LoginServiceImpl implements LoginService {
                 .orElseThrow(() -> new IllegalArgumentException("User not found: " + username));
 
         // 제재 대상 유저인가 검증
-//        int cumBadWordCount = chatMessageRepository.countBadWordMessagesByUser(user);
-//
-//        switch (cumBadWordCount) {
-//            case 1:
-//                throw new IllegalArgumentException("Your cumulative profanity count is 1 times, so you are subject to a 15-day penalty.");
-//            case 2:
-//                throw new IllegalArgumentException("Your cumulative profanity count is 2 times, so you are subject to a 20-day penalty.");
-//            case 3:
-//                throw new IllegalArgumentException("Your cumulative profanity count is 3 times, so you are subject to a 25-day penalty.");
-//            case 4:
-//                throw new IllegalArgumentException("Your cumulative profanity count is 4 times, so you are subject to a 30-day penalty.");
-//        }
+        Optional<BanUser> checkBanUser = banUserRepository.findByUser(user); // 없다고 에러 내서는 안됨
+        if (checkBanUser.isPresent()){
+            BanUser banUser = checkBanUser.get();
+            LocalDate allowedLoginDate = banUser.getAllowedLoginDate();
+            int daysLeft = (int) ChronoUnit.DAYS.between(LocalDate.now(), allowedLoginDate);
+
+            if (daysLeft < 0){
+                throw new IllegalArgumentException("daysLeft cannot be negative");
+            } else {
+                throw new AccessDeniedException("You are currently restricted from logging in." +
+                        "\nYou will be able to log in on " + allowedLoginDate + ".");
+            }
+        }
 
         // System Log
         System.out.println("DB에서 찾은 사용자: " + user.getUsername());
