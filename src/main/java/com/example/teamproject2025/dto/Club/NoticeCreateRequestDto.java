@@ -1,5 +1,6 @@
 package com.example.teamproject2025.dto.Club;
 
+import com.example.teamproject2025.constant.DefaultImage;
 import com.example.teamproject2025.entity.Club.Club;
 import com.example.teamproject2025.entity.Club.Notice;
 import com.example.teamproject2025.entity.User.User;
@@ -16,6 +17,8 @@ public class NoticeCreateRequestDto {
 
     private String noticeTitle;
     private String noticeContents;
+//    @Builder.Default
+//    private String thumbUrl = DefaultImage.CLUB_THUMBNAIL;
     private String thumbUrl;
 
     public Notice toEntity(Club club, User user){

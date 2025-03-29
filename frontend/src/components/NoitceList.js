@@ -11,6 +11,7 @@ const NoticeList = () => {
     const [currentPage, setCurrentPage] = useState(0);
     const [totalPages, setTotalPage] = useState(0);
     const [isLeadership, setIsLeadership] = useState(false);
+    const [total, setTotal] = useState(0);
     const limit = 10;
 
     const [loading, setLoading] = useState(true);
@@ -30,6 +31,9 @@ const NoticeList = () => {
                 console.log('사용자 role', role);
 
                 setTotalPage(Math.ceil(response.pagination.total / limit));
+
+                setTotal(response.pagination.total);
+                console.log('total: ', total);
             } catch (error) {
                 console.error("공지사항 목록 조회 실패: ", error);
             } finally {
@@ -38,7 +42,7 @@ const NoticeList = () => {
         };
 
         fetchNotices();
-    }, [clubId, currentPage]);
+    }, [clubId, currentPage, total]);
 
     const handlePageChange = (newPage) => {
         setCurrentPage(newPage);
@@ -67,7 +71,7 @@ const NoticeList = () => {
                     </div>
                 ) : (
                     <div className="divide-y divide-gray-200">
-                        {notices.map((notice) => (
+                        {notices.toReversed().map((notice) => (
                             <div
                                 key={notice.noticeId}
                                 onClick={() => navigate(`/clubs/${clubId}/notices/${notice.noticeId}`)}
