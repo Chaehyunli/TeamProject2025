@@ -151,7 +151,7 @@ const TopNavbar = () => {
                 {/* 로그인 & 회원가입 또는 프로필 */}
                 {isLoggedIn ? (
                     <div className="flex items-center gap-8">
-                        <FaRegBell className="text-extraText cursor-pointer" />
+                        {/*<FaRegBell className="text-extraText cursor-pointer" />*/}
                         <ProfileDropdown username={username} userImage={userImage} onLogout={handleLogout} />
                     </div>
                 ) : (
