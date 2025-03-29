@@ -12,7 +12,7 @@ function UpdatePasswordPage() {
         <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
             <div className="bg-white p-6 md:p-8 rounded-lg shadow-md w-full max-w-md border border-gray-300">
                 <MainLogoForm/>
-                <h2 className="text-lg font-bold text-center text-gray-500 mb-4">이메일 인증을 먼저 인증해주세요!</h2>
+                <h2 className="text-lg font-bold text-center text-extraText mb-4 cursor-default">이메일 인증을 먼저 인증해주세요!</h2>
                 <UpdatePasswordForm universityName={universityName} username={username}/>
             </div>
         </div>
