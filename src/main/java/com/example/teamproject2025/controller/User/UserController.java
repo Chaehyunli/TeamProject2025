@@ -1,10 +1,8 @@
 package com.example.teamproject2025.controller.User;
 
 import com.example.teamproject2025.dto.Common.CommonResponseDto;
-import com.example.teamproject2025.dto.User.UserCreateRequestDto;
-import com.example.teamproject2025.dto.User.UserListResDto;
-import com.example.teamproject2025.dto.User.UserResponseDto;
-import com.example.teamproject2025.dto.User.UserUpdateRequestDto;
+import com.example.teamproject2025.dto.User.*;
+import com.example.teamproject2025.service.User.BanUserService;
 import com.example.teamproject2025.service.User.UserService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -21,6 +19,7 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final BanUserService banUserService;
 
     // 사용자 등록
     @PostMapping("/register")
@@ -97,5 +96,12 @@ public class UserController {
 
         userService.resetUserProfileImage(userId);
         return ResponseEntity.ok(CommonResponseDto.success(200, "기본 프로필 이미지로 변경 완료"));
+    }
+
+    @PutMapping("/ban-user/{userId}")
+    public ResponseEntity<CommonResponseDto<BanUserResponseDto>> updateBanUserInfo(@PathVariable Long userId){
+        BanUserResponseDto banUserDto = banUserService.updateBanUserInfo(userId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CommonResponseDto.success(HttpStatus.OK.value(), "Complete Ban User Info", banUserDto));
     }
 }
