@@ -44,7 +44,7 @@ const CreateNotice = () => {
 
             await createNotice(clubId, noticeData);
 
-            navigate(`/clubs/${clubId}/notices`);
+            navigate(`/clubs/${clubId}/notices`, {state: { refreshed: true }});
         } catch (error){
             console.error("공지사항 작성 실패: ", error);
         } finally {

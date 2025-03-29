@@ -47,7 +47,7 @@ const CreateArticle = () => {
 
             await createArticle(clubId, articleData);
 
-            navigate(`/clubs/${clubId}/articles`);
+            navigate(`/clubs/${clubId}/articles`, {state: { refreshed: true }});
         } catch (error) {
             console.error("게시글 작성 실패:", error);
             setErrorMessage("게시글 작성에 실패했습니다. 다시 시도해주세요.");
