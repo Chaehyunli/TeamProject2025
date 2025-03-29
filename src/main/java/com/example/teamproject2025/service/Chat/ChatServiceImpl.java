@@ -14,6 +14,7 @@ import com.example.teamproject2025.repository.Chat.ChatParticipantRepository;
 import com.example.teamproject2025.repository.Chat.ChatRoomRepository;
 import com.example.teamproject2025.repository.Chat.ReadStatusRepository;
 import com.example.teamproject2025.repository.User.UserRepository;
+import com.example.teamproject2025.service.ProfanityFilter.ProfanityFilterService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -37,6 +38,7 @@ public class ChatServiceImpl implements ChatService {
     private final ChatMessageRepository chatMessageRepository;
     private final ReadStatusRepository readStatusRepository;
     private final UserRepository userRepository;
+    private final ProfanityFilterService profanityFilterService;
 
     // ✅ 세션에서 현재 로그인된 사용자 가져오기
     private User getSessionUser(HttpServletRequest request) {
@@ -68,11 +70,18 @@ public class ChatServiceImpl implements ChatService {
                     return new EntityNotFoundException("user cannot be found");
                 });
 
+        String originalMessage = chatMessageReqDto.getMessage();
+        List<String> detectedWords = profanityFilterService.detectProfanity(originalMessage);
+        boolean isBadWord = !detectedWords.isEmpty(); // 비속어 탐지 여부 확인
+
+        String filteredMessage = profanityFilterService.maskProfanity(originalMessage); // 마스킹 처리
+
         // 메시지저장
         ChatMessage chatMessage = ChatMessage.builder()
                 .chatRoom(chatRoom)
                 .user(sender)
-                .content(chatMessageReqDto.getMessage())
+                .content(filteredMessage)
+                .isBadWord(isBadWord)
                 .build();
 
         chatMessageRepository.save(chatMessage);
