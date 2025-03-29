@@ -23,6 +23,7 @@ import com.example.teamproject2025.repository.Membership.ClubSubmissionRepositor
 import com.example.teamproject2025.repository.Membership.UserClubRepository;
 import com.example.teamproject2025.repository.Membership.UserRoleRepository;
 import com.example.teamproject2025.repository.University.UniversityRepository;
+import com.example.teamproject2025.repository.User.BanUserRepository;
 import com.example.teamproject2025.repository.User.UserRepository;
 import com.example.teamproject2025.service.Chat.ChatService;
 import com.google.cloud.storage.Storage;
@@ -56,6 +57,7 @@ public class UserServiceImpl implements UserService {
     private final ClubArticleRepository clubArticleRepository;
     private final ClubNoticeRepository clubNoticeRepository;
     private final ClubSubmissionRepository clubSubmissionRepository;
+    private final BanUserRepository banUserRepository;
 
     @Value("${spring.cloud.gcp.storage.bucket}")
     private String bucketName;
@@ -164,6 +166,9 @@ public class UserServiceImpl implements UserService {
                 }
             }
         }
+
+        // Delete Ban User
+        banUserRepository.deleteByUser(user);
 
         // 사용자 관련 데이터 삭제 (사용자가 동아리 회장이 아닐 때만 가능)
         userClubRepository.deleteAllByUser_UserId(sessionUserId);
