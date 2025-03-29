@@ -207,7 +207,7 @@ public class ClubServiceImpl implements ClubService {
 
         String storageThumbUrl = (uploadedFileName != null && !uploadedFileName.isEmpty())
                 ? uploadedFileName
-                : DefaultImage.CLUB_THUMBNAIL;
+                : null;
 
         ClubArticleRequestDto requestDto = new ClubArticleRequestDto(title,
                 content, storageThumbUrl, is_notice);
