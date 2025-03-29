@@ -164,7 +164,6 @@ public class EmailServiceImpl implements EmailService {
 
             // 도메인 맵에서 대학교 이름 찾기
             String universityName = reversedUnivDomainMap.get(mainDomain);
-            System.out.println("\n\n⚠️TEST: "+universityName);
 
             if (universityName == null) {
                 throw new IllegalArgumentException("도메인에 해당하는 대학교를 찾을 수 없습니다.");
