@@ -34,6 +34,15 @@ public class ProfanityConfig {
         return json.get("words");
     }
 
+    // ✅ JSON 파일에서 Allowed Words 로드
+    @Bean(name = "allowedWords")
+    public List<String> allowedWords() throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        InputStream is = new ClassPathResource("allowed_words.json").getInputStream();
+        Map<String, List<String>> json = mapper.readValue(is, new TypeReference<>() {});
+        return json.get("words");
+    }
+
     // ✅ Caffeine Cache 설정
     @Bean
     public Cache<String, Trie> trieCache() {
@@ -44,8 +53,8 @@ public class ProfanityConfig {
     }
 
     // ✅ Trie 빌드 메서드 (Caffeine Cache 적용)
-    @Bean
-    public Trie buildTrie(List<String> badWords, Cache<String, Trie> trieCache) {
+    @Bean(name = "badWordTrie")
+    public Trie badWordTrie(List<String> badWords, Cache<String, Trie> trieCache) {
         Trie cachedTrie = trieCache.getIfPresent("trie"); // 캐시에서 Trie 조회
         if (cachedTrie != null) {
             return cachedTrie; // 캐시된 Trie 사용
@@ -59,6 +68,26 @@ public class ProfanityConfig {
         Trie newTrie = builder.build();
 
         trieCache.put("trie", newTrie); // 캐시에 저장
+
+        return newTrie;
+    }
+
+    // ✅ AllowedWordTrie 빌드 메서드 (Caffeine Cache 적용)
+    @Bean(name = "allowedWordTrie")
+    public Trie allowedWordTrie(List<String> allowedWords, Cache<String, Trie> trieCache) {
+        Trie cachedTrie = trieCache.getIfPresent("allowedWordTrie"); // 캐시에서 Trie 조회
+        if (cachedTrie != null) {
+            return cachedTrie; // 캐시된 Trie 사용
+        }
+
+        // 새로 빌드하는 경우
+        Trie.TrieBuilder builder = Trie.builder().ignoreCase();
+        for (String word : allowedWords) {
+            builder.addKeyword(word);
+        }
+        Trie newTrie = builder.build();
+
+        trieCache.put("allowedWordTrie", newTrie); // 캐시에 저장
 
         return newTrie;
     }
