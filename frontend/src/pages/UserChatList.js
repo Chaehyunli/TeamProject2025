@@ -53,7 +53,7 @@ const UserChatList = () => {
                         <td className="border p-2">{user.email}</td>
                         <td className="border p-2">
                             <button onClick={() => startChat(user.userId, user.name)}
-                                    className="bg-blue-500 text-white px-4 py-1 rounded">
+                                    className="bg-primary text-white px-4 py-1 rounded">
                                 채팅하기
                             </button>
                         </td>
