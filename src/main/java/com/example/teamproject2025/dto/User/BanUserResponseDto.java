@@ -1,5 +1,6 @@
 package com.example.teamproject2025.dto.User;
 
+import com.example.teamproject2025.entity.User.BanUser;
 import com.example.teamproject2025.entity.User.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,12 +16,24 @@ import java.time.LocalDate;
 public class BanUserResponseDto {
     private User user;
     private LocalDate allowedLoginDate;
-    private Integer prevBadMessagesCnt;
+    private int prevBadMessagesCnt;
 
-    public BanUserResponseDto toEntity(
+    public static BanUser toEntity(
             User user,
             LocalDate allowedLoginDate,
-            Integer prevBadMessagesCnt
+            int prevBadMessagesCnt
+    ){
+        return BanUser.builder()
+                .user(user)
+                .allowedLoginDate(allowedLoginDate)
+                .prevBadMessagesCnt(prevBadMessagesCnt)
+                .build();
+    }
+
+    public static BanUserResponseDto toDTO(
+        User user,
+        LocalDate allowedLoginDate,
+        int prevBadMessagesCnt
     ){
         return BanUserResponseDto.builder()
                 .user(user)
