@@ -59,7 +59,7 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public void saveMessage(Long roomId, ChatMessageReqDto chatMessageReqDto){
+    public void saveMessage(Long roomId, ChatMessageReqDto chatMessageReqDto, Boolean isBadWord){
         //  채팅방 조회: Path Parameter 로 roomId 가 딸려오게 됨
         ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(()-> new EntityNotFoundException("room cannot be found"));
 
@@ -70,17 +70,11 @@ public class ChatServiceImpl implements ChatService {
                     return new EntityNotFoundException("user cannot be found");
                 });
 
-        String originalMessage = chatMessageReqDto.getMessage();
-        List<String> detectedWords = profanityFilterService.detectProfanity(originalMessage);
-        boolean isBadWord = !detectedWords.isEmpty(); // 비속어 탐지 여부 확인
-
-        String filteredMessage = profanityFilterService.maskProfanity(originalMessage); // 마스킹 처리
-
         // 메시지저장
         ChatMessage chatMessage = ChatMessage.builder()
                 .chatRoom(chatRoom)
                 .user(sender)
-                .content(filteredMessage)
+                .content(chatMessageReqDto.getMessage())
                 .isBadWord(isBadWord)
                 .build();
 
