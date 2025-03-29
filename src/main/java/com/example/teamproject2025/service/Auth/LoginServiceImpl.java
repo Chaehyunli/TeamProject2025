@@ -38,18 +38,18 @@ public class LoginServiceImpl implements LoginService {
                 .orElseThrow(() -> new IllegalArgumentException("User not found: " + username));
 
         // 제재 대상 유저인가 검증
-        int cumBadWordCount = chatMessageRepository.countBadWordMessagesByUser(user);
-
-        switch (cumBadWordCount) {
-            case 1:
-                throw new IllegalArgumentException("Your cumulative profanity count is 1 times, so you are subject to a 15-day penalty.");
-            case 2:
-                throw new IllegalArgumentException("Your cumulative profanity count is 2 times, so you are subject to a 20-day penalty.");
-            case 3:
-                throw new IllegalArgumentException("Your cumulative profanity count is 3 times, so you are subject to a 25-day penalty.");
-            case 4:
-                throw new IllegalArgumentException("Your cumulative profanity count is 4 times, so you are subject to a 30-day penalty.");
-        }
+//        int cumBadWordCount = chatMessageRepository.countBadWordMessagesByUser(user);
+//
+//        switch (cumBadWordCount) {
+//            case 1:
+//                throw new IllegalArgumentException("Your cumulative profanity count is 1 times, so you are subject to a 15-day penalty.");
+//            case 2:
+//                throw new IllegalArgumentException("Your cumulative profanity count is 2 times, so you are subject to a 20-day penalty.");
+//            case 3:
+//                throw new IllegalArgumentException("Your cumulative profanity count is 3 times, so you are subject to a 25-day penalty.");
+//            case 4:
+//                throw new IllegalArgumentException("Your cumulative profanity count is 4 times, so you are subject to a 30-day penalty.");
+//        }
 
         // System Log
         System.out.println("DB에서 찾은 사용자: " + user.getUsername());
