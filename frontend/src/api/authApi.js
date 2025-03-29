@@ -154,3 +154,24 @@ export const findUsername = async (formData) => {
         throw error;
     }
 };
+
+export const getUniversityNameByEmail = async (email) => {
+    try {
+        const response = await axios.post(`${API_BASE_URL}/univ-name`, { email }, {  // ← 수정된 부분
+            headers: { "Content-Type": "application/json" }
+        });
+
+        const result = response.data;
+
+        if (result && result.data) {
+            console.log(`${result.data} 이거 대학명 맞??`);
+            return result.data; // University name 반환
+        } else {
+            throw new Error("University name could not be retrieved.");
+        }
+
+    } catch (error) {
+        console.error("대학교 이름 조회 오류: ", error.response?.data || error.message);
+        throw error;
+    }
+};
