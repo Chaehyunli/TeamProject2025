@@ -1,7 +1,8 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import React, { useEffect, useState } from "react";
-import { getNoticeList, getUserRoleInClub } from "../api/clubApi";
+import { getClubList, getNoticeList, getUserRoleInClub } from "../api/clubApi";
 import { ProtectedImage } from "../api/uploadApi";
+import UserNameFine from "./UserNameFine";
 
 const NoticeList = () => {
     const {clubId} = useParams();
@@ -10,37 +11,60 @@ const NoticeList = () => {
     const [currentPage, setCurrentPage] = useState(0);
     const [totalPages, setTotalPage] = useState(0);
     const [isLeadership, setIsLeadership] = useState(false);
+    const [total, setTotal] = useState(0);
     const limit = 10;
 
-    const [loading, setLoading] = useState(true);
+    const location = useLocation();
+    const [hasRefreshed, setHasRefreshed] = useState(false);
+
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        const fetchNotices = async () => {
-            setLoading(true);
-            try {
-                const offset = currentPage * limit;
-                const response = await getNoticeList(clubId, limit, offset);
-                const role = await getUserRoleInClub(clubId);
-
-                setNotices(response.noticeList);
-                setIsLeadership(role === 'PRESIDENT' || role === 'VICE_PRESIDENT');
-
-                console.log('공지사항 List: ', response.noticeList);
-                console.log('사용자 role', role);
-
-                setTotalPage(Math.ceil(response.pagination.total / limit));
-            } catch (error) {
-                console.error("공지사항 목록 조회 실패: ", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
         fetchNotices();
     }, [clubId, currentPage]);
 
+    useEffect(() => {
+        if (location.state?.refreshed && !hasRefreshed) {
+            fetchNotices(); // 새로 작성된 글까지 반영
+            setHasRefreshed(true);
+            navigate(location.pathname, { replace: true });
+        }
+    }, [location, hasRefreshed]);
+
+    const fetchNotices = async () => {
+        setLoading(true);
+        try {
+            const offset = currentPage * limit;
+            const response = await getNoticeList(clubId, limit, offset);
+            const role = await getUserRoleInClub(clubId);
+
+            setNotices(response.noticeList);
+            setIsLeadership(role === 'PRESIDENT' || role === 'VICE_PRESIDENT');
+
+            console.log('공지사항 List: ', response.noticeList);
+            console.log('사용자 role', role);
+
+            setTotalPage(Math.ceil(response.pagination.total / limit));
+
+            setTotal(response.pagination.total);
+            console.log('total: ', total);
+        } catch (error) {
+            console.error("공지사항 목록 조회 실패: ", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const handlePageChange = (newPage) => {
         setCurrentPage(newPage);
+    }
+
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center h-64">
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+            </div>
+        );
     }
 
     return (
@@ -58,15 +82,13 @@ const NoticeList = () => {
 
             {/* 공지사항 목록 */}
             <div className="bg-white shadow-md rounded-lg">
-                {loading ? (
-                    <div className="text-center py-8 text-gray-500">불러오는 중...</div>
-                ) : notices.length === 0 ? (
-                    <div className="text-center py-8 text-gray-500">
+                {notices.length === 0 ? (
+                    <div className="text-center py-8 text-extraText">
                         공지사항이 없습니다.
                     </div>
                 ) : (
                     <div className="divide-y divide-gray-200">
-                        {notices.map((notice) => (
+                        {notices.toReversed().map((notice) => (
                             <div
                                 key={notice.noticeId}
                                 onClick={() => navigate(`/clubs/${clubId}/notices/${notice.noticeId}`)}
@@ -85,13 +107,16 @@ const NoticeList = () => {
                                         {notice.noticeTitle}
                                     </h3>
                                     <span className="text-sm text-gray-500">
-                            {new Date(notice.createdAt).toLocaleDateString()}
-                        </span>
+                                        {new Date(notice.createdAt).toLocaleDateString()}
+                                    </span>
                                 </div>
                                 <div className="flex items-center text-sm text-gray-600">
-                                    <span>작성자: ({notice.author.authorName})</span>
+                                    <span>작성자: &nbsp;</span>
+                                    <span><UserNameFine articles={notice} /></span>
+                                    <span>({notice.author.authorName})</span>
                                 </div>
                             </div>
+
                         ))}
                     </div>
                 )}

@@ -44,7 +44,7 @@ const CreateNotice = () => {
 
             await createNotice(clubId, noticeData);
 
-            navigate(`/clubs/${clubId}/notices`);
+            navigate(`/clubs/${clubId}/notices`, {state: { refreshed: true }});
         } catch (error){
             console.error("공지사항 작성 실패: ", error);
         } finally {
@@ -141,6 +141,7 @@ const CreateNotice = () => {
                         <button
                             type="submit"
                             // disabled={loading}
+                            onClick={() => navigate(`/clubs/${clubId}/notices`)}
                             className="px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-md"
                         >
                             작성하기

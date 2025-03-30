@@ -378,7 +378,7 @@ public class ClubServiceImpl implements ClubService {
     @Override
     public SpecificNoticeResponseDto getNoticeDetail(Long clubId, Long noticeId) {
 
-        boolean check = clubArticleRepository.existsByClub_ClubId(clubId);
+        boolean check = clubNoticeRepository.existsByClub_ClubId(clubId);
         if(!check) {
             throw new NoSuchElementException("존재 하지 않는 동아리입니다.");
         }

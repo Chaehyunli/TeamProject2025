@@ -217,20 +217,6 @@ export const getArticleDetail = async (clubId, articleId) => {
     }
 };
 
-// 동아리 게시물 삭제
-export const deleteArticle = async (clubId, articleId) => {
-    try {
-        const response = await axios.delete(
-            `${API_BASE_URL}/${clubId}/articles/${articleId}`,
-            { withCredentials: true }
-        );
-        return response.data;
-    } catch (error) {
-        console.error('게시글 삭제 실패:', error);
-        throw error;
-    }
-};
-
 // 동아리 게시물 수정
 export const updateArticle = async (clubId, articleId, articleData) => {
     try {
@@ -242,6 +228,20 @@ export const updateArticle = async (clubId, articleId, articleData) => {
         return response.data;
     } catch (error) {
         console.error('게시글 수정 실패:', error);
+        throw error;
+    }
+};
+
+// 동아리 게시물 삭제
+export const deleteArticle = async (clubId, articleId) => {
+    try {
+        const response = await axios.delete(
+            `${API_BASE_URL}/${clubId}/articles/${articleId}`,
+            { withCredentials: true }
+        );
+        return response.data;
+    } catch (error) {
+        console.error('게시글 삭제 실패:', error);
         throw error;
     }
 };
@@ -260,6 +260,7 @@ export const getUserRoleInClub = async (clubId) => {
     }
 };
 
+// 공지사항 작성
 export const createNotice = async (clubId, noticeData) => {
     try{
         const response = await axios.post(`${API_BASE_URL}/${clubId}/notices`,
@@ -273,6 +274,7 @@ export const createNotice = async (clubId, noticeData) => {
     }
 };
 
+// 공지사항 특정 조회
 export const getNoticeDetail = async (clubId, noticeId) => {
 
     try {
@@ -288,6 +290,7 @@ export const getNoticeDetail = async (clubId, noticeId) => {
     }
 };
 
+// 공지사항 조회
 export const getNoticeList = async (clubId, limit = 10, offset = 0) => {
     try {
         const response = await axios.get(`${API_BASE_URL}/${clubId}/notices`, {
@@ -304,19 +307,7 @@ export const getNoticeList = async (clubId, limit = 10, offset = 0) => {
     }
 };
 
-export const deleteNotice = async (clubId, noticeId) => {
-    try {
-        const response = await axios.delete(
-            `${API_BASE_URL}/${clubId}/notices/${noticeId}`,
-            { withCredentials: true }
-        );
-        return response.data;
-    } catch (error) {
-        console.error('공지사항 삭제 실패:', error);
-        throw error;
-    }
-};
-
+// 공지사항 수정
 export const updateNotice = async (clubId, noticeId, noticeData) => {
 
     try {
@@ -332,7 +323,19 @@ export const updateNotice = async (clubId, noticeId, noticeData) => {
     }
 }
 
-
+// 공지사항 삭제
+export const deleteNotice = async (clubId, noticeId) => {
+    try {
+        const response = await axios.delete(
+            `${API_BASE_URL}/${clubId}/notices/${noticeId}`,
+            { withCredentials: true }
+        );
+        return response.data;
+    } catch (error) {
+        console.error('공지사항 삭제 실패:', error);
+        throw error;
+    }
+};
 
 // 특정 동아리 Thumbnail 수정
 export const updateClubThumbnail = async (clubId, objectName) => {

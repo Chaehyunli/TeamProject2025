@@ -40,11 +40,8 @@ public class Article {
     @Column(nullable = false)
     private boolean is_notice;  // 게시물인가 공지사항인가 구분
 
-    @Column(nullable = true, columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT", nullable = true)
     private String thumbUrl;  // 게시물 사진 URL (선택 사항)
-
-//    @OneToMany(mappedBy = "club", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<Article> articles;
 
     @CreationTimestamp
     private LocalDateTime createdAt;    // 게시물 작성 시간

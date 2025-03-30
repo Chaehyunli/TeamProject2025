@@ -1,31 +1,42 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { getClubArticles, getUserRoleInClub } from "../api/clubApi";
 import { ProtectedImage } from "../api/uploadApi";
+import UserNameFine from "./UserNameFine";
 
 const ClubArticlesList = () => {
     const { clubId } = useParams();
     const navigate = useNavigate();
     const [articles, setArticles] = useState([]);
-    const [error, setError] = useState(null);
     const [currentPage, setCurrentPage] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
     const [isClubMember, setIsClubMember] = useState(false);
     const limit = 10; // 한 페이지당 게시글 수
     const [loading, setLoading] = useState(false);
+    const [total, setTotal] = useState(0);
+
+    const location = useLocation();
+    const [hasRefreshed, setHasRefreshed] = useState(false);
 
     useEffect(() => {
         fetchArticles();
     }, [clubId, currentPage]);
 
-    const fetchArticles = async () => {
-        if (loading) return;
+    useEffect(() => {
+        if (location.state?.refreshed && !hasRefreshed) {
+            fetchArticles(); // 새로 작성된 글까지 반영
+            setHasRefreshed(true);
+            navigate(location.pathname, { replace: true });
+        }
+    }, [location, hasRefreshed]);
 
+    const fetchArticles = async () => {
         setLoading(true);
         try {
             const offset = currentPage * limit;
             const response = await getClubArticles(clubId, limit, offset);
             const role = await getUserRoleInClub(clubId);
+
 
             console.log('사용자 role', role);
             if (role === "NO_ROLE"){
@@ -36,15 +47,15 @@ const ClubArticlesList = () => {
             console.log('role boolean', isClubMember);
 
             // 응답 구조 확인
-            console.log('게시글 목록 응답:', response);
+            console.log('게시물 목록 응답:', response);
             setArticles(response.articles);
 
-            setTotalPages(Math.ceil(response.pagination.total / limit));
-            setError(null);
+            console.log('article list', articles);
 
+            setTotalPages(Math.ceil(response.pagination.total / limit));
+            setTotal(response.pagination.total);
         } catch (error) {
-            console.error("게시글 목록 조회 실패:", error);
-            setError("게시글을 불러오는데 실패했습니다.");
+            console.error("게시물 목록 조회 실패:", error);
         } finally {
             setLoading(false);
         }
@@ -53,10 +64,6 @@ const ClubArticlesList = () => {
     const handlePageChange = (newPage) => {
         setCurrentPage(newPage);
     };
-
-    if (error) {
-        return <div className="text-warningText text-center p-4">{error}</div>;
-    }
 
     if (loading) {
         return (
@@ -74,20 +81,20 @@ const ClubArticlesList = () => {
                         onClick={() => navigate(`/clubs/${clubId}/articles/create`)}
                         className="bg-primary hover:bg-hoverBlueColor text-white px-4 py-2 rounded-lg"
                     >
-                        게시글 작성
+                        게시물 작성
                     </button>
                 </div>
             )}
 
-            {/* 게시글 목록 */}
+            {/* 게시물 목록 */}
             <div className="bg-white shadow-md rounded-lg">
                 {articles.length === 0 ? (
-                    <div className="text-center py-8 text-gray-500">
-                        게시글이 없습니다.
+                    <div className="text-center py-8 text-extraText">
+                        게시물이 없습니다.
                     </div>
                 ) : (
                     <div className="divide-y divide-gray-200">
-                        {articles.map((article) => (
+                        {articles.toReversed().map((article) => (
                             <div
                                 key={article.articleId}
                                 onClick={() => navigate(`/clubs/${clubId}/articles/${article.articleId}`)}
@@ -100,7 +107,7 @@ const ClubArticlesList = () => {
                                     </div>
                                 )}
 
-                                {/* 게시글 정보 */}
+                                {/* 게시물 정보 */}
                                 <div className="flex items-center justify-between mb-2">
                                     <h3 className="text-lg font-semibold">
                                         {article.title}
@@ -110,7 +117,9 @@ const ClubArticlesList = () => {
                                     </span>
                                 </div>
                                 <div className="flex items-center text-sm text-gray-600">
-                                    <span>작성자: ({article.author.authorName})</span>
+                                    <span>작성자 :&nbsp;</span>
+                                    <span><UserNameFine articles={article} /></span>
+                                    <span>({article.author.authorName})</span>
                                 </div>
                             </div>
                         ))}
@@ -126,7 +135,7 @@ const ClubArticlesList = () => {
                         disabled={currentPage === 0}
                         className={`px-4 py-2 rounded ${
                             currentPage === 0
-                                ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                                ? "bg-gray-200 text-extraText cursor-not-allowed"
                                 : "bg-primary text-white hover:bg-hoverBlueColor"
                         }`}
                     >
@@ -152,7 +161,7 @@ const ClubArticlesList = () => {
                         disabled={currentPage === totalPages - 1}
                         className={`px-4 py-2 rounded ${
                             currentPage === totalPages - 1
-                                ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                                ? "bg-gray-200 text-extraText cursor-not-allowed"
                                 : "bg-primary text-white hover:bg-hoverBlueColor"
                         }`}
                     >

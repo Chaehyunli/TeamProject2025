@@ -1,5 +1,6 @@
 package com.example.teamproject2025.repository.Club;
 
+import com.example.teamproject2025.entity.Club.Article;
 import com.example.teamproject2025.entity.Club.Notice;
 import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -21,8 +22,11 @@ public interface ClubNoticeRepository extends JpaRepository<Notice, Long> {
 
     List<Notice> findByUser_UserId(Long userId);
 
+    boolean existsByClub_ClubId(Long clubId);
+
     @Query("SELECT a FROM Notice a WHERE a.club.clubId = :clubId AND a.noticeId = :noticeId")
     Optional<Notice> findByClubIdAndNoticeIdAndThumbUrl(Long clubId, Long noticeId);
+
 
     @Modifying
     @Transactional

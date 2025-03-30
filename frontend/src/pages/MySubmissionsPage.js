@@ -85,10 +85,10 @@ const MySubmissionsPage = () => {
                                 <span
                                     className={`px-3 py-1 text-sm font-semibold rounded-lg ${
                                         submission.status === "PENDING"
-                                            ? "bg-yellow-500 text-white"
+                                            ? "bg-pendingColor text-white"
                                             : submission.status === "APPROVED"
-                                                ? "bg-green-500 text-white"
-                                                : "bg-warningText text-white"
+                                                ? "bg-approvedTrueColor text-white"
+                                                : "bg-approvedFalseColor text-white"
                                     }`}
                                 >
                                     {submission.status === "PENDING"

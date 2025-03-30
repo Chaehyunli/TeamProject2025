@@ -16,13 +16,18 @@ const UpdateProfilePage = () => {
         isEmailVerified: false
     });
 
+    const [loading, setLoading] = useState(false);
+
     useEffect(() => {
         const fetchUserInfo = async () => {
+            setLoading(true);
             try {
                 const userData = await getUserProfile();
                 setUser(userData.data || userData);
             } catch (error) {
                 console.error("프로필 정보를 불러오는 데 실패했습니다.", error);
+            } finally {
+                setLoading(false);
             }
         };
 
@@ -96,9 +101,12 @@ const UpdateProfilePage = () => {
         }
     };
 
-    if (!user) {
-        return <div className="text-center mt-10 text-lg">⏳ 로딩 중...</div>;
-    }
+    if (loading || !user) {
+        return (
+            <div className="flex justify-center items-center h-64">
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+            </div>
+        );    }
 
     return (
         <div className="w-full flex flex-col items-center my-28 py-12">
