@@ -87,6 +87,12 @@ public class AuthController {
                 .body(CommonResponseDto.success(HttpStatus.OK.value(), "Password reset successfully", null));
     }
 
+    @PostMapping("/univ-name")
+    public ResponseEntity<CommonResponseDto<Object>> getUniversityNameByEmail(@RequestBody @Validated String email) {
+        String universityName = emailServiceImpl.getUniversityNameByEmail(email);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CommonResponseDto.success(HttpStatus.OK.value(), "Success: Get University Name", universityName));
+    }
 }
 
 /* 💡Descriptions -- Refactoring @dev_taehuyn

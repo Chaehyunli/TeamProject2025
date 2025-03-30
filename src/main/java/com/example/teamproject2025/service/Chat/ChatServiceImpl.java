@@ -14,6 +14,7 @@ import com.example.teamproject2025.repository.Chat.ChatParticipantRepository;
 import com.example.teamproject2025.repository.Chat.ChatRoomRepository;
 import com.example.teamproject2025.repository.Chat.ReadStatusRepository;
 import com.example.teamproject2025.repository.User.UserRepository;
+import com.example.teamproject2025.service.ProfanityFilter.ProfanityFilterService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -37,6 +38,7 @@ public class ChatServiceImpl implements ChatService {
     private final ChatMessageRepository chatMessageRepository;
     private final ReadStatusRepository readStatusRepository;
     private final UserRepository userRepository;
+    private final ProfanityFilterService profanityFilterService;
 
     // ✅ 세션에서 현재 로그인된 사용자 가져오기
     private User getSessionUser(HttpServletRequest request) {
@@ -57,7 +59,7 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public void saveMessage(Long roomId, ChatMessageReqDto chatMessageReqDto){
+    public void saveMessage(Long roomId, ChatMessageReqDto chatMessageReqDto, Boolean isBadWord){
         //  채팅방 조회: Path Parameter 로 roomId 가 딸려오게 됨
         ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(()-> new EntityNotFoundException("room cannot be found"));
 
@@ -73,6 +75,7 @@ public class ChatServiceImpl implements ChatService {
                 .chatRoom(chatRoom)
                 .user(sender)
                 .content(chatMessageReqDto.getMessage())
+                .isBadWord(isBadWord)
                 .build();
 
         chatMessageRepository.save(chatMessage);

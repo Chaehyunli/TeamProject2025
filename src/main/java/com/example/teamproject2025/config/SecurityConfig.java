@@ -145,7 +145,9 @@ public class SecurityConfig {
                                 "/connect/**",
                                 "/swagger-ui/**",      // Swagger UI 관련 경로
                                 "/v3/api-docs/**",     // API 문서 JSON
-                                "/swagger-resources/**"
+                                "/swagger-resources/**",
+                                "/api/v1/users/ban-user/**",
+                                "/api/v1/auth/univ-name"
                         ).permitAll() // 인증 없이 접근 가능
 
                         .requestMatchers("/api/v1/users/delete").authenticated() // 회원탈퇴는 인증 필요
