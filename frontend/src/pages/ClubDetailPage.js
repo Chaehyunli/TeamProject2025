@@ -201,7 +201,11 @@ const ClubDetailPage = () => {
                                 )}
                             </div>
 
-                            <DirectMessageButton presidentId={president.userId} receiverName={president.name} />
+                            <DirectMessageButton
+                                presidentId={president.userId}
+                                receiverName={president.name}
+                                clubId={clubId}
+                            />
                         </div>
                     </div>
                 )}

@@ -26,6 +26,9 @@ public class ChatRoom{
     @Builder.Default
     private Boolean isGroupChat=false; // 추후 그룹 채팅 기능 추가할 경우를 대비
 
+    @Column(nullable = false)
+    private Long clubId;
+
     @CreationTimestamp
     private LocalDateTime createdAt;
 

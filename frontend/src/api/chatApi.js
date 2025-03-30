@@ -64,10 +64,10 @@ export const markMessagesAsRead = async (roomId) => {
 };
 
 // 1:1 채팅방 생성 (또는 기존 채팅방 ID 반환)
-export const createPrivateChatRoom = async (otherUserId) => {
+export const createPrivateChatRoom = async (otherUserId, clubId) => {
     try {
         const response = await axios.post(
-            `${API_BASE_URL}/room/private/create?otherUserId=${otherUserId}`,
+            `${API_BASE_URL}/room/private/create?otherUserId=${otherUserId}&clubId=${clubId}`,
             {},
             { withCredentials: true } // ✅ 세션 방식으로 변경
         );
@@ -100,6 +100,18 @@ export const fetchMyChatRooms = async () => {
         return response.data.data;
     } catch (error) {
         console.error("❌ 내 채팅방 목록 불러오기 실패:", error);
+        throw error;
+    }
+};
+
+export const fetchChatRoomName = async (roomId) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/room/${roomId}/name`, {
+            withCredentials: true
+        });
+        return response.data.data; // roomName 반환
+    } catch (error) {
+        console.error("❌ 채팅방 이름 불러오기 실패:", error);
         throw error;
     }
 };

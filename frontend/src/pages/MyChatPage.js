@@ -9,8 +9,6 @@ const MyChatPage = () => {
     const [loading, setLoading] = useState(false);
     const [leavingRoomId, setLeavingRoomId] = useState(null);
 
-    console.log("😎 두둥 태현이 등장! ");
-
     useEffect(() => {
         loadMyChatRooms();
     }, []);
@@ -36,7 +34,7 @@ const MyChatPage = () => {
 
     // ✅ 채팅방 입장
     const enterChatRoom = (roomId, receiverName) => {
-        navigate(`/chatpage/${roomId}`, { state: { receiverName } });
+        navigate(`/chatpage/${roomId}`, { state: { receiverName } }); // press 입장 -> goto Stomp Page
     };
 
     // ✅ 채팅방 나가기
