@@ -61,14 +61,35 @@ public class ClubMemberServiceImpl implements ClubMemberService {
             throw new RuntimeException("회장만 역할을 변경할 수 있습니다.");
         }
 
-        // 6. 현재 회장의 역할을 변경할 수 없음
+        // 6. 현재 회장의 역할을 변경할 수 없음(회장 넘기기는 가능)
         if (targetUserRole == RoleType.PRESIDENT) {
             throw new RuntimeException("회장의 역할은 변경할 수 없습니다.");
         }
 
-        // 7. 다른 회원을 회장(PRESIDENT)으로 임명할 수 없음
+        // 7. 회장을 넘기는 경우: 본인은 MEMBER로, 대상자는 PRESIDENT로
         if (roleType == RoleType.PRESIDENT) {
-            throw new RuntimeException("다른 회원을 회장으로 임명할 수 없습니다.");
+            // 7-1. 대상자 역할 갱신
+            UserRole newPresidentRole = userRoleRepository.findByUser_UserIdAndClub_ClubId(targetUserId, clubId)
+                    .orElseGet(() -> UserRole.builder()
+                            .user(targetUser)
+                            .club(club)
+                            .build());
+
+            newPresidentRole.setRoleName(RoleType.PRESIDENT);
+
+            userRoleRepository.save(newPresidentRole);
+
+            // 7-2. 본인(기존 회장)의 역할을 MEMBER로 갱신
+            User grantorUser = userRepository.findById(grantorUserId)
+                    .orElseThrow(() -> new RuntimeException("회장 사용자를 찾을 수 없습니다."));
+            UserRole oldPresidentRole = userRoleRepository.findByUser_UserIdAndClub_ClubId(grantorUserId, clubId)
+                    .orElseThrow(() -> new RuntimeException("회장 역할을 찾을 수 없습니다."));
+
+            oldPresidentRole.setRoleName(RoleType.MEMBER);
+
+            userRoleRepository.save(oldPresidentRole);
+
+            return;
         }
 
         // 8. 기존 역할이 있으면 업데이트, 없으면 새로 생성
@@ -76,7 +97,7 @@ public class ClubMemberServiceImpl implements ClubMemberService {
                 .orElseGet(() -> UserRole.builder()
                         .user(targetUser)
                         .club(club)
-                        .roleName(roleType)
+                        //.roleName(roleType)
                         .build());
 
         // 9. 역할 업데이트 및 저장
