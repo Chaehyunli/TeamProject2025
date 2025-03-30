@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { requestVerificationCode, verifyCode } from "../api/authApi";
 import InputField from "./InputField";
+import {getUniversityNameByEmail} from "../api/authApi";
 
 const EmailVerificationForm = ({
     onVerificationSuccess,
     initialEmail,
     onEmailChange,
-    universityName
+    universityName,
 }) => {
     const [email, setEmail] = useState(initialEmail || ""); // 초기값 설정
     const [verificationCode, setVerificationCode] = useState("");
@@ -32,7 +33,6 @@ const EmailVerificationForm = ({
         }
     };
 
-
     // 이메일 인증 요청
     const handleRequestVerificationCode = async () => {
         setIsCodeSent(true);  // 즉시 UI 변경 (인증번호 입력칸 바로 표시)
@@ -46,11 +46,18 @@ const EmailVerificationForm = ({
         setIntervalId(newIntervalId);
 
         try {
+            // universityName이 없는 경우 API를 통해 가져오기
+            if (!universityName) {
+                universityName = await getUniversityNameByEmail(email);
+            }
             await requestVerificationCode(email, universityName);
+            setMessage("✅ 인증 코드가 이메일로 전송되었습니다.");
         } catch (error) {
             if (
-                error.response &&
-                error.response.data.message === "대학교 이메일을 입력해주세요"
+                error.response && (
+                    error.response.data.message === "대학교 이메일을 입력해주세요" ||
+                    error.response.data.message === "대학교 이름 조회 중 오류 발생: 도메인에 해당하는 대학교를 찾을 수 없습니다."
+                )
             ) {
                 setMessage("❌ 대학교 이메일을 입력해주세요.");
             } else {

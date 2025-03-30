@@ -4,6 +4,7 @@ import com.example.teamproject2025.dto.Common.CommonResponseDto;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -76,6 +77,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<CommonResponseDto<Void>> handleCustomException(CustomException e) {
         return ResponseEntity.status(e.getStatus())
                 .body(CommonResponseDto.error(e.getStatus(), e.getMessage()));
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<CommonResponseDto<Void>> handleAccessDeniedException(AccessDeniedException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(CommonResponseDto.error(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
     }
 }
 

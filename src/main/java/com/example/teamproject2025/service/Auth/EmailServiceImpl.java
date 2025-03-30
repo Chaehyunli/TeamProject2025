@@ -18,6 +18,7 @@ import org.thymeleaf.context.Context;
 
 import java.io.InputStream;
 import java.security.SecureRandom;
+import java.util.HashMap;
 import java.util.Map;
 
 @Service
@@ -34,6 +35,7 @@ public class EmailServiceImpl implements EmailService {
 
     // JSON 도메인 매핑용 객체
     private Map<String, String> univDomainMap;
+    private final Map<String, String> reversedUnivDomainMap = new HashMap<>(); // 역매핑된 Map (도메인 -> 대학 이름)
 
     // ✅ 도메인 검증 메서드
     private boolean isEmailDomainMatched(String email, String univName) {
@@ -58,6 +60,13 @@ public class EmailServiceImpl implements EmailService {
         InputStream inputStream = resource.getInputStream();
         ObjectMapper objectMapper = new ObjectMapper();
         univDomainMap = objectMapper.readValue(inputStream, new TypeReference<>() {});
+
+        // 역매핑 작업 (도메인 -> 대학교 이름)
+        for (Map.Entry<String, String> entry : univDomainMap.entrySet()) {
+            String universityName = entry.getKey();
+            String domain = entry.getValue();
+            reversedUnivDomainMap.put(domain, universityName); // 도메인을 Key 로, 대학 이름을 Value 로 저장
+        }
     }
 
     // 이메일 인증 요청 메서드
@@ -131,6 +140,38 @@ public class EmailServiceImpl implements EmailService {
 
         } catch (RuntimeException e) {
              throw new RuntimeException("Email Verification is Failed: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public String getUniversityNameByEmail(String email){
+        try {
+            if (univDomainMap == null || reversedUnivDomainMap.isEmpty()) {
+                loadDomainJson(); // JSON 파일 로드
+            }
+
+            // 이메일에서 도메인 추출
+            if (email == null || !email.contains("@")) {
+                throw new IllegalArgumentException("올바른 이메일 형식이 아닙니다.");
+            }
+
+            String domainPart = email.split("@")[1]; // ex: mju.ac.kr
+            String[] domainParts = domainPart.split("\\.");
+
+            // 예: mju.ac.kr -> mju
+            String mainDomain = domainParts[0];
+
+
+            // 도메인 맵에서 대학교 이름 찾기
+            String universityName = reversedUnivDomainMap.get(mainDomain);
+
+            if (universityName == null) {
+                throw new IllegalArgumentException("도메인에 해당하는 대학교를 찾을 수 없습니다.");
+            }
+
+            return universityName;
+        } catch (Exception e) {
+            throw new RuntimeException("대학교 이름 조회 중 오류 발생: " + e.getMessage(), e);
         }
     }
 }
