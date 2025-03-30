@@ -101,4 +101,11 @@ public class ChatController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(CommonResponseDto.success(HttpStatus.OK.value(), "✅ Get Chat Room Users", dtos));
     }
+
+    @GetMapping("/room/{roomId}/name")
+    public ResponseEntity<CommonResponseDto<String>> getChatRoomName(@PathVariable Long roomId) {
+        String roomName = chatService.getRoomName(roomId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CommonResponseDto.success(HttpStatus.OK.value(), "✅ Get Chat Room Name", roomName));
+    }
 }

@@ -1,14 +1,15 @@
 import { useState, useEffect, useRef } from "react";
-import { useParams, useLocation, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import SockJS from "sockjs-client";
 import Stomp from "webstomp-client";
 import axios from "axios";
 import { useChat } from "../context/ChatContext";  // 🔥 ChatContext 가져오기
 import backIcon from "../assets/backIcon.png";
-import { fetchChatHistory, markMessagesAsRead } from "../api/chatApi";
+import { fetchChatHistory, markMessagesAsRead, fetchChatRoomName } from "../api/chatApi";
 
 const StompChatPage = () => {
     const { roomId } = useParams();
+    const [roomName, setRoomName] = useState("");
     const { participants, fetchChatParticipants } = useChat();
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState("");
@@ -17,16 +18,11 @@ const StompChatPage = () => {
     const subscriptionRef = useRef(null);
     const isConnectedRef = useRef(false);
     const scrollRef = useRef(null);
-    const location = useLocation();
     const [receiverImageUrl, setReceiverImageUrl] = useState(null); // GCP Presigned URL 캐싱
-    const receiverNameFromNavigate = location.state?.receiverName || "알 수 없음";
-
     const [receiverEmail, setReceiverEmail] = useState("");
-    const [receiverName, setReceiverName] = useState(receiverNameFromNavigate);
     const navigate = useNavigate();
 
     const API_BASE_URL = "http://localhost:8080";
-
 
     useEffect(() => {
         if (!isConnectedRef.current) {
@@ -44,6 +40,12 @@ const StompChatPage = () => {
 
                 const foundReceiverEmail = chatHistory.find(msg => msg.senderEmail !== senderEmail)?.senderEmail || "unknown";
                 setReceiverEmail(foundReceiverEmail);
+
+                // 🔥 채팅방 이름 설정 API 호출
+                const roomNameResponse = await fetchChatRoomName(roomId);
+                setRoomName(roomNameResponse || "알 수 없음");
+                // console.log(`⚠️⚠️ TESTo : ${roomNameResponse}`);
+
             } catch (error) {
                 console.error("❌ Failed to fetch chat history", error);
             }
@@ -78,13 +80,6 @@ const StompChatPage = () => {
     useEffect(() => {
         scrollToBottom();
     }, [messages]);
-
-    useEffect(() => {
-        const updatedReceiverName = participants[receiverEmail]?.name || receiverNameFromNavigate;
-        if (updatedReceiverName !== receiverName) {
-            setReceiverName(updatedReceiverName);
-        }
-    }, [participants, receiverEmail, receiverNameFromNavigate]);
 
     const connectWebsocket = () => {
         if (isConnectedRef.current) return;
@@ -186,7 +181,7 @@ const StompChatPage = () => {
                     <button onClick={handleBack} className="absolute left-4">
                         <img src={String(backIcon)} alt="뒤로가기" className="w-5 h-5"/>
                     </button>
-                    {receiverName}
+                    {roomName || "Loading..."}
                 </div>
 
 

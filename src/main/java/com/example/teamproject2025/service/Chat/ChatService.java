@@ -26,4 +26,5 @@ public interface ChatService {
     List<ChatRoomParticipantsReqDto> getRoomUsers(Long roomId);
     List<MyChatListResDto> getMyChatRoomsByUser(User user);
     void leavePrivateChatRoomInternal(ChatRoom chatRoom, User user);
+    String getRoomName(Long roomId);
 }

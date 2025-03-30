@@ -319,7 +319,7 @@ public class ChatServiceImpl implements ChatService {
         // 근데 이건 너무 하드하고, 유연한 방식으로 갈려면 DB 구조를 뜯어야 한다. 아...ㅐㅁㄴㅇ라훼ㅑㅐ미ㅓㄴㅇ후ㅑㅐㅔㅁ녕
 
         // 만약에 1:1채팅방이 없을경우 기존 채팅방 개설
-        String roomName = String.format("%s(%s)", otherUser.getName(), club.getClubName());
+        String roomName = String.format("%s (회장: %s / 유저: %s) ", club.getClubName(), otherUser.getName(), user.getName());
 
         ChatRoom newRoom = ChatRoom.builder()
                 .isGroupChat(false)
@@ -354,5 +354,12 @@ public class ChatServiceImpl implements ChatService {
             dtos.add(dto);
         }
         return dtos;
+    }
+
+    @Override
+    public String getRoomName(Long roomId) {
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId)
+                .orElseThrow(() -> new EntityNotFoundException("room cannot be found"));
+        return chatRoom.getName();
     }
 }

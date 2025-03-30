@@ -103,3 +103,15 @@ export const fetchMyChatRooms = async () => {
         throw error;
     }
 };
+
+export const fetchChatRoomName = async (roomId) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/room/${roomId}/name`, {
+            withCredentials: true
+        });
+        return response.data.data; // roomName 반환
+    } catch (error) {
+        console.error("❌ 채팅방 이름 불러오기 실패:", error);
+        throw error;
+    }
+};
