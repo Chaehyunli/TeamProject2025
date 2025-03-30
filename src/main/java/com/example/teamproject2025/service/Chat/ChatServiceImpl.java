@@ -8,11 +8,13 @@ import com.example.teamproject2025.entity.Chat.ChatMessage;
 import com.example.teamproject2025.entity.Chat.ChatParticipant;
 import com.example.teamproject2025.entity.Chat.ChatRoom;
 import com.example.teamproject2025.entity.Chat.ReadStatus;
+import com.example.teamproject2025.entity.Club.Club;
 import com.example.teamproject2025.entity.User.User;
 import com.example.teamproject2025.repository.Chat.ChatMessageRepository;
 import com.example.teamproject2025.repository.Chat.ChatParticipantRepository;
 import com.example.teamproject2025.repository.Chat.ChatRoomRepository;
 import com.example.teamproject2025.repository.Chat.ReadStatusRepository;
+import com.example.teamproject2025.repository.Club.ClubRepository;
 import com.example.teamproject2025.repository.User.UserRepository;
 import com.example.teamproject2025.service.ProfanityFilter.ProfanityFilterService;
 import jakarta.persistence.EntityNotFoundException;
@@ -38,7 +40,7 @@ public class ChatServiceImpl implements ChatService {
     private final ChatMessageRepository chatMessageRepository;
     private final ReadStatusRepository readStatusRepository;
     private final UserRepository userRepository;
-    private final ProfanityFilterService profanityFilterService;
+    private final ClubRepository clubRepository;
 
     // ✅ 세션에서 현재 로그인된 사용자 가져오기
     private User getSessionUser(HttpServletRequest request) {
@@ -292,13 +294,18 @@ public class ChatServiceImpl implements ChatService {
 
 
     @Override
-    public Long getOrCreatePrivateRoom(Long otherUserId, HttpServletRequest request){
+    public Long getOrCreatePrivateRoom(Long otherUserId, Long clubId, HttpServletRequest request){
         User user = getSessionUser(request);
 
         User otherUser = userRepository.findById(otherUserId).orElseThrow(()->new EntityNotFoundException("user cannot be found"));
+        Club club = clubRepository.findById(clubId).orElseThrow(()->new EntityNotFoundException("club cannot be found"));
 
         // 나와 상대방이 1:1채팅에 이미 참석하고 있다면 해당 roomId return
-        Optional<ChatRoom> chatRoom = chatParticipantRepository.findExistingPrivateRoom(user.getUserId(), otherUser.getUserId());
+        Optional<ChatRoom> chatRoom = chatRoomRepository.findExistingPrivateRoom(
+                user.getUserId(),
+                otherUser.getUserId(),
+                clubId
+        );
 
         if(chatRoom.isPresent()){
             return chatRoom.get().getId();
@@ -312,9 +319,12 @@ public class ChatServiceImpl implements ChatService {
         // 근데 이건 너무 하드하고, 유연한 방식으로 갈려면 DB 구조를 뜯어야 한다. 아...ㅐㅁㄴㅇ라훼ㅑㅐ미ㅓㄴㅇ후ㅑㅐㅔㅁ녕
 
         // 만약에 1:1채팅방이 없을경우 기존 채팅방 개설
+        String roomName = String.format("%s(%s)", otherUser.getName(), club.getClubName());
+
         ChatRoom newRoom = ChatRoom.builder()
                 .isGroupChat(false)
-                .name(user.getName() + "-" + otherUser.getName())
+                .name(roomName)
+                .clubId(clubId)
                 .build();
 
         chatRoomRepository.save(newRoom);

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { createPrivateChatRoom } from "../api/chatApi";
 import { useNavigate } from "react-router-dom";
 
-const DirectMessageButton = ({ presidentId, receiverName}) => {
+const DirectMessageButton = ({ presidentId, receiverName, clubId}) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const navigate = useNavigate();
@@ -21,17 +21,18 @@ const DirectMessageButton = ({ presidentId, receiverName}) => {
         }
 
         console.log("President ID: " + presidentId);
+        console.log("Club ID: " + clubId);
 
         setLoading(true);
         setError(null);
 
         try {
             // 1:1 채팅방 개설 요청 (or 기존 방 ID 반환)
-            const roomId = await createPrivateChatRoom(presidentId);
+            const roomId = await createPrivateChatRoom(presidentId, clubId);
 
             // 채팅방으로 이동
             // window.location.href = `/chatpage/${roomId}`;
-            navigate(`/chatpage/${roomId}`, { state: { receiverName } });
+            navigate(`/chatpage/${roomId}`, { state: { receiverName } }); // goto Stomp Page
         } catch (err) {
             setError("채팅방을 개설하는 중 오류가 발생했습니다.");
         } finally {

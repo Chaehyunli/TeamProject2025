@@ -85,8 +85,12 @@ public class ChatController {
 
     // 개인 채팅방 개설 또는 기존roomId return
     @PostMapping("/room/private/create")
-    public ResponseEntity<CommonResponseDto<Long>> getOrCreatePrivateRoom(@RequestParam Long otherUserId, HttpServletRequest request){
-        Long roomId = chatService.getOrCreatePrivateRoom(otherUserId, request);
+    public ResponseEntity<CommonResponseDto<Long>> getOrCreatePrivateRoom(
+            @RequestParam Long otherUserId,
+            @RequestParam Long clubId,
+            HttpServletRequest request
+    ){
+        Long roomId = chatService.getOrCreatePrivateRoom(otherUserId, clubId, request);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(CommonResponseDto.success(HttpStatus.OK.value(), "✅ Get or Create Private Room", roomId));
     }

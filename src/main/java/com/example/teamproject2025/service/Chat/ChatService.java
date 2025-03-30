@@ -22,7 +22,7 @@ public interface ChatService {
     List<MyChatListResDto> getMyChatRooms(HttpServletRequest request);
     void leaveGroupChatRoom(Long roomId, HttpServletRequest request);
     void leavePrivateChatRoom(Long roomId, HttpServletRequest request);
-    Long getOrCreatePrivateRoom(Long otherUserId, HttpServletRequest request);
+    Long getOrCreatePrivateRoom(Long otherUserId, Long clubId, HttpServletRequest request);
     List<ChatRoomParticipantsReqDto> getRoomUsers(Long roomId);
     List<MyChatListResDto> getMyChatRoomsByUser(User user);
     void leavePrivateChatRoomInternal(ChatRoom chatRoom, User user);

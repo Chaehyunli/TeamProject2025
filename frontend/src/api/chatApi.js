@@ -64,10 +64,10 @@ export const markMessagesAsRead = async (roomId) => {
 };
 
 // 1:1 채팅방 생성 (또는 기존 채팅방 ID 반환)
-export const createPrivateChatRoom = async (otherUserId) => {
+export const createPrivateChatRoom = async (otherUserId, clubId) => {
     try {
         const response = await axios.post(
-            `${API_BASE_URL}/room/private/create?otherUserId=${otherUserId}`,
+            `${API_BASE_URL}/room/private/create?otherUserId=${otherUserId}&clubId=${clubId}`,
             {},
             { withCredentials: true } // ✅ 세션 방식으로 변경
         );
