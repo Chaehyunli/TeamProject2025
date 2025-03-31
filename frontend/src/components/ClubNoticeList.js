@@ -106,11 +106,11 @@ const NoticeList = () => {
                                     <h3 className="text-lg font-semibold">
                                         {notice.title}
                                     </h3>
-                                    <span className="text-sm text-gray-500">
+                                    <span className="text-sm text-extraText">
                                         {new Date(notice.createdAt).toLocaleDateString()}
                                     </span>
                                 </div>
-                                <div className="flex items-center text-sm text-gray-600">
+                                <div className="flex items-center text-sm text-extraText">
                                     <span>작성자: &nbsp;</span>
                                     <span><UserNameFine articles={notice} /></span>
                                     <span>({notice.author.authorName})</span>

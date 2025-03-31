@@ -89,7 +89,7 @@ const ClubNoticeDetail = () => {
                         <div className="flex justify-between">
                             <button
                                 onClick={() => navigate(`/clubs/${clubId}/notices`)}
-                                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md"
+                                className="px-4 py-2 text-sm font-medium text-extraText bg-gray-100 hover:bg-gray-200 rounded-md"
                             >
                                 목록으로
                             </button>
@@ -100,13 +100,13 @@ const ClubNoticeDetail = () => {
                                         <div className="flex gap-2">
                                             <button
                                                 onClick={() => navigate(`/clubs/${clubId}/notices/${noticeId}/edit`)}
-                                                className="px-4 py-2 text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 rounded-md"
+                                                className="px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-hoverBlueColor rounded-md"
                                             >
                                                 수정
                                             </button>
                                             <button
                                                 onClick={handleDelete}
-                                                className="px-4 py-2 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-md"
+                                                className="px-4 py-2 text-sm font-medium text-white bg-warningButton hover:bg-hoverWarningButton rounded-md"
                                                 disabled={actionLoading}
                                             >
                                                 삭제
