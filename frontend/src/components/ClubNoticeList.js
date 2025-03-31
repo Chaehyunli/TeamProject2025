@@ -84,7 +84,7 @@ const NoticeList = () => {
             <div className="bg-white shadow-md rounded-lg">
                 {notices.length === 0 ? (
                     <div className="text-center py-8 text-extraText">
-                        공지사항이 없습니다.
+                        공지사항이 없습니다
                     </div>
                 ) : (
                     <div className="divide-y divide-gray-200">
@@ -97,14 +97,14 @@ const NoticeList = () => {
                                 {/* 썸네일이 있을 때만 이미지 로딩 */}
                                 {notice.thumbUrl && (
                                     <div className="flex-shrink-0">
-                                        <ProtectedImage objectName={notice.thumbUrl} alt={notice.noticeTitle}/>
+                                        <ProtectedImage objectName={notice.thumbUrl} alt={notice.title}/>
                                     </div>
                                 )}
 
                                 {/* 공지사항 정보 */}
                                 <div className="flex items-center justify-between mb-2">
                                     <h3 className="text-lg font-semibold">
-                                        {notice.noticeTitle}
+                                        {notice.title}
                                     </h3>
                                     <span className="text-sm text-gray-500">
                                         {new Date(notice.createdAt).toLocaleDateString()}

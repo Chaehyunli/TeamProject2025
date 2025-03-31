@@ -12,7 +12,6 @@ const CreateArticle = () => {
     const [formData, setFormData] = useState({
         title: '',
         contents: '',
-        is_notice: false,
         thumbUrl: undefined
     });
 
@@ -41,7 +40,6 @@ const CreateArticle = () => {
             const articleData = {
                 title: formData.title,
                 contents: formData.contents,
-                is_notice: false,
                 thumbUrl: thumbUrl || undefined
             };
 

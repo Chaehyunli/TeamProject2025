@@ -31,6 +31,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -51,8 +52,7 @@ public class ClubServiceImpl implements ClubService {
     private final ApplicationContext applicationContext;
 
     // 업로드 경로 (Spring Boot의 정적 리소스로 활용, 현재 프로젝트 루트 경로에 uploads 폴더 생성)
-    private static final String UPLOAD_DIR = System.getProperty("user.dir") + "/uploads/clubs/";
-    @Value("${spring.cloud.gcp.storage.bucket}")
+    @Value("${GCP_BUCKET}")
     private String bucketName;
 
     @PersistenceContext
@@ -194,11 +194,10 @@ public class ClubServiceImpl implements ClubService {
         return "PRESIDENT".equals(userRole) || "VICE_PRESIDENT".equals(userRole);
     }
 
-    // 동아리 게시물 작성
+    // 동아리 게시글 작성
     @Override
     public ClubArticleResponseDto createArticle(Long clubId, Long userId, String title, String content,
-                                                String uploadedFileName, boolean is_notice) {
-
+                                                String uploadedFileName) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다. userId: " + userId));
 
@@ -210,15 +209,15 @@ public class ClubServiceImpl implements ClubService {
                 : null;
 
         ClubArticleRequestDto requestDto = new ClubArticleRequestDto(title,
-                content, storageThumbUrl, is_notice);
+                content, storageThumbUrl);
 
-        Article newArticle = requestDto.toEntity(club, user, is_notice);
+        Article newArticle = requestDto.toEntity(club, user);
         clubArticleRepository.save(newArticle);
 
         return ClubArticleResponseDto.fromEntity(newArticle);
     }
 
-    // 동아리 게시물 조회
+    // 동아리 게시글 조회
     @Override
     public ArticleListResponseDto getArticlesList(Long clubId, int limit, int offset) {
         List<Article> articleList = clubArticleRepository.findByClub_ClubId(clubId);
@@ -233,28 +232,35 @@ public class ClubServiceImpl implements ClubService {
         return ArticleListResponseDto.fromEntity(paginatedArticles, total, limit, offset);
     }
 
-    // 동아리 게시물 수정
+    // 동아리 게시글 수정
     @Override
     public ClubArticleResponseDto updateArticle(Long userId, Long clubId, Long articleId, ArticleModificationRequestDto requestDto) {
         // clubId를 사용해야 되는지 아니면 사용을 굳이 안해야 되는지 몰라서 일단 남겨둠,,,
 
         Article article = clubArticleRepository.findByArticleId(articleId)
-                .orElseThrow(() -> new NoSuchElementException("해당 ID의 게시물이 존재하지 않습니다."));
+                .orElseThrow(() -> new NoSuchElementException("해당 ID의 게시글이 존재하지 않습니다."));
 
         if(!article.getUser().getUserId().equals(userId)) {
-            throw new IllegalArgumentException("이 게시물을 수정할 권한이 없습니다.");
+            throw new IllegalArgumentException("이 게시글을 수정할 권한이 없습니다.");
         }
 
-        article.setTitle(requestDto.getTitle());
-        article.setContents(requestDto.getContents());
-        article.setThumbUrl(requestDto.getThumbUrl());
+        if(requestDto.getTitle() != null) article.setTitle(requestDto.getTitle());
+        if(requestDto.getContents() != null) article.setContents(requestDto.getContents());
 
+        // 기존 이미지 삭제 로직 추가(Google Cloud)
+        if (requestDto.getThumbUrl() != null && !requestDto.getThumbUrl().isBlank() && !requestDto.getThumbUrl().equals(article.getThumbUrl())) {
+            deleteImageFromGCS(article.getThumbUrl()); // 기존 이미지 삭제
+            article.setThumbUrl(requestDto.getThumbUrl());
+        }
+
+        article.setUpdatedAt(LocalDateTime.now());
+        
         clubArticleRepository.save(article);
 
         return ClubArticleResponseDto.fromEntity(article);
     }
 
-    // 동아리 특정 게시물 조회
+    // 동아리 특정 게시글 조회
     @Override
     public SpecificArticleResponseDto getArticleDetail(Long clubId, Long articleId) {
 //        authorDto author = new authorDto(userId, username);
@@ -270,10 +276,9 @@ public class ClubServiceImpl implements ClubService {
         return SpecificArticleResponseDto.fromEntity(article);
     }
 
-    // 동아리 게시물 삭제
+    // 동아리 게시글 삭제
     @Override
     public boolean deleteArticle(Long clubId, Long articleId, Long userId) {
-
         Article article = clubArticleRepository.findByClubIdAndArticleIdAndThumbUrl(clubId, articleId)
                 .orElseThrow(() -> new NoSuchElementException("해당 클럽에 게시글이 존재하지 않습니다."));
 
@@ -282,9 +287,8 @@ public class ClubServiceImpl implements ClubService {
         }
 
         // 기존 이미지 삭제 로직 추가(Google Cloud)
-        if (article.getThumbUrl() != null
-                && !article.getThumbUrl().equals(DefaultImage.CLUB_THUMBNAIL)) {
-            deleteImageFromGCS(article.getThumbUrl()); // 기존 이미지 삭제 (기본 이미지 제외)
+        if (article.getThumbUrl() != null) {
+            deleteImageFromGCS(article.getThumbUrl()); // 기존 이미지 삭제
         }
 
         clubArticleRepository.delete(article);
@@ -304,8 +308,8 @@ public class ClubServiceImpl implements ClubService {
                 ? requestDto.getThumbUrl()
                 : null;
 
-        NoticeCreateRequestDto noticeRequestDto = new NoticeCreateRequestDto(requestDto.getNoticeTitle(),
-                requestDto.getNoticeContents(), storageThumbUrl);
+        NoticeCreateRequestDto noticeRequestDto = new NoticeCreateRequestDto(requestDto.getTitle(),
+                requestDto.getContents(), storageThumbUrl);
 
         Notice newNotice = noticeRequestDto.toEntity(club, user);
         clubNoticeRepository.save(newNotice);
@@ -326,14 +330,12 @@ public class ClubServiceImpl implements ClubService {
                 .collect(Collectors.toList());
 
         return NoticeListResponseDto.fromEntity(paginatedNotices, total, limit, offset);
-
     }
 
     // 동아리 공지사항 수정
     @Override
     @Transactional
     public NoticeModifyResponseDto updateNotice(Long userId, Long clubId, Long noticeId, NoticeModifyRequestDto requestDto) {
-
         Notice notice = clubNoticeRepository.findByNoticeId(noticeId)
                 .orElseThrow(() -> new NoSuchElementException("해당 공지사항이 없습니다."));
 
@@ -341,21 +343,25 @@ public class ClubServiceImpl implements ClubService {
             throw new IllegalArgumentException("이 공지사항을 수정할 권한이 없습니다.");
         }
 
+        if(requestDto.getTitle() != null) notice.setTitle(requestDto.getTitle());
+        if(requestDto.getContents() != null) notice.setContents(requestDto.getContents());
 
-        notice.setNoticeTitle(requestDto.getNoticeTitle());
-        notice.setNoticeContents(requestDto.getNoticeContents());
-        notice.setThumbUrl(requestDto.getThumbUrl());
+        // 기존 이미지 삭제 로직 추가(Google Cloud)
+        if (requestDto.getThumbUrl() != null  && !requestDto.getThumbUrl().isBlank() && !requestDto.getThumbUrl().equals(notice.getThumbUrl())) {
+            deleteImageFromGCS(notice.getThumbUrl()); // 기존 이미지 삭제
+            notice.setThumbUrl(requestDto.getThumbUrl());
+        }
+
+        notice.setUpdatedAt(LocalDateTime.now());
 
         clubNoticeRepository.save(notice);
 
         return NoticeModifyResponseDto.fromEntity(notice);
-
     }
 
     // 동아리 공지사항 삭제
     @Override
     public boolean deleteNotice(Long clubId, Long noticeId, Long userId) {
-
         Notice notice = clubNoticeRepository.findByClubIdAndNoticeIdAndThumbUrl(clubId, noticeId)
                 .orElseThrow(() -> new NoSuchElementException("해당 클럽에 공지사항이 존재하지 않습니다."));
 
@@ -364,20 +370,17 @@ public class ClubServiceImpl implements ClubService {
         }
 
         // 기존 이미지 삭제 로직 추가(Google Cloud)
-        if (notice.getThumbUrl() != null
-                && !notice.getThumbUrl().equals("default-thumbnail.png")) {
-            deleteImageFromGCS(notice.getThumbUrl()); // 기존 이미지 삭제 (기본 이미지 제외)
+        if (notice.getThumbUrl() != null) {
+            deleteImageFromGCS(notice.getThumbUrl()); // 기존 이미지 삭제
         }
 
         clubNoticeRepository.delete(notice);
         return true;
-
     }
 
     // 동아리 특정 공지사항 조회
     @Override
     public SpecificNoticeResponseDto getNoticeDetail(Long clubId, Long noticeId) {
-
         boolean check = clubNoticeRepository.existsByClub_ClubId(clubId);
         if(!check) {
             throw new NoSuchElementException("존재 하지 않는 동아리입니다.");

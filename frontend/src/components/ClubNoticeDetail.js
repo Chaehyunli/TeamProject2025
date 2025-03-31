@@ -41,7 +41,7 @@ const ClubNoticeDetail = () => {
                 alert('공지사항이 삭제되었습니다.');
                 navigate(`/clubs/${clubId}/notices`);
             }catch (error) {
-                console.error('게시글 삭제 실패: ', error);
+                console.error('공지사항 삭제 실패: ', error);
             }
         }
     };
@@ -60,7 +60,7 @@ const ClubNoticeDetail = () => {
                 {/* 헤더 섹션 */}
                 <div className="p-6 border-b border-gray-200">
                     <div className="flex mb-4">
-                        <h1 className="text-2xl font-bold">{notices.noticeTitle}</h1>
+                        <h1 className="text-2xl font-bold">{notices.title}</h1>
                     </div>
                 </div>
 
@@ -70,14 +70,14 @@ const ClubNoticeDetail = () => {
                         {/* 썸네일이 있을 때만 이미지 로딩 */}
                         {notices.thumbUrl && (
                             <div className="flex-shrink-0">
-                                <ProtectedImage objectName={notices.thumbUrl} alt={notices.noticeTitle}/>
+                                <ProtectedImage objectName={notices.thumbUrl} alt={notices.thumbUrl}/>
                             </div>
                         )}
 
                         {/* 본문 내용 */}
                         <div className="prose max-w-none">
                             <div className="whitespace-pre-wrap">
-                                {notices.noticeContents}
+                                {notices.contents}
                             </div>
                         </div>
                     </div>
@@ -95,7 +95,7 @@ const ClubNoticeDetail = () => {
                                 {/* 작성자인 경우 수정/삭제 버튼 표시 */}
                                 {isLeadership ?
                                     (
-                                        <div className="justify-center">
+                                        <div className="flex gap-2">
                                             <button
                                                 onClick={() => navigate(`/clubs/${clubId}/notices/${noticeId}/edit`)}
                                                 className="px-4 py-2 text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 rounded-md"

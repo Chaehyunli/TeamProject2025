@@ -8,8 +8,8 @@ const CreateNotice = () => {
     const navigate = useNavigate();
     const {clubId} = useParams();
     const [formData, setFormData] = useState({
-        noticeTitle: '',
-        noticeContents: '',
+        title: '',
+        contents: '',
         thumbUrl: undefined
     });
     const [actionLoading, setActionLoading] = useState(false);
@@ -37,8 +37,8 @@ const CreateNotice = () => {
             }
 
             const noticeData = {
-                noticeTitle: formData.noticeTitle,
-                noticeContents: formData.noticeContents,
+                title: formData.title,
+                contents: formData.contents,
                 thumbUrl: thumbUrl || undefined
             };
 
@@ -83,16 +83,16 @@ const CreateNotice = () => {
                     {/* 제목 입력 */}
                     <div>
                         <label
-                            htmlFor="noticeTitle"
+                            htmlFor="title"
                             className="block text-sm font-medium text-gray-700 mb-2"
                         >
                             제목
                         </label>
                         <input
-                            id="noticeTitle"
+                            id="title"
                             type="text"
-                            name="noticeTitle"
-                            value={formData.noticeTitle}
+                            name="title"
+                            value={formData.title}
                             onChange={handleChange}
                             required
                             className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
@@ -103,15 +103,15 @@ const CreateNotice = () => {
                     {/* 내용 입력 */}
                     <div>
                         <label
-                            htmlFor="noticeContents"
+                            htmlFor="contents"
                             className="block text-sm font-medium text-gray-700 mb-2"
                         >
                             내용
                         </label>
                         <textarea
-                            id="noticeContents"
-                            name="noticeContents"
-                            value={formData.noticeContents}
+                            id="contents"
+                            name="contents"
+                            value={formData.contents}
                             onChange={handleChange}
                             required
                             rows="10"

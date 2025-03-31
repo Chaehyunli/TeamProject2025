@@ -47,7 +47,7 @@ const ClubArticlesList = () => {
             console.log('role boolean', isClubMember);
 
             // 응답 구조 확인
-            console.log('게시물 목록 응답:', response);
+            console.log('게시글 목록 응답:', response);
             setArticles(response.articles);
 
             console.log('article list', articles);
@@ -55,7 +55,7 @@ const ClubArticlesList = () => {
             setTotalPages(Math.ceil(response.pagination.total / limit));
             setTotal(response.pagination.total);
         } catch (error) {
-            console.error("게시물 목록 조회 실패:", error);
+            console.error("게시글 목록 조회 실패:", error);
         } finally {
             setLoading(false);
         }
@@ -86,7 +86,7 @@ const ClubArticlesList = () => {
                 </div>
             )}
 
-            {/* 게시물 목록 */}
+            {/* 게시글 목록 */}
             <div className="bg-white shadow-md rounded-lg">
                 {articles.length === 0 ? (
                     <div className="text-center py-8 text-extraText">
@@ -107,7 +107,7 @@ const ClubArticlesList = () => {
                                     </div>
                                 )}
 
-                                {/* 게시물 정보 */}
+                                {/* 게시글 정보 */}
                                 <div className="flex items-center justify-between mb-2">
                                     <h3 className="text-lg font-semibold">
                                         {article.title}
