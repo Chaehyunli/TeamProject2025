@@ -81,7 +81,7 @@ const ClubArticlesList = () => {
                         onClick={() => navigate(`/clubs/${clubId}/articles/create`)}
                         className="bg-primary hover:bg-hoverBlueColor text-white px-4 py-2 rounded-lg"
                     >
-                        게시물 작성
+                        게시글 작성
                     </button>
                 </div>
             )}
@@ -90,7 +90,7 @@ const ClubArticlesList = () => {
             <div className="bg-white shadow-md rounded-lg">
                 {articles.length === 0 ? (
                     <div className="text-center py-8 text-extraText">
-                        게시물이 없습니다.
+                        게시글이 없습니다
                     </div>
                 ) : (
                     <div className="divide-y divide-gray-200">

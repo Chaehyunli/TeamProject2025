@@ -8,7 +8,7 @@ import {
 import { ProtectedImage } from "../api/uploadApi";
 import Comment from "../components/Comment";
 
-const ArticleDetail = () => {
+const ClubArticleDetail = () => {
     const { clubId, articleId } = useParams();
     const navigate = useNavigate();
     const [article, setArticle] = useState(null);
@@ -144,4 +144,4 @@ const ArticleDetail = () => {
     );
 };
 
-export default ArticleDetail;
+export default ClubArticleDetail;

@@ -2,7 +2,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import {deleteNotice, getNoticeDetail, getUserClubRole} from "../api/clubApi";
 import { ProtectedImage } from "../api/uploadApi";
-const NoticeDetail = () => {
+const ClubNoticeDetail = () => {
     const {clubId, noticeId} = useParams();
     const navigate = useNavigate();
     const [notices, setNotices] = useState(null);
@@ -119,4 +119,4 @@ const NoticeDetail = () => {
     );
 };
 
-export default NoticeDetail;
+export default ClubNoticeDetail;
