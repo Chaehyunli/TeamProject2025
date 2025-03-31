@@ -1,12 +1,15 @@
 import { useNavigate, useParams } from "react-router-dom";
 import React, { useEffect, useState } from "react";
-import {deleteNotice, getNoticeDetail, getUserClubRole} from "../api/clubApi";
+import { deleteNotice, getNoticeDetail, getUserClubRole } from "../api/clubApi";
 import { ProtectedImage } from "../api/uploadApi";
+import Spinner from "./Spinner";
+
 const ClubNoticeDetail = () => {
     const {clubId, noticeId} = useParams();
     const navigate = useNavigate();
     const [notices, setNotices] = useState(null);
     const [isLeadership, setIsLeadership] = useState(false);
+    const [actionLoading, setActionLoading] = useState(false);
 
     useEffect(() => {
         const fetchNoticeDetail = async () => {
@@ -36,22 +39,21 @@ const ClubNoticeDetail = () => {
 
     const handleDelete = async () => {
         if(window.confirm('정말로 이 공지사항을 삭제하시겠습니까?')){
+            setActionLoading(true);
             try {
                 await deleteNotice(clubId, noticeId);
                 alert('공지사항이 삭제되었습니다.');
                 navigate(`/clubs/${clubId}/notices`);
-            }catch (error) {
+            } catch (error) {
                 console.error('공지사항 삭제 실패: ', error);
+            } finally {
+                setActionLoading(false);
             }
         }
     };
 
     if(!notices){
-        return (
-            <div className="flex justify-center items-center h-64">
-                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
-            </div>
-        );
+        return <Spinner />;
     }
 
     return (
@@ -105,6 +107,7 @@ const ClubNoticeDetail = () => {
                                             <button
                                                 onClick={handleDelete}
                                                 className="px-4 py-2 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-md"
+                                                disabled={actionLoading}
                                             >
                                                 삭제
                                             </button>
