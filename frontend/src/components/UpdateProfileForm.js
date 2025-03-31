@@ -68,13 +68,13 @@ const UpdateProfileForm = ({ formData, setFormData, handleEmailChange, handleEma
             {/* 버튼 추가 */}
             <div className="flex justify-end mt-6 space-x-4">
                 <button
-                    className="px-4 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500"
+                    className="px-4 py-2 text-extraText bg-gray-100 hover:bg-gray-200 rounded-md"
                     onClick={() => navigate("/profile")}
                 >
                     취소
                 </button>
                 <button
-                    className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-hoverBlueColor"
+                    className="px-4 py-2 bg-primary text-white rounded-md hover:bg-hoverBlueColor"
                     onClick={handleSave}
                 >
                     저장
