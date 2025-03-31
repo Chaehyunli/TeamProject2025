@@ -52,12 +52,12 @@ const DirectMessageButton = ({ presidentId, receiverName, clubId}) => {
         <div className="mt-4">
             <button
                 onClick={handleStartChat}
-                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+                className="bg-primary hover:bg-hoverBlueColor text-white px-4 py-2 rounded"
                 disabled={loading}
             >
                 {loading ? "채팅방 생성 중..." : "회장에게 1:1 문의하기"}
             </button>
-            {error && <p className="text-red-500 mt-2">{error}</p>}
+            {error && <p className="text-warningText mt-2">{error}</p>}
         </div>
     );
 };
