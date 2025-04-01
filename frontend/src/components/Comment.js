@@ -175,7 +175,7 @@ const Comment = ({ articleId, currentUserId, userRole }) => {
                                 />
                                 <div className="flex gap-2">
                                     <button onClick={handleEditSubmit} className="px-2 py-1 text-xs bg-primary text-white rounded hover:bg-hoverBlueColor">저장</button>
-                                    <button onClick={handleEditCancel} className="px-2 py-1 text-xs bg-gray-300 text-black rounded hover:bg-gray-400">취소</button>
+                                    <button onClick={handleEditCancel} className="px-2 py-1 text-xs bg-gray-300 text-black rounded hover:bg-extraText">취소</button>
                                 </div>
                             </div>
                         ) : (
@@ -187,7 +187,7 @@ const Comment = ({ articleId, currentUserId, userRole }) => {
                                     )}
                                 </div>
                                 <div
-                                    className="text-sm text-gray-500">작성자: {userProfiles[c.userId]?.name}({userProfiles[c.userId]?.username})
+                                    className="text-sm text-extraText">작성자: {userProfiles[c.userId]?.name}({userProfiles[c.userId]?.username})
                                 </div>
                                 <div className="text-xs text-gray-400 mt-1">
                                     {c.updatedAt ? `최근 수정일자: ${new Date(c.updatedAt).toLocaleString()}` : `댓글 작성일자: ${new Date(c.createdAt).toLocaleString()}`}
@@ -198,10 +198,10 @@ const Comment = ({ articleId, currentUserId, userRole }) => {
                         {!c.deleted && (
                             <div className="absolute top-2 right-2 flex space-x-2">
                                 {String(c.userId) === currentUserId && (
-                                    <button onClick={(e) => { e.stopPropagation(); handleEditClick(c.commentId, c.content); }} className="px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600">수정</button>
+                                    <button onClick={(e) => { e.stopPropagation(); handleEditClick(c.commentId, c.content); }} className="px-2 py-1 text-xs bg-primary text-white rounded hover:bg-hoverBlueColor">수정</button>
                                 )}
                                 {(String(c.userId) === currentUserId || userRole === 'PRESIDENT') && (
-                                    <button onClick={(e) => { e.stopPropagation(); handleCommentDelete(c.commentId); }} className="px-2 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600">삭제</button>
+                                    <button onClick={(e) => { e.stopPropagation(); handleCommentDelete(c.commentId); }} className="px-2 py-1 text-xs bg-warningButton text-white rounded hover:bg-hoverWarningButton">삭제</button>
                                 )}
                             </div>
                         )}

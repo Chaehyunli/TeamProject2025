@@ -38,7 +38,5 @@ out/
 
 node_modules/
 
-### Ignore application.properties file in src/main/resources ###
-src/main/resources/application.properties
-
-src/main/resources/application.properties
+### GCP key ###
+src/main/resources/service-key.json

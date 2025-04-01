@@ -16,8 +16,8 @@ import java.time.LocalDateTime;
 public class SpecificNoticeResponseDto {
     private Long noticeId;
     private AuthorDto author;
-    private String noticeTitle;
-    private String noticeContents;
+    private String title;
+    private String contents;
     private LocalDateTime created_at;
     private LocalDateTime updated_at;
     private String thumbUrl;
@@ -26,8 +26,8 @@ public class SpecificNoticeResponseDto {
         return SpecificNoticeResponseDto.builder()
                 .noticeId(notice.getNoticeId())
                 .author(new AuthorDto(notice.getUser().getUserId(), notice.getUser().getUsername()))
-                .noticeTitle(notice.getNoticeTitle())
-                .noticeContents(notice.getNoticeContents())
+                .title(notice.getTitle())
+                .contents(notice.getContents())
                 .created_at(notice.getCreatedAt())
                 .updated_at(notice.getUpdatedAt())
                 .thumbUrl(notice.getThumbUrl())

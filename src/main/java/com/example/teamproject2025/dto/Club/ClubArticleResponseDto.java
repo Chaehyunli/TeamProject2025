@@ -13,11 +13,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 public class ClubArticleResponseDto {
-
     private Long articleId;
     private Long clubId;
     private Long userId;
-    private boolean is_notice;
     private String title;
     private String contents;
     private String thumbUrl;
@@ -28,7 +26,6 @@ public class ClubArticleResponseDto {
                 .articleId(article.getArticleId())
                 .clubId(article.getClub().getClubId())
                 .userId(article.getUser().getUserId())
-                .is_notice(article.is_notice())
                 .title(article.getTitle())
                 .contents(article.getContents())
                 .thumbUrl(article.getThumbUrl())

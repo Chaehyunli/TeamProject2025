@@ -17,7 +17,6 @@ public class ArticleResponseDto {
     private Long articleId;
     private Long clubId;
     private AuthorDto author;
-    private boolean is_notice;
     private String title;
     private String contents;
     private LocalDateTime createdAt;
@@ -30,7 +29,6 @@ public class ArticleResponseDto {
                 .articleId(article.getArticleId())
                 .clubId(article.getClub().getClubId())
                 .author(new AuthorDto(article.getUser().getUserId(), article.getUser().getUsername()))
-                .is_notice(article.is_notice())
                 .title(article.getTitle())
                 .contents(article.getContents())
                 .createdAt(article.getCreatedAt())

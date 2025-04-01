@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import FileUpload from "./FileUpload";
 import InputField from "./InputField";
 import { getCategory } from "../api/categoryApi";
+import Spinner from "./Spinner";
 
 const ClubRegistrationForm = ({ presidentName, onSubmit, actionLoading }) => {
     const [clubName, setClubName] = useState("");
@@ -65,11 +66,7 @@ const ClubRegistrationForm = ({ presidentName, onSubmit, actionLoading }) => {
     };
 
     if (loading) {
-        return (
-            <div className="flex justify-center items-center h-64">
-                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
-            </div>
-        );
+        return <Spinner />;
     }
 
     return (

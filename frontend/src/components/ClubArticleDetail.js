@@ -7,8 +7,9 @@ import {
 } from '../api/clubApi';
 import { ProtectedImage } from "../api/uploadApi";
 import Comment from "../components/Comment";
+import Spinner from "./Spinner";
 
-const ArticleDetail = () => {
+const ClubArticleDetail = () => {
     const { clubId, articleId } = useParams();
     const navigate = useNavigate();
     const [article, setArticle] = useState(null);
@@ -74,11 +75,7 @@ const ArticleDetail = () => {
     }
 
     if (loading || !article) {
-        return (
-            <div className="flex justify-center items-center h-64">
-                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
-            </div>
-        );
+        return <Spinner />;
     }
 
     return (
@@ -144,4 +141,4 @@ const ArticleDetail = () => {
     );
 };
 
-export default ArticleDetail;
+export default ClubArticleDetail;

@@ -3,6 +3,7 @@ import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { getClubArticles, getUserRoleInClub } from "../api/clubApi";
 import { ProtectedImage } from "../api/uploadApi";
 import UserNameFine from "./UserNameFine";
+import Spinner from "./Spinner";
 
 const ClubArticlesList = () => {
     const { clubId } = useParams();
@@ -47,7 +48,7 @@ const ClubArticlesList = () => {
             console.log('role boolean', isClubMember);
 
             // 응답 구조 확인
-            console.log('게시물 목록 응답:', response);
+            console.log('게시글 목록 응답:', response);
             setArticles(response.articles);
 
             console.log('article list', articles);
@@ -55,7 +56,7 @@ const ClubArticlesList = () => {
             setTotalPages(Math.ceil(response.pagination.total / limit));
             setTotal(response.pagination.total);
         } catch (error) {
-            console.error("게시물 목록 조회 실패:", error);
+            console.error("게시글 목록 조회 실패:", error);
         } finally {
             setLoading(false);
         }
@@ -66,11 +67,7 @@ const ClubArticlesList = () => {
     };
 
     if (loading) {
-        return (
-            <div className="flex justify-center items-center h-64">
-                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
-            </div>
-        );
+        return <Spinner />;
     }
 
     return (
@@ -81,16 +78,16 @@ const ClubArticlesList = () => {
                         onClick={() => navigate(`/clubs/${clubId}/articles/create`)}
                         className="bg-primary hover:bg-hoverBlueColor text-white px-4 py-2 rounded-lg"
                     >
-                        게시물 작성
+                        게시글 작성
                     </button>
                 </div>
             )}
 
-            {/* 게시물 목록 */}
+            {/* 게시글 목록 */}
             <div className="bg-white shadow-md rounded-lg">
                 {articles.length === 0 ? (
                     <div className="text-center py-8 text-extraText">
-                        게시물이 없습니다.
+                        게시글이 없습니다
                     </div>
                 ) : (
                     <div className="divide-y divide-gray-200">
@@ -107,7 +104,7 @@ const ClubArticlesList = () => {
                                     </div>
                                 )}
 
-                                {/* 게시물 정보 */}
+                                {/* 게시글 정보 */}
                                 <div className="flex items-center justify-between mb-2">
                                     <h3 className="text-lg font-semibold">
                                         {article.title}
