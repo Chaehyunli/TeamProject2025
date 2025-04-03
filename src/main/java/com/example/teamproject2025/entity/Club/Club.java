@@ -28,7 +28,7 @@ public class Club {
     private String clubName; // 동아리 이름
 
     @Lob
-    @Column(nullable = false)
+    @Column(nullable = false, length = 500)
     private String description; // 동아리 설명
 
     @ManyToOne
