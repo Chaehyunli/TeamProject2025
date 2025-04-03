@@ -1,4 +1,6 @@
 import axios from "axios";
+import SockJS from "sockjs-client";
+import Stomp from "webstomp-client";
 
 const API_BASE_URL = "http://localhost:8080/api/v1/chat";
 
@@ -113,5 +115,38 @@ export const fetchChatRoomName = async (roomId) => {
     } catch (error) {
         console.error("❌ 채팅방 이름 불러오기 실패:", error);
         throw error;
+    }
+};
+
+export const fetchPresignedUrl = async (objectName) => {
+    try {
+        const response = await axios.get(`http://localhost:8080/api/v1/upload/presigned-url/download`, {
+            params: { objectName },
+            withCredentials: true
+        });
+        return response.data.data.url;
+    } catch (error) {
+        console.error("❌ Presigned URL 요청 실패:", error);
+        throw error;
+    }
+};
+
+export const fetchReceiverProfileImageUrl = async (receiverEmail, participants) => {
+    if (!receiverEmail || !participants[receiverEmail]) return null;
+
+    const userProfile = participants[receiverEmail];
+
+    try {
+        if (userProfile.profileImage && !userProfile.profileImage.startsWith("http")) {
+            // Presigned URL이 필요한 경우
+            const presignedUrl = await fetchPresignedUrl(userProfile.profileImage);
+            return presignedUrl;
+        } else {
+            // URL이 이미 존재하는 경우 (http 또는 https로 시작하는 경우)
+            return userProfile.profileImage;
+        }
+    } catch (error) {
+        console.error("❌ 프로필 이미지 가져오기 실패:", error);
+        return null;
     }
 };

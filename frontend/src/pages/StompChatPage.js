@@ -2,10 +2,9 @@ import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import SockJS from "sockjs-client";
 import Stomp from "webstomp-client";
-import axios from "axios";
 import { useChat } from "../context/ChatContext";  // 🔥 ChatContext 가져오기
 import backIcon from "../assets/backIcon.png";
-import { fetchChatHistory, markMessagesAsRead, fetchChatRoomName } from "../api/chatApi";
+import { fetchChatHistory, markMessagesAsRead, fetchChatRoomName, fetchReceiverProfileImageUrl } from "../api/chatApi";
 
 const StompChatPage = () => {
     const { roomId } = useParams();
@@ -63,18 +62,16 @@ const StompChatPage = () => {
     useEffect(() => {
         if (!receiverEmail || !participants[receiverEmail]) return;
 
-        const userProfile = participants[receiverEmail];
+        const loadReceiverImageUrl = async () => {
+            try {
+                const imageUrl = await fetchReceiverProfileImageUrl(receiverEmail, participants);
+                if (imageUrl) setReceiverImageUrl(imageUrl);
+            } catch (error) {
+                console.error("❌ Receiver Image URL 로딩 실패", error);
+            }
+        };
 
-        if (userProfile.profileImage && !userProfile.profileImage.startsWith("http") && !receiverImageUrl) {
-            axios.get(`${API_BASE_URL}/api/v1/upload/presigned-url/download`, {
-                params: { objectName: userProfile.profileImage },
-                withCredentials: true
-            })
-                .then(res => setReceiverImageUrl(res.data.data.url))
-                .catch(error => console.error("❌ Presigned URL 요청 실패:", error));
-        } else {
-            setReceiverImageUrl(userProfile.profileImage); // 일반 URL이라면 그대로 사용
-        }
+        loadReceiverImageUrl();
     }, [receiverEmail, participants]); // receiverImageUrl을 의존성에서 제외하여 불필요한 반복 호출 방지해야 한다.
 
     useEffect(() => {
