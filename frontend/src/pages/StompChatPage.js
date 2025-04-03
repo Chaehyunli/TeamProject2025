@@ -1,11 +1,15 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import SockJS from "sockjs-client";
-import Stomp from "webstomp-client";
-import axios from "axios";
 import { useChat } from "../context/ChatContext";  // 🔥 ChatContext 가져오기
 import backIcon from "../assets/backIcon.png";
-import { fetchChatHistory, markMessagesAsRead, fetchChatRoomName } from "../api/chatApi";
+import {
+    fetchChatHistory,
+    fetchChatRoomName,
+    fetchReceiverProfileImageUrl,
+    connectWebSocket,
+    sendMessage,
+    disconnectWebSocket
+} from "../api/chatApi";
 
 const StompChatPage = () => {
     const { roomId } = useParams();
@@ -24,11 +28,12 @@ const StompChatPage = () => {
 
     const API_BASE_URL = "http://localhost:8080";
 
+    // 전체로직 부분: 연결상태인가 체크하고 아니라면 연결과 함꼐, 챗 관련 정보들을 로드한다. 종료하면 연결해제한다.
     useEffect(() => {
-        if (!isConnectedRef.current) {
-            console.log("🔌 Connecting WebSocket...");
-            connectWebsocket();
-        }
+        console.log("🔌 Connecting WebSocket...");
+        connectWebSocket(roomId, (receivedMessage) => {
+            setMessages((prevMessages) => [...prevMessages, receivedMessage]);
+        });
 
         fetchChatParticipants(roomId);
 
@@ -55,121 +60,50 @@ const StompChatPage = () => {
 
         return () => {
             console.log("🔌 Disconnecting WebSocket... 여기는 UseEffect 부분임");
-            disconnectWebSocket();
+            disconnectWebSocket(roomId);
         };
     }, [roomId]);
 
-    // 상대방 프로필 정보 및 Presigned URL 가져오기
+    // 부분 로직 ①. 상대방 프로필 정보 및 Presigned URL 가져오기
     useEffect(() => {
         if (!receiverEmail || !participants[receiverEmail]) return;
 
-        const userProfile = participants[receiverEmail];
+        const loadReceiverImageUrl = async () => {
+            try {
+                const imageUrl = await fetchReceiverProfileImageUrl(receiverEmail, participants);
+                if (imageUrl) setReceiverImageUrl(imageUrl);
+            } catch (error) {
+                console.error("❌ Receiver Image URL 로딩 실패", error);
+            }
+        };
 
-        if (userProfile.profileImage && !userProfile.profileImage.startsWith("http") && !receiverImageUrl) {
-            axios.get(`${API_BASE_URL}/api/v1/upload/presigned-url/download`, {
-                params: { objectName: userProfile.profileImage },
-                withCredentials: true
-            })
-                .then(res => setReceiverImageUrl(res.data.data.url))
-                .catch(error => console.error("❌ Presigned URL 요청 실패:", error));
-        } else {
-            setReceiverImageUrl(userProfile.profileImage); // 일반 URL이라면 그대로 사용
-        }
+        loadReceiverImageUrl();
     }, [receiverEmail, participants]); // receiverImageUrl을 의존성에서 제외하여 불필요한 반복 호출 방지해야 한다.
 
+    // 부분 로직 ②. 스크롤은 항상 최신 메시지 기준으로
     useEffect(() => {
         scrollToBottom();
     }, [messages]);
 
-    const connectWebsocket = () => {
-        if (isConnectedRef.current) return;
-
-        console.log("🔗 Connecting WebSocket...");
-        isConnectedRef.current = true;
-
-        const sockJs = new SockJS(`${API_BASE_URL}/connect`);
-        const stompClient = Stomp.over(sockJs);
-        stompClientRef.current = stompClient;
-
-        stompClient.connect({}, (frame) => {
-                console.log("✅ STOMP WebSocket 연결 성공", frame.headers);
-
-                if (subscriptionRef.current) {
-                    subscriptionRef.current.unsubscribe();
-                    subscriptionRef.current = null;
-                }
-
-                subscriptionRef.current = stompClient.subscribe(
-                    `/topic/${roomId}`,
-                    (message) => {
-                        console.log("📩 메시지 수신:", message.body);
-                        const receivedMessage = JSON.parse(message.body);
-                        setMessages((prevMessages) => [...prevMessages, receivedMessage]);
-                    }
-                );
-            },
-            (error) => {
-                console.error("❌ WebSocket 연결 실패", error);
-                isConnectedRef.current = false;
-            }
-        );
-    };
-
-    const sendMessage = () => {
-        if (!isConnectedRef.current || newMessage.trim() === "") return;
-
-        const message = { senderEmail, message: newMessage };
-
-        stompClientRef.current.send(
-            `/publish/${roomId}`,
-            JSON.stringify(message),
-            { "content-length": new TextEncoder().encode(JSON.stringify(message)).length }
-        );
-
+    // 부분 로직 ④. Stomp Websocket Handler 를 통해 메시지를 보낸다.
+    const handleSendMessage = () => {
+        sendMessage(roomId, senderEmail, newMessage);
         setNewMessage("");
     };
 
-    const disconnectWebSocket = async () => {
-        if (!stompClientRef.current || !isConnectedRef.current) return;
-
-        console.log("🔌 Disconnecting WebSocket .. 여긴 method 내부 코드임. ㄹㅇ");
-
-        try {
-            subscriptionRef.current?.unsubscribe();
-            subscriptionRef.current = null;
-
-            await new Promise(resolve => {
-                if (stompClientRef.current && stompClientRef.current.connected) {
-                    stompClientRef.current.disconnect(() => {
-                        console.log("✅ WebSocket 해제 완료.");
-                        isConnectedRef.current = false;
-                        stompClientRef.current = null;
-                        resolve();
-                    });
-                } else {
-                    console.log("⚠️ WebSocket 연결이 이미 끊어져 있음.");
-                    resolve();
-                }
-            });
-
-            // ✅ 읽음 처리 API 요청 추가
-            await markMessagesAsRead(roomId);
-
-        } catch (error) {
-            console.error("❌ WebSocket 해제 중 오류 발생", error);
-        }
-    };
-
+    // 부분 로직 ⑥. 처음 입장 성공 시 최신 메시지 기준으로 넘어가짐
     const scrollToBottom = () => {
         scrollRef.current?.scrollIntoView({ behavior: "smooth" });
     };
 
+    // 부분 로직 ⑦. Back 으로부터 받아오는 데이터가 ISO 임. 이걸 hhmm 으로 바꾸기 위한 메서드
     function formatTimeFromISO(isoString) {
         return new Date(isoString).toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" });
     }
 
+    // 부분 로직 ⑧. 만약 Back 을 하게 되면 WebSocket 을 해제하는데, 이때 메시지를 읽고 my-chatpage 로 넘어감
     const handleBack = async () => {
-        await disconnectWebSocket();   // 읽음처리
+        await disconnectWebSocket(roomId);   // 읽음처리
         navigate("/my-chatpage");      // 그 다음 페이지 이동
     };
 
@@ -184,8 +118,6 @@ const StompChatPage = () => {
                     {roomName || "Loading..."}
                 </div>
 
-
-                {/*<div className="h-[50vh] flex-1 overflow-y-auto p-4 space-y-3 max-h-[600px]">*/}
                 <div className="h-[600px] overflow-y-auto p-4 space-y-3">
                     {messages.map((msg, index) => {
                         const senderInfo = participants[msg.senderEmail] || {
@@ -238,9 +170,9 @@ const StompChatPage = () => {
                         onChange={(e) => setNewMessage(e.target.value)}
                         placeholder="메시지 입력"
                         className="flex-1 border border-gray-300 rounded-lg p-2 focus:outline-none"
-                        onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+                        onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
                     />
-                    <button onClick={sendMessage} className="ml-3 bg-primary text-white px-4 py-2 rounded-lg">전송
+                    <button onClick={handleSendMessage} className="ml-3 bg-primary text-white px-4 py-2 rounded-lg">전송
                     </button>
                 </div>
             </div>
