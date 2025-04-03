@@ -21,7 +21,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<CommonResponseDto<Void>> handleDataIntegrityViolationException(DataIntegrityViolationException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(CommonResponseDto.error(HttpStatus.CONFLICT.value(), "Duplicate entry detected."));
+                .body(CommonResponseDto.error(HttpStatus.CONFLICT.value(), "이미 존재하는 계정입니다."));
     }
 
     // 기본 예외 처리
