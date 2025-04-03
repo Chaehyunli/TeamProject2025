@@ -19,7 +19,7 @@ module.exports = {
                 approvedFalseColor: '#EF4444', // 승인 거부 상태
             },
             fontFamily: {
-                sans: ['Pretendard', 'sans-serif'], // 전체 기본 폰트
+                sans: ['sans-serif'], // 전체 기본 폰트
             }
         },
     },
