@@ -16,7 +16,11 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "users")
+@Table(name = "users", uniqueConstraints = {
+        @UniqueConstraint(name = "users_email_unique", columnNames = "email"),
+        @UniqueConstraint(name = "users_username_unique", columnNames = "username"),
+        @UniqueConstraint(name = "users_studentId_unique", columnNames = "student_id")
+})
 public class User {
 
     @Id
