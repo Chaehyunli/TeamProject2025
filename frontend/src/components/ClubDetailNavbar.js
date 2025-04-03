@@ -4,7 +4,7 @@ import { useNavigate,useLocation } from "react-router-dom";
 const ClubDetailNavbar = ({ clubId, userRole, onDeleteClub }) => {
     console.log("ClubDetailNavbar received userRole:", userRole); // props 확인
 
-    const [selected, setSelected] = useState("게시물");
+    const [selected, setSelected] = useState("게시글");
     const navigate = useNavigate();
     const location = useLocation(); // 현재 URL 가져오기
 
@@ -14,12 +14,12 @@ const ClubDetailNavbar = ({ clubId, userRole, onDeleteClub }) => {
         if (location.pathname.includes("/submissions")) return "지원자관리";
         if (location.pathname.includes("/members")) return "권한";
         if (location.pathname.includes("/apply")) return "지원하기";
-        return "게시물"; // 기본값
+        return "게시글"; // 기본값
     };
 
     // 기본 메뉴 (모든 사용자에게 표시)
     let menuItems = [
-        { name: "게시물", path: `/clubs/${clubId}/articles` },
+        { name: "게시글", path: `/clubs/${clubId}/articles` },
         { name: "공지사항", path: `/clubs/${clubId}/notices` }
     ];
 

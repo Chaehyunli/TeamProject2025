@@ -17,8 +17,8 @@ public class NoticeResponseDto {
     private Long noticeId;
     private Long clubId;
     private AuthorDto author;
-    private String noticeTitle;
-    private String noticeContents;
+    private String title;
+    private String contents;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private String thumbUrl;
@@ -28,8 +28,8 @@ public class NoticeResponseDto {
                 .noticeId(notice.getNoticeId())
                 .clubId(notice.getClub().getClubId())
                 .author(new AuthorDto(notice.getUser().getUserId(), notice.getUser().getUsername()))
-                .noticeTitle(notice.getNoticeTitle())
-                .noticeContents(notice.getNoticeContents())
+                .title(notice.getTitle())
+                .contents(notice.getContents())
                 .createdAt(notice.getCreatedAt())
                 .updatedAt(notice.getUpdatedAt())
                 .thumbUrl(notice.getThumbUrl())

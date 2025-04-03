@@ -1,7 +1,6 @@
 package com.example.teamproject2025.service.Club;
 
 import com.example.teamproject2025.dto.Club.*;
-import com.example.teamproject2025.dto.Membership.ClubMemberResponseDto;
 import com.example.teamproject2025.dto.Membership.UserClubResponseDto;
 
 import java.io.IOException;
@@ -20,7 +19,7 @@ public interface ClubService {
 
     boolean checkUserIsPresident(Long userId, Long clubId);
 
-    ClubArticleResponseDto createArticle(Long clubId, Long userId, String title, String content, String uploadedFileName, boolean is_notice);
+    ClubArticleResponseDto createArticle(Long clubId, Long userId, String title, String content, String uploadedFileName);
 
     boolean deleteArticle(Long clubId, Long articleId, Long userId);
 

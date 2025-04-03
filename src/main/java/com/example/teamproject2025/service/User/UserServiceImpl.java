@@ -1,7 +1,6 @@
 package com.example.teamproject2025.service.User;
 
 import com.example.teamproject2025.constant.DefaultImage;
-import com.example.teamproject2025.dto.Chat.ChatRoomParticipantsReqDto;
 import com.example.teamproject2025.dto.Chat.MyChatListResDto;
 import com.example.teamproject2025.dto.Club.ClubSummaryDto;
 import com.example.teamproject2025.dto.User.UserCreateRequestDto;
@@ -13,8 +12,8 @@ import com.example.teamproject2025.entity.Chat.ChatRoom;
 import com.example.teamproject2025.entity.Club.Article;
 import com.example.teamproject2025.entity.Club.Notice;
 import com.example.teamproject2025.entity.User.User;
-import com.example.teamproject2025.repository.Chat.ChatParticipantRepository;
 import com.example.teamproject2025.exception.CustomException;
+import com.example.teamproject2025.repository.Chat.ChatParticipantRepository;
 import com.example.teamproject2025.repository.Chat.ChatRoomRepository;
 import com.example.teamproject2025.repository.Club.ClubArticleRepository;
 import com.example.teamproject2025.repository.Club.ClubNoticeRepository;
@@ -38,7 +37,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -59,7 +57,7 @@ public class UserServiceImpl implements UserService {
     private final ClubSubmissionRepository clubSubmissionRepository;
     private final BanUserRepository banUserRepository;
 
-    @Value("${spring.cloud.gcp.storage.bucket}")
+    @Value("${GCP_BUCKET}")
     private String bucketName;
 
     @Override
@@ -91,15 +89,18 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         // 기존 이미지 삭제 로직 추가(Google Cloud)
-        if (dto.getProfileImage() != null
-                && !dto.getProfileImage().equals(user.getProfileImage())
-                && !dto.getProfileImage().equals(DefaultImage.PROFILE_IMAGE)) {
-            deleteImageFromGCS(user.getProfileImage()); // 기존 이미지 삭제 (기본 이미지 제외)
+        if (dto.getProfileImage() != null && !dto.getProfileImage().isBlank() && !dto.getProfileImage().equals(user.getProfileImage()) && !dto.getProfileImage().equals(DefaultImage.PROFILE_IMAGE)) {
+            deleteImageFromGCS(user.getProfileImage()); // 기존 이미지 삭제
+            user.setProfileImage(dto.getProfileImage());
         }
 
         // PATCH 방식이므로 값이 존재하는 경우에만 업데이트
         if (dto.getEmail() != null) user.setEmail(dto.getEmail());
-        if (dto.getProfileImage() != null) user.setProfileImage(dto.getProfileImage());
+        // 기존 이미지 삭제 로직 추가(Google Cloud)
+        if (dto.getProfileImage() != null && !dto.getProfileImage().isBlank() && !dto.getProfileImage().equals(user.getProfileImage()) && !dto.getProfileImage().equals(DefaultImage.PROFILE_IMAGE)) {
+            deleteImageFromGCS(user.getProfileImage()); // 기존 이미지 삭제
+            user.setProfileImage(dto.getProfileImage());
+        }
         if (dto.getName() != null) user.setName(dto.getName());
         if (dto.getStudentId() != null) user.setStudentId(dto.getStudentId());
         if (dto.getDepartment() != null) user.setDepartment(dto.getDepartment());

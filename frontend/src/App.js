@@ -1,7 +1,24 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+
+// Components
 import TopNavbar from "./components/TopNavbar";
 import UnderConstruction from "./components/UnderConstruction";
+import ChatLayout from "./layouts/ChatLayout";
+import ClubArticlesList from "./components/ClubArticlesList";
+import ClubSubmissions from "./components/ClubSubmissions";
+import ClubMembers from "./components/ClubMembers";
+import ClubApply from "./components/ClubApply";
+import ClubSubmissionDetail from "./components/ClubSubmissionDetail";
+import CreateArticle from "./components/CreateArticle";
+import ClubArticleDetail from "./components/ClubArticleDetail";
+import ProtectedRoute from "./components/ProtectedRoute";
+import FindPasswordForm from "./components/FindPasswordForm";
+import CreateNotice from "./components/CreateNotice";
+import ClubNoticeList from "./components/ClubNoticeList";
+import ClubNoticeDetail from "./components/ClubNoticeDetail";
+
+// Pages
 import HomePage from "./pages/HomePage";
 import ProfilePage from "./pages/ProfilePage";
 import LoginPage from "./pages/LoginPage";
@@ -11,33 +28,18 @@ import ResetPasswordPage from "./pages/ResetPasswordPage";
 import FindAccountPage from "./pages/FindAccountPage";
 import UserChatList from "./pages/UserChatList";
 import MyChatPage from "./pages/MyChatPage";
-import ChatLayout from "./layouts/ChatLayout";
 import StompChatPage from "./pages/StompChatPage";
 import TestPage from "./pages/TestPage";
 import ClubRegisterPage from "./pages/ClubRegisterPage";
 import ClubDetailPage from "./pages/ClubDetailPage";
-import ClubArticlesList from "./components/ClubArticlesList";
-import ClubSubmissions from "./components/ClubSubmissions";
-import ClubMembers from "./components/ClubMembers";
-import ClubApply from "./components/ClubApply";
-import ClubSubmissionDetail from "./components/ClubSubmissionDetail";
+import MyClubsPage from "./pages/MyClubPage";
 import MySubmissionsPage from "./pages/MySubmissionsPage";
 import MySubmissionsDetailPage from "./pages/MySubmissionsDetailPage";
 import MySubmissionsUpdatePage from "./pages/MySubmissionsUpdatePage";
-import MyClubsPage from "./pages/MyClubPage";
-import CreateArticle from "./components/CreateArticle";
-import ArticleDetail from "./components/ArticleDetail";
-import UpdateArticle from "./components/UpdateArticle";
 import ClubSearchResultPage from "./pages/ClubSearchResultPage";
-import ProtectedRoute from "./components/ProtectedRoute";
-import ResetPasswordForm from "./components/ResetPasswordForm";
-import EmailVerificationForm from "./components/EmailVerificationForm";
-import FindPasswordForm from "./components/FindPasswordForm";
 import UpdatePasswordPage from "./pages/UpdatePasswordPage";
-import CreateNotice from "./components/CreateNotice";
-import NoticeList from "./components/NoitceList";
-import NoticeDetail from "./components/NoticeDetail";
-import UpdateNotice from "./components/UpdateNotice";
+import UpdateArticlePage from "./pages/UpdateArticlePage";
+import UpdateNoticePage from "./pages/UpdateNoticePage";
 
 function App() {
     return (
@@ -86,12 +88,12 @@ function App() {
                     <Route path="members" element={<ProtectedRoute><ClubMembers /></ProtectedRoute>} />
                     <Route path="apply" element={<ProtectedRoute><ClubApply /></ProtectedRoute>} />
                     <Route path="/clubs/:clubId/articles/create" element={<ProtectedRoute><CreateArticle /></ProtectedRoute>} />
-                    <Route path="articles/:articleId" element={<ProtectedRoute><ArticleDetail /></ProtectedRoute>} />
-                    <Route path="/clubs/:clubId/articles/:articleId/edit" element={<ProtectedRoute><UpdateArticle /></ProtectedRoute>} />
+                    <Route path="articles/:articleId" element={<ProtectedRoute><ClubArticleDetail /></ProtectedRoute>} />
+                    <Route path="/clubs/:clubId/articles/:articleId/edit" element={<ProtectedRoute><UpdateArticlePage /></ProtectedRoute>} />
                     <Route path="notices/create" element={<ProtectedRoute><CreateNotice /></ProtectedRoute>} />
-                    <Route path="notices" element={<ProtectedRoute><NoticeList /></ProtectedRoute>} />
-                    <Route path="notices/:noticeId" element={<ProtectedRoute><NoticeDetail /></ProtectedRoute>} />
-                    <Route path="notices/:noticeId/edit" element={<ProtectedRoute><UpdateNotice /></ProtectedRoute>} />
+                    <Route path="notices" element={<ProtectedRoute><ClubNoticeList /></ProtectedRoute>} />
+                    <Route path="notices/:noticeId" element={<ProtectedRoute><ClubNoticeDetail /></ProtectedRoute>} />
+                    <Route path="notices/:noticeId/edit" element={<ProtectedRoute><UpdateNoticePage /></ProtectedRoute>} />
 
                 </Route>
 

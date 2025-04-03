@@ -3,7 +3,8 @@ import { useParams } from "react-router-dom";
 import { getClubSubmissionDetail, getClub } from "../api/clubApi";
 import { getParticularUserProfile } from "../api/userApi";
 import InputField from "./InputField"; // 기존 폼에서 사용한 InputField 컴포넌트
-import dayjs from "dayjs"; // 날짜 변환 라이브러리 -> 지원 시간 및 최근 업데이트 시간을 형식에 맞게 출력 -> "npm install dayjs" 라이브러리 설치 필요
+import dayjs from "dayjs";
+import Spinner from "./Spinner"; // 날짜 변환 라이브러리 -> 지원 시간 및 최근 업데이트 시간을 형식에 맞게 출력 -> "npm install dayjs" 라이브러리 설치 필요
 
 const ClubSubmissionDetail = () => {
     const { clubId, applyId } = useParams(); // 경로 변수 가져오기
@@ -58,15 +59,11 @@ const ClubSubmissionDetail = () => {
     }, [submission]);
 
     if (profileLoading || submissionLoading) {
-        return (
-            <div className="flex justify-center items-center h-64">
-                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
-            </div>
-        );
+        return <Spinner />;
     }
 
     if (!submission) {
-        return <p className="text-warningText font-semibold mt-4 text-center">지원서 정보를 찾을 수 없습니다.</p>;
+        return <p className="text-warningText font-semibold mt-4 text-center">지원서 정보를 찾을 수 없습니다</p>;
     }
 
     return (

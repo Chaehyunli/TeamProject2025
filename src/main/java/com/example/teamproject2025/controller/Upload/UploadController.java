@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 public class UploadController {
 
     private final Storage storage;
-    @Value("${spring.cloud.gcp.storage.bucket}")
+    @Value("${GCP_BUCKET}")
     private String bucketName;
 
     // Presigned URL 생성 (파일 업로드)

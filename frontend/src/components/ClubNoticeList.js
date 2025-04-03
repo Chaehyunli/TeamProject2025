@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { getClubList, getNoticeList, getUserRoleInClub } from "../api/clubApi";
 import { ProtectedImage } from "../api/uploadApi";
 import UserNameFine from "./UserNameFine";
+import Spinner from "./Spinner";
 
 const NoticeList = () => {
     const {clubId} = useParams();
@@ -60,11 +61,7 @@ const NoticeList = () => {
     }
 
     if (loading) {
-        return (
-            <div className="flex justify-center items-center h-64">
-                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
-            </div>
-        );
+        return <Spinner />;
     }
 
     return (
@@ -84,7 +81,7 @@ const NoticeList = () => {
             <div className="bg-white shadow-md rounded-lg">
                 {notices.length === 0 ? (
                     <div className="text-center py-8 text-extraText">
-                        공지사항이 없습니다.
+                        공지사항이 없습니다
                     </div>
                 ) : (
                     <div className="divide-y divide-gray-200">
@@ -97,20 +94,20 @@ const NoticeList = () => {
                                 {/* 썸네일이 있을 때만 이미지 로딩 */}
                                 {notice.thumbUrl && (
                                     <div className="flex-shrink-0">
-                                        <ProtectedImage objectName={notice.thumbUrl} alt={notice.noticeTitle}/>
+                                        <ProtectedImage objectName={notice.thumbUrl} alt={notice.title}/>
                                     </div>
                                 )}
 
                                 {/* 공지사항 정보 */}
                                 <div className="flex items-center justify-between mb-2">
                                     <h3 className="text-lg font-semibold">
-                                        {notice.noticeTitle}
+                                        {notice.title}
                                     </h3>
-                                    <span className="text-sm text-gray-500">
+                                    <span className="text-sm text-extraText">
                                         {new Date(notice.createdAt).toLocaleDateString()}
                                     </span>
                                 </div>
-                                <div className="flex items-center text-sm text-gray-600">
+                                <div className="flex items-center text-sm text-extraText">
                                     <span>작성자: &nbsp;</span>
                                     <span><UserNameFine articles={notice} /></span>
                                     <span>({notice.author.authorName})</span>

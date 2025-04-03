@@ -1,6 +1,5 @@
 package com.example.teamproject2025.dto.Club;
 
-import com.example.teamproject2025.constant.DefaultImage;
 import com.example.teamproject2025.entity.Club.Club;
 import com.example.teamproject2025.entity.Club.Notice;
 import com.example.teamproject2025.entity.User.User;
@@ -14,19 +13,16 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class NoticeCreateRequestDto {
-
-    private String noticeTitle;
-    private String noticeContents;
-//    @Builder.Default
-//    private String thumbUrl = DefaultImage.CLUB_THUMBNAIL;
+    private String title;
+    private String contents;
     private String thumbUrl;
 
     public Notice toEntity(Club club, User user){
         return Notice.builder()
                 .club(club)
                 .user(user)
-                .noticeTitle(noticeTitle)
-                .noticeContents(noticeContents)
+                .title(title)
+                .contents(contents)
                 .thumbUrl(thumbUrl)
                 .build();
     }

@@ -113,7 +113,7 @@ public class ClubController {
 
         ClubArticleResponseDto clubArticle = clubService.createArticle(
                 clubId, userId, requestDto.getTitle(), requestDto.getContents(),
-                requestDto.getThumbUrl(), requestDto.is_notice()
+                requestDto.getThumbUrl()
         );
         return ResponseEntity.ok(
                 CommonResponseDto.success(200, "Article created successfully", clubArticle)
