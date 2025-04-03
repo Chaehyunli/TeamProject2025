@@ -90,12 +90,9 @@ const ClubMembers = () => {
             return;
         }
 
-        if (newRole === "PRESIDENT") {
-            alert("다른 회원을 회장으로 임명할 수 없습니다.");
-            return;
-        }
+        const roleLabel = newRole === "PRESIDENT" ? "회장" : newRole === "VICE_PRESIDENT" ? "부회장" : newRole === "STAFF" ? "임원" : "회원";
 
-        const confirmed = window.confirm(`${username}님을 ${newRole}로 임명하시겠습니까?`);
+        const confirmed = window.confirm(`${username}님을 ${roleLabel}으로 임명하시겠습니까?`);
         if (!confirmed) return;
 
         setActionLoading(true);
@@ -103,11 +100,31 @@ const ClubMembers = () => {
             const message = await grantRole(userId, clubId, newRole);
             alert(message);
 
+            // 본인이 회장을 넘겼다면, 내 역할을 "MEMBER"로 갱신 + members 목록도 갱신
+            if (newRole === "PRESIDENT" && userId !== currentUserId) {
+                setCurrentUserRole("MEMBER");
+
+                setMembers((prevMembers) =>
+                    prevMembers.map((member) =>
+                        member.userId === userId
+                            ? { ...member, roleName: newRole } // 새 회장
+                            : member.userId === currentUserId
+                                ? { ...member, roleName: "MEMBER" } // 나 → MEMBER
+                                : member
+                    )
+                );
+
+                window.location.reload(); // 화면 새로고침
+                return; // 아래 코드 실행하지 않음
+            }
+
+            // 그 외 경우 (회장 외 다른 역할 변경 시)
             setMembers((prevMembers) =>
                 prevMembers.map((member) =>
                     member.userId === userId ? { ...member, roleName: newRole } : member
                 )
             );
+
         } catch (error) {
             console.error("역할 변경 실패:", error);
             alert("역할 변경에 실패했습니다.");
@@ -172,7 +189,7 @@ const ClubMembers = () => {
                                         member.roleName === role ? "bg-primary text-white" : "border"
                                     }`}
                                     onClick={() => handleRoleChange(member.userId, role, member.username)}
-                                    disabled={currentUserRole !== "PRESIDENT" || member.isCurrentUser || role === "PRESIDENT"}
+                                    disabled={currentUserRole !== "PRESIDENT" || member.isCurrentUser}
                                 >
                                     {role === "MEMBER" ? "회원" :
                                         role === "STAFF" ? "임원" :
