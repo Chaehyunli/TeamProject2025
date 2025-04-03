@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { getClubList, getNoticeList, getUserRoleInClub } from "../api/clubApi";
 import { ProtectedImage } from "../api/uploadApi";
 import UserNameFine from "./UserNameFine";
+import Spinner from "./Spinner";
 
 const NoticeList = () => {
     const {clubId} = useParams();
@@ -60,11 +61,7 @@ const NoticeList = () => {
     }
 
     if (loading) {
-        return (
-            <div className="flex justify-center items-center h-64">
-                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
-            </div>
-        );
+        return <Spinner />;
     }
 
     return (
@@ -106,11 +103,11 @@ const NoticeList = () => {
                                     <h3 className="text-lg font-semibold">
                                         {notice.title}
                                     </h3>
-                                    <span className="text-sm text-gray-500">
+                                    <span className="text-sm text-extraText">
                                         {new Date(notice.createdAt).toLocaleDateString()}
                                     </span>
                                 </div>
-                                <div className="flex items-center text-sm text-gray-600">
+                                <div className="flex items-center text-sm text-extraText">
                                     <span>작성자: &nbsp;</span>
                                     <span><UserNameFine articles={notice} /></span>
                                     <span>({notice.author.authorName})</span>

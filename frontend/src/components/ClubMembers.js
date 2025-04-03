@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { getClubMembers, grantRole, leaveClub, getUserClubRole } from "../api/clubApi";
 import { ProtectedImage } from "../api/uploadApi";
 import { getParticularUserProfile } from "../api/userApi";
+import Spinner from "./Spinner";
 
 const ClubMembers = () => {
     const { clubId } = useParams();
@@ -142,11 +143,7 @@ const ClubMembers = () => {
     };
 
     if (membersLoading || roleLoading) {
-        return (
-            <div className="flex justify-center items-center h-64">
-                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
-            </div>
-        );
+        return <Spinner />;
     }
 
     return (

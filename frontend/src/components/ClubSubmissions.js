@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { getClubSubmissions, approveSubmission, rejectSubmission, getUserClubRole } from "../api/clubApi";
 import { ProtectedImage } from "../api/uploadApi";
 import { getParticularUserProfile } from "../api/userApi";
+import Spinner from "./Spinner";
 
 const ClubSubmissions = () => {
     const { clubId } = useParams(); // URL에서 동아리 ID 가져오기
@@ -99,15 +100,11 @@ const ClubSubmissions = () => {
     };
 
     if (loading) {
-        return (
-            <div className="flex justify-center items-center h-64">
-                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
-            </div>
-        );
+        return <Spinner />;
     }
 
     if (!userRole || (userRole !== "PRESIDENT" && userRole !== "VICE_PRESIDENT")) {
-        return <p className="text-center mt-10 text-warningText text-xl">⚠️ 권한이 없습니다.</p>;
+        return <p className="text-center mt-10 text-warningText text-xl">⚠️ 권한이 없습니다</p>;
     }
 
     return (
@@ -160,7 +157,7 @@ const ClubSubmissions = () => {
                         </div>
                     ))
                 ) : (
-                    <p className="text-center text-gray-500 mt-4">아직 지원자가 없습니다.</p>
+                    <p className="text-center text-gray-500 mt-4">아직 지원자가 없습니다</p>
                 )}
             </div>
         </div>

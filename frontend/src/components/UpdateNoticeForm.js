@@ -58,13 +58,13 @@ const UpdateNoticeForm = ({
                 <button
                     type="button"
                     onClick={onCancel}
-                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md"
+                    className="px-4 py-2 text-sm font-medium text-extraText bg-gray-100 hover:bg-gray-200 rounded-md"
                 >
                     취소
                 </button>
                 <button
                     type="submit"
-                    className="px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-md hover:bg-blue-600"
+                    className="px-4 py-2 text-sm font-medium text-white bg-primary rounded-md hover:bg-hoverBlueColor"
                     disabled={actionLoading}
                 >
                     수정하기
