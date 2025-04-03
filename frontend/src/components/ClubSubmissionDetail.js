@@ -4,6 +4,7 @@ import { getClubSubmissionDetail, getClub } from "../api/clubApi";
 import { getParticularUserProfile } from "../api/userApi";
 import InputField from "./InputField"; // 기존 폼에서 사용한 InputField 컴포넌트
 import dayjs from "dayjs";
+import TextareaField from "./TextareaField";
 import Spinner from "./Spinner"; // 날짜 변환 라이브러리 -> 지원 시간 및 최근 업데이트 시간을 형식에 맞게 출력 -> "npm install dayjs" 라이브러리 설치 필요
 
 const ClubSubmissionDetail = () => {
@@ -87,7 +88,7 @@ const ClubSubmissionDetail = () => {
                     {/* 지원 동기 */}
                     <div>
                         <label className="block text-gray-700 text-sm font-medium mb-2">지원 동기</label>
-                        <textarea
+                        <TextareaField
                             value={submission.contents}
                             className="w-full p-3 bg-gray-100 rounded-lg shadow-sm focus:outline-none focus:ring-0 h-40 resize-none border-0"
                             disabled

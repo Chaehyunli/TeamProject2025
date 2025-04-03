@@ -3,6 +3,8 @@ import React, { useState } from "react";
 import { uploadImageToGCP } from "../api/uploadApi";
 import { createNotice } from "../api/clubApi";
 import FileUpload from "./FileUpload";
+import TextareaField from "./TextareaField";
+import InputField from "./InputField";
 
 const CreateNotice = () => {
     const navigate = useNavigate();
@@ -88,14 +90,14 @@ const CreateNotice = () => {
                         >
                             제목
                         </label>
-                        <input
-                            id="title"
+                        <InputField
+                            label="공지사항 제목"
                             type="text"
                             name="title"
                             value={formData.title}
                             onChange={handleChange}
-                            required
                             className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+                            required={true}
                             placeholder="제목을 입력하세요"
                         />
                     </div>
@@ -108,8 +110,8 @@ const CreateNotice = () => {
                         >
                             내용
                         </label>
-                        <textarea
-                            id="contents"
+                        <TextareaField
+                            label="공지사항 내용"
                             name="contents"
                             value={formData.contents}
                             onChange={handleChange}

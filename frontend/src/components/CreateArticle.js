@@ -3,6 +3,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { createArticle } from '../api/clubApi';
 import FileUpload from "./FileUpload";
 import { uploadImageToGCP } from "../api/uploadApi";
+import TextareaField from "./TextareaField";
+import InputField from "./InputField";
 
 const CreateArticle = () => {
     const navigate = useNavigate();
@@ -90,13 +92,13 @@ const CreateArticle = () => {
                         >
                             제목
                         </label>
-                        <input
-                            id="title"
+                        <InputField
+                            label="게시물 제목"
                             type="text"
                             name="title"
                             value={formData.title}
                             onChange={handleChange}
-                            required
+                            required={true}
                             className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
                             placeholder="제목을 입력하세요"
                         />
@@ -110,8 +112,8 @@ const CreateArticle = () => {
                         >
                             내용
                         </label>
-                        <textarea
-                            id="contents"
+                        <TextareaField
+                            label="게시물 내용"
                             name="contents"
                             value={formData.contents}
                             onChange={handleChange}

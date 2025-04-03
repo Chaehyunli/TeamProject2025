@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { submitClubApplication, getUserClubSubmissionStatus, getClub } from "../api/clubApi";
 import { getUserProfile } from "../api/userApi";
 import InputField from "../components/InputField";
+import TextareaField from "./TextareaField";
 import Spinner from "./Spinner";
 
 const ClubApply = () => {
@@ -132,8 +133,9 @@ const ClubApply = () => {
 
                         {/* 지원동기 입력 */}
                         <div>
-                            <label className="block text-gray-700 text-sm font-medium mb-2">지원동기</label>
-                            <textarea
+                            {/*<label className="block text-gray-700 text-sm font-medium mb-2">지원동기</label>*/}
+                            <TextareaField
+                                label="지원동기"
                                 name="contents"
                                 value={formData.contents}
                                 onChange={handleChange}

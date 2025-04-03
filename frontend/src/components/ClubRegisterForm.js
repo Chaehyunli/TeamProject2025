@@ -92,16 +92,16 @@ const ClubRegistrationForm = ({ presidentName, onSubmit, actionLoading }) => {
             />
 
             {/* 동아리 설명 */}
-            <label className="block text-sm font-medium text-gray-700 mt-4">동아리 설명</label>
+            {/*<label className="block text-sm font-medium text-gray-700 mt-4">동아리 설명</label>*/}
             <textarea
+                label="동아리 설명"
                 name="description"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 required
                 className="w-full px-4 py-2 border rounded-md shadow-sm h-32 resize-none focus:outline-none focus:ring-2 focus:ring-primary"
                 placeholder="동아리 설명을 입력하세요"
-            ></textarea>
-
+            />
             {/* 카테고리 선택 (드롭다운) */}
             <label className="block text-sm font-medium text-gray-700 mt-4">카테고리</label>
             <select
