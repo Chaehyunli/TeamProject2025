@@ -154,19 +154,18 @@ export const fetchReceiverProfileImageUrl = async (receiverEmail, participants) 
 
 let stompClient = null;
 let subscription = null;
-let isConnected = false;
 
-export const connectWebSocket = (roomId, onMessageReceived) => {
-    if (isConnected) return;
+export const connectWebSocket = (roomId, onMessageReceived, isConnectedRef) => {
+    if (isConnectedRef.current) return;
 
     console.log("🔗 Connecting WebSocket...");
 
     const sockJs = new SockJS(`${API_LOCAL_BASE_URL}/connect`);
     stompClient = Stomp.over(sockJs);
+    isConnectedRef.current = true;
 
     stompClient.connect({}, (frame) => {
             console.log("✅ STOMP WebSocket 연결 성공", frame.headers);
-            isConnected = true;
 
             if (subscription) {
                 subscription.unsubscribe();
@@ -184,13 +183,14 @@ export const connectWebSocket = (roomId, onMessageReceived) => {
         },
         (error) => {
             console.error("❌ WebSocket 연결 실패", error);
-            isConnected = false;
+            isConnectedRef.current = false;
         }
     );
 };
 
-export const sendMessage = (roomId, senderEmail, message) => {
-    if (!isConnected || message.trim() === "") return;
+export const sendMessage = (roomId, senderEmail, message, isConnectedRef) => {
+    console.log("✅ connectWebSocket에서 isConnectedRef 확인:", isConnectedRef);
+    if (!isConnectedRef.current || message.trim() === "") return;
 
     const messageData = { senderEmail, message };
 
@@ -201,8 +201,8 @@ export const sendMessage = (roomId, senderEmail, message) => {
     );
 };
 
-export const disconnectWebSocket = async (roomId) => {
-    if (!stompClient || !isConnected) return;
+export const disconnectWebSocket = async (roomId, isConnectedRef) => {
+    if (!stompClient || !isConnectedRef.current) return;
 
     console.log("🔌 Disconnecting WebSocket .. 여긴 method 내부 코드임. ㄹㅇ");
 
@@ -214,7 +214,7 @@ export const disconnectWebSocket = async (roomId) => {
             if (stompClient && stompClient.connected) {
                 stompClient.disconnect(() => {
                     console.log("✅ WebSocket 해제 완료.");
-                    isConnected = false;
+                    isConnectedRef.current = false;
                     stompClient = null;
                     resolve();
                 });
@@ -229,5 +229,21 @@ export const disconnectWebSocket = async (roomId) => {
 
     } catch (error) {
         console.error("❌ WebSocket 해제 중 오류 발생", error);
+    }
+};
+
+export const loadChatHistory = async (roomId, senderEmail, setMessages, setReceiverEmail, setRoomName) => {
+    try {
+        const chatHistory = await fetchChatHistory(roomId);
+        console.log("📜 채팅 내역:", chatHistory);
+        setMessages(chatHistory);
+
+        const foundReceiverEmail = chatHistory.find(msg => msg.senderEmail !== senderEmail)?.senderEmail || "unknown";
+        setReceiverEmail(foundReceiverEmail);
+
+        const roomNameResponse = await fetchChatRoomName(roomId);
+        setRoomName(roomNameResponse || "알 수 없음");
+    } catch (error) {
+        console.error("❌ Failed to load chat history", error);
     }
 };

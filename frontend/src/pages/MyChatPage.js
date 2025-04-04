@@ -95,7 +95,12 @@ const MyChatPage = () => {
                             <div key={chat.roomId}
                                  className="flex items-center justify-between bg-white rounded-lg border p-3 shadow-sm">
                                 <div className="flex flex-col">
-                                    <span className="text-md font-semibold">{chat.roomName}</span>
+                                    <span
+                                        className="text-md font-semibold"
+                                        style={{ whiteSpace: 'pre-line' }}
+                                    >
+                                        {chat.roomName}
+                                    </span>
                                     <span className="text-sm text-gray-500">{formatTimeFromISO(chat.updatedAt)}</span>
                                 </div>
                                 <div className="flex items-center space-x-3">

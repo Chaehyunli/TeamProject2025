@@ -3,12 +3,11 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useChat } from "../context/ChatContext";  // 🔥 ChatContext 가져오기
 import backIcon from "../assets/backIcon.png";
 import {
-    fetchChatHistory,
-    fetchChatRoomName,
     fetchReceiverProfileImageUrl,
     connectWebSocket,
     sendMessage,
-    disconnectWebSocket
+    disconnectWebSocket,
+    loadChatHistory
 } from "../api/chatApi";
 
 const StompChatPage = () => {
@@ -18,8 +17,8 @@ const StompChatPage = () => {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState("");
     const senderEmail = localStorage.getItem("email");
-    const stompClientRef = useRef(null);
-    const subscriptionRef = useRef(null);
+    // const stompClientRef = useRef(null);
+    // const subscriptionRef = useRef(null);
     const isConnectedRef = useRef(false);
     const scrollRef = useRef(null);
     const [receiverImageUrl, setReceiverImageUrl] = useState(null); // GCP Presigned URL 캐싱
@@ -33,34 +32,20 @@ const StompChatPage = () => {
         console.log("🔌 Connecting WebSocket...");
         connectWebSocket(roomId, (receivedMessage) => {
             setMessages((prevMessages) => [...prevMessages, receivedMessage]);
-        });
+
+            // 상대방 정보 갱신하기 (초기에 로드 안되는 이슈 해결 목적으로)
+            if (receivedMessage.senderEmail && receivedMessage.senderEmail !== senderEmail) {
+                setReceiverEmail(receivedMessage.senderEmail);
+                fetchChatParticipants(roomId);
+            }
+        }, isConnectedRef);
 
         fetchChatParticipants(roomId);
-
-        const loadChatHistory = async () => {
-            try {
-                const chatHistory = await fetchChatHistory(roomId);
-                console.log("📜 채팅 내역:", chatHistory);
-                setMessages(chatHistory);
-
-                const foundReceiverEmail = chatHistory.find(msg => msg.senderEmail !== senderEmail)?.senderEmail || "unknown";
-                setReceiverEmail(foundReceiverEmail);
-
-                // 🔥 채팅방 이름 설정 API 호출
-                const roomNameResponse = await fetchChatRoomName(roomId);
-                setRoomName(roomNameResponse || "알 수 없음");
-                // console.log(`⚠️⚠️ TESTo : ${roomNameResponse}`);
-
-            } catch (error) {
-                console.error("❌ Failed to fetch chat history", error);
-            }
-        };
-
-        loadChatHistory();
+        loadChatHistory(roomId, senderEmail, setMessages, setReceiverEmail, setRoomName);
 
         return () => {
             console.log("🔌 Disconnecting WebSocket... 여기는 UseEffect 부분임");
-            disconnectWebSocket(roomId);
+            disconnectWebSocket(roomId, isConnectedRef);
         };
     }, [roomId]);
 
@@ -87,7 +72,7 @@ const StompChatPage = () => {
 
     // 부분 로직 ④. Stomp Websocket Handler 를 통해 메시지를 보낸다.
     const handleSendMessage = () => {
-        sendMessage(roomId, senderEmail, newMessage);
+        sendMessage(roomId, senderEmail, newMessage, isConnectedRef);
         setNewMessage("");
     };
 
@@ -103,7 +88,7 @@ const StompChatPage = () => {
 
     // 부분 로직 ⑧. 만약 Back 을 하게 되면 WebSocket 을 해제하는데, 이때 메시지를 읽고 my-chatpage 로 넘어감
     const handleBack = async () => {
-        await disconnectWebSocket(roomId);   // 읽음처리
+        await disconnectWebSocket(roomId, isConnectedRef);   // 읽음처리
         navigate("/my-chatpage");      // 그 다음 페이지 이동
     };
 
