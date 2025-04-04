@@ -1,5 +1,7 @@
 import React from "react";
 import FileUpload from "./FileUpload";
+import InputField from "./InputField";
+import TextareaField from "./TextareaField";
 
 const UpdateNoticeForm = ({
                                formData,
@@ -13,9 +15,9 @@ const UpdateNoticeForm = ({
         <form onSubmit={handleSubmit} className="space-y-6">
             {/* 제목 입력 */}
             <div>
-                <label htmlFor="title" className="block text-sm font-medium text-extraText mb-2">제목</label>
-                <input
-                    id="title"
+                {/*<label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">제목</label>*/}
+                <InputField
+                    label="공지사항 제목 수정"
                     type="text"
                     name="title"
                     value={formData.title}
@@ -28,9 +30,9 @@ const UpdateNoticeForm = ({
 
             {/* 내용 입력 */}
             <div>
-                <label htmlFor="contents" className="block text-sm font-medium text-extraText mb-2">내용</label>
-                <textarea
-                    id="contents"
+                {/*<label htmlFor="contents" className="block text-sm font-medium text-gray-700 mb-2">내용</label>*/}
+                <TextareaField
+                    label="공지사항 내용 수정"
                     name="contents"
                     value={formData.contents}
                     onChange={handleChange}
