@@ -202,7 +202,19 @@ export const sendMessage = (roomId, senderEmail, message, isConnectedRef) => {
 };
 
 export const disconnectWebSocket = async (roomId, isConnectedRef) => {
-    if (!stompClient || !isConnectedRef.current) return;
+    console.log("🔌🔌🔌🔌🔌🔌시발시발시발시발🔌🔌🔌🔌🔌🔌🔌🔌🔌🔌");
+    console.log(`🔌🔌🔌🔌${isConnectedRef}🔌🔌🔌🔌`);
+
+    if (!stompClient || !isConnectedRef.current) {
+
+        if(!isConnectedRef.current){
+            console.log(`🔌🔌🔌🔌isConnect${isConnectedRef.current}🔌🔌🔌🔌`);
+        }
+        if(!stompClient){
+            console.log(`🔌🔌🔌🔌stomp${stompClient}🔌🔌🔌🔌`);
+        }
+        return;
+    }
 
     console.log("🔌 Disconnecting WebSocket .. 여긴 method 내부 코드임. ㄹㅇ");
 

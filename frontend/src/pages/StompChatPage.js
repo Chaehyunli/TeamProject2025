@@ -122,7 +122,7 @@ const StompChatPage = () => {
                     className="p-4 border-primary border-b border-b-white flex relative justify-center items-center bg-hoverBlueColor text-white font-semibold text-lg rounded-t-2xl">
                     <button
                         onClick={() => {
-                            isBackButtonRef.current = true; 
+                            isBackButtonRef.current = true;
                             handleBack(); // ✅ handleBack 함수 호출
                         }}
                         className="absolute left-4"

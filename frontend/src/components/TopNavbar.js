@@ -71,6 +71,7 @@ const TopNavbar = () => {
     //     }
     // }, [isLoggedIn, location.pathname, navigate]);
 
+
     const handleLogout = async () => {
         try {
             await logout();
