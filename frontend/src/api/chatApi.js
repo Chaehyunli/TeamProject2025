@@ -231,3 +231,19 @@ export const disconnectWebSocket = async (roomId) => {
         console.error("❌ WebSocket 해제 중 오류 발생", error);
     }
 };
+
+export const loadChatHistory = async (roomId, senderEmail, setMessages, setReceiverEmail, setRoomName) => {
+    try {
+        const chatHistory = await fetchChatHistory(roomId);
+        console.log("📜 채팅 내역:", chatHistory);
+        setMessages(chatHistory);
+
+        const foundReceiverEmail = chatHistory.find(msg => msg.senderEmail !== senderEmail)?.senderEmail || "unknown";
+        setReceiverEmail(foundReceiverEmail);
+
+        const roomNameResponse = await fetchChatRoomName(roomId);
+        setRoomName(roomNameResponse || "알 수 없음");
+    } catch (error) {
+        console.error("❌ Failed to load chat history", error);
+    }
+};
