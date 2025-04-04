@@ -24,6 +24,7 @@ const TopNavbar = () => {
     useEffect(() => {
         if (location.pathname.includes("/club-register")) setSelectedMenu("/club-register");
         else if (location.pathname.includes("/my-chatpage")) setSelectedMenu("/my-chatpage");
+        else if (location.pathname.startsWith("/chatpage")) setSelectedMenu("/my-chatpage");
         else setSelectedMenu("/home");
     }, [location.pathname]);
 
