@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import {useParams, useNavigate, useLocation} from "react-router-dom";
 import { useChat } from "../context/ChatContext";  // 🔥 ChatContext 가져오기
 import backIcon from "../assets/backIcon.png";
 import {
@@ -24,8 +24,24 @@ const StompChatPage = () => {
     const [receiverImageUrl, setReceiverImageUrl] = useState(null); // GCP Presigned URL 캐싱
     const [receiverEmail, setReceiverEmail] = useState("");
     const navigate = useNavigate();
+    const location = useLocation();
+    const previousPath = useRef(location.state?.previousPath || "");
+    const isBackButtonRef = useRef(false);
 
-    const API_BASE_URL = "http://localhost:8080";
+    useEffect(() => {
+        const handlePopState = () => {
+            console.log("✅ 브라우저 뒤로가기 버튼 클릭 감지됨.");
+            isBackButtonRef.current = true;
+        };
+
+        window.addEventListener("popstate", handlePopState);
+
+        return () => {
+            window.removeEventListener("popstate", handlePopState);
+        };
+    }, []);
+
+    // console.log(`아이 시발시발십라시바ㅣㅁㄴ아ㅣ라ㅣㄴㅇ라ㅣㅁㄴㅇ라ㅣㅁㄴㅇㄹ${previousPath.current}`);
 
     // 전체로직 부분: 연결상태인가 체크하고 아니라면 연결과 함꼐, 챗 관련 정보들을 로드한다. 종료하면 연결해제한다.
     useEffect(() => {
@@ -45,7 +61,8 @@ const StompChatPage = () => {
 
         return () => {
             console.log("🔌 Disconnecting WebSocket... 여기는 UseEffect 부분임");
-            disconnectWebSocket(roomId, isConnectedRef);
+            // disconnectWebSocket(roomId, isConnectedRef);
+            handleBack();
         };
     }, [roomId]);
 
@@ -89,7 +106,13 @@ const StompChatPage = () => {
     // 부분 로직 ⑧. 만약 Back 을 하게 되면 WebSocket 을 해제하는데, 이때 메시지를 읽고 my-chatpage 로 넘어감
     const handleBack = async () => {
         await disconnectWebSocket(roomId, isConnectedRef);   // 읽음처리
-        navigate("/my-chatpage");      // 그 다음 페이지 이동
+        // navigate("/my-chatpage", { state: { reload: true } }); // 그 다음 페이지 이동 & Reload 상태 넘기기
+
+        // ✅ 이전 경로가 MyChatPage 였을 때만 reload 상태를 전달한다.
+        if (previousPath.current === "/my-chatpage" && isBackButtonRef.current) {
+            console.log("✅ 이전 경로가 MyChatPage입니다. navigate로 상태 전달.");
+            navigate("/my-chatpage", { state: { reload: true } });
+        }
     };
 
     return (

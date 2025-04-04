@@ -207,15 +207,20 @@ export const disconnectWebSocket = async (roomId, isConnectedRef) => {
     console.log("🔌 Disconnecting WebSocket .. 여긴 method 내부 코드임. ㄹㅇ");
 
     try {
+        await markMessagesAsRead(roomId);
+        console.log("✅ WebSocket 해제 완료.");
+
         subscription?.unsubscribe();
         subscription = null;
 
-        await new Promise(resolve => {
+        await new Promise((resolve) => {
             if (stompClient && stompClient.connected) {
-                stompClient.disconnect(() => {
+                stompClient.disconnect(async () => {
                     console.log("✅ WebSocket 해제 완료.");
                     isConnectedRef.current = false;
                     stompClient = null;
+
+
                     resolve();
                 });
             } else {
@@ -223,9 +228,6 @@ export const disconnectWebSocket = async (roomId, isConnectedRef) => {
                 resolve();
             }
         });
-
-        // ✅ 읽음 처리 API 요청 추가
-        await markMessagesAsRead(roomId);
 
     } catch (error) {
         console.error("❌ WebSocket 해제 중 오류 발생", error);
