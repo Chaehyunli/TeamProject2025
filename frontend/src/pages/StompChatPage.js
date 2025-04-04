@@ -120,7 +120,13 @@ const StompChatPage = () => {
             <div className="w-full max-w-lg bg-white rounded-2xl shadow-lg flex flex-col overflow-hidden">
                 <div
                     className="p-4 border-primary border-b border-b-white flex relative justify-center items-center bg-hoverBlueColor text-white font-semibold text-lg rounded-t-2xl">
-                    <button onClick={handleBack} className="absolute left-4">
+                    <button
+                        onClick={() => {
+                            isBackButtonRef.current = true; 
+                            handleBack(); // ✅ handleBack 함수 호출
+                        }}
+                        className="absolute left-4"
+                    >
                         <img src={String(backIcon)} alt="뒤로가기" className="w-5 h-5"/>
                     </button>
                     {roomName || "Loading..."}
