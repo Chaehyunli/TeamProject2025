@@ -26,6 +26,8 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,6 +60,7 @@ public class ClubServiceImpl implements ClubService {
     @PersistenceContext
     private EntityManager entityManager;  // 영속성 컨텍스트 주입
 
+    @CacheEvict(value = "clubListByUniversity", allEntries = true) // 캐시 생성 후, 동아리가 새로 생성될 경우, 이 항목의 캐시 삭제
     @Override
     @Transactional
     public Long createClub(String username, String clubName, String description, String categoryName, String uploadedFileName) throws IOException {
@@ -109,6 +112,10 @@ public class ClubServiceImpl implements ClubService {
         return newClub.getClubId();
     }
 
+    @Cacheable(
+            value = "clubListByUniversity",
+            key = "T(String).valueOf(@userRepository.findByUsername(#username).orElseThrow().universityId) + ':' + #limit + ':' + #offset"
+    ) // 캐시 이름: "clubListByUniversity", 키 값: "아이디:limit:offset"
     @Override
     @Transactional(readOnly = true)
     public ClubListResponseDto getClubsByUserUniversity(String username, int limit, int offset) {
@@ -405,6 +412,7 @@ public class ClubServiceImpl implements ClubService {
         }
     }
 
+    @CacheEvict(value = "clubListByUniversity", allEntries = true)
     public void updateClubThumbnail(String username, Long clubId, String objectName) {
         Club club = clubRepository.findById(clubId)
                 .orElseThrow(() -> new IllegalArgumentException("❌ 존재하지 않는 동아리"));
@@ -427,6 +435,7 @@ public class ClubServiceImpl implements ClubService {
         clubRepository.save(club);
     }
 
+    @CacheEvict(value = "clubListByUniversity", allEntries = true)
     public void resetClubThumbnail(String username, Long clubId) {
         Club club = clubRepository.findById(clubId)
                 .orElseThrow(() -> new IllegalArgumentException("❌ 존재하지 않는 동아리"));
@@ -483,6 +492,7 @@ public class ClubServiceImpl implements ClubService {
         return ClubListResponseDto.fromEntity(paginatedClubs, total, limit, offset);
     }
 
+    @CacheEvict(value = "clubListByUniversity", allEntries = true)
     @Override
     @Transactional
     public void deleteClub(Long clubId, Long userId) {
