@@ -86,12 +86,6 @@ const CreateArticle = () => {
                 <form onSubmit={handleSubmit} className="space-y-6">
                     {/* 제목 입력 */}
                     <div>
-                        <label
-                            htmlFor="title"
-                            className="block text-sm font-medium text-extraText mb-2"
-                        >
-                            제목
-                        </label>
                         <InputField
                             label="게시물 제목"
                             type="text"
@@ -106,12 +100,6 @@ const CreateArticle = () => {
 
                     {/* 내용 입력 */}
                     <div>
-                        <label
-                            htmlFor="contents"
-                            className="block text-sm font-medium text-extraText mb-2"
-                        >
-                            내용
-                        </label>
                         <TextareaField
                             label="게시물 내용"
                             name="contents"

@@ -84,12 +84,6 @@ const CreateNotice = () => {
                 <form onSubmit={handleSubmit} className="space-y-6">
                     {/* 제목 입력 */}
                     <div>
-                        <label
-                            htmlFor="title"
-                            className="block text-sm font-medium text-extraText mb-2"
-                        >
-                            제목
-                        </label>
                         <InputField
                             label="공지사항 제목"
                             type="text"
@@ -104,12 +98,6 @@ const CreateNotice = () => {
 
                     {/* 내용 입력 */}
                     <div>
-                        <label
-                            htmlFor="contents"
-                            className="block text-sm font-medium text-extraText mb-2"
-                        >
-                            내용
-                        </label>
                         <TextareaField
                             label="공지사항 내용"
                             name="contents"

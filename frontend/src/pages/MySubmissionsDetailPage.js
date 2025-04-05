@@ -4,6 +4,7 @@ import { getMySubmissionDetail, getParticularUserProfile } from "../api/userApi"
 import InputField from "../components/InputField";
 import dayjs from "dayjs";
 import Spinner from "../components/Spinner";
+import TextareaField from "../components/TextareaField";
 
 const MySubmissionsDetailPage = () => {
     const { applyId } = useParams();
@@ -81,8 +82,8 @@ const MySubmissionsDetailPage = () => {
 
                     {/* 지원 동기 */}
                     <div>
-                        <label className="block text-gray-700 text-sm font-medium mb-2">지원 동기</label>
-                        <textarea
+                        <TextareaField
+                            label="지원동기"
                             value={submission.contents}
                             className="w-full p-3 bg-gray-100 rounded-lg shadow-sm focus:outline-none focus:ring-0 h-40 resize-none border-0"
                             disabled

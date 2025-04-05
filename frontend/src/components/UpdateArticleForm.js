@@ -15,7 +15,6 @@ const UpdateArticleForm = ({
         <form onSubmit={handleSubmit} className="space-y-6">
             {/* 제목 입력 */}
             <div>
-                {/*<label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">제목</label>*/}
                 <InputField
                     label="게시물 제목 수정"
                     type="text"
@@ -30,7 +29,6 @@ const UpdateArticleForm = ({
 
             {/* 내용 입력 */}
             <div>
-                {/*<label htmlFor="contents" className="block text-sm font-medium text-gray-700 mb-2">내용</label>*/}
                 <TextareaField
                     label="게시물 내용 수정"
                     id="contents"
