@@ -4,6 +4,7 @@ import { getUserClubs, getClubList } from "../api/clubApi";
 import ClubList from "../components/ClubList";
 import { DEFAULT_CLUB_THUMBNAIL } from "../constants/DefaultImage";
 import BannerHeader from "../components/BannerHeader";
+import Spinner from "../components/Spinner";
 
 const MyClubsPage = () => {
     const navigate = useNavigate();
@@ -35,11 +36,7 @@ const MyClubsPage = () => {
     }, [username, navigate]);
 
     if (loading) {
-        return (
-            <div className="flex justify-center items-center h-96">
-                <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-primary"></div>
-            </div>
-        );
+        return <Spinner />;
     }
 
     return (

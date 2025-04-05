@@ -3,6 +3,7 @@ import { logout } from "../api/authApi";
 import { deleteUser, getUserProfile, resetUserProfileImage } from "../api/userApi";
 import { useNavigate } from "react-router-dom";
 import { ProtectedImage } from "../api/uploadApi";
+import Spinner from "../components/Spinner";
 
 const ProfilePage = () => {
     const navigate = useNavigate();
@@ -107,11 +108,7 @@ const ProfilePage = () => {
     }
 
     if (loading || !user) {
-        return (
-            <div className="flex justify-center items-center h-64">
-                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
-            </div>
-        );
+        return <Spinner />;
     }
 
     return (
