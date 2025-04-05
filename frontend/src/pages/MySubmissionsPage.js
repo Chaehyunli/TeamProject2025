@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getMySubmissions, deleteMySubmission } from "../api/userApi";
+import BannerHeader from "../components/BannerHeader";
 
 const MySubmissionsPage = () => {
     const [submissions, setSubmissions] = useState([]);
@@ -49,8 +50,8 @@ const MySubmissionsPage = () => {
     }
 
     return (
-        <div className="w-full max-w-4xl mx-auto pt-28 p-6 bg-white shadow-md rounded-lg">
-            <h2 className="text-xl font-semibold mb-4">나의 지원서 목록</h2>
+        <div className="container mx-auto px-8 lg:px-16">
+            <BannerHeader imageUrl="/banner.png" title="나의 지원서 목록" />
 
             {submissions.length > 0 ? (
                 <div className="divide-y divide-gray-300">
