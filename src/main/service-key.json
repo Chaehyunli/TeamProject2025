@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "formidable-card-451902-k8",
+  "private_key_id": "960060c5306da78fe9d6a55c20690fa54b1624cf",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQC13nmeMYSfTN3/\nAflKK+b2f+RtP0CjWQesYDao7ZU+5RtxvibwjQcSylLyLDfLizmIWL8ovoI6s47T\nkIQJDLM97muazwUG8EWX45N5t7bNU4OtZ/WIYkpSVpHhEivJJnN9mSxsYiiunih0\nicFDrjP7RXejuxTQtahtIi+weIDxRyPu3hIg6/uKuW5RkmgXx7KGNZFy03gkMdmv\nrXa3OnwEc9E38UtG2nHV7f3RzaYDVUFMKvvpLyyJmVUXGeHDVWK4Q2ZuepIKTa77\nZ+AtjEuwatAv4Js4hn7P2bBqK4DxXrZ0C3O3TUuKXRZ4Llb+XjhXvSFEZZXlpXzW\n+BHGUs5ZAgMBAAECggEAET3PH80n+oYqAZPpUzvIQJQtTqIRearmDFRuuiMT5AuK\nR4U0Ydes1P4zUNwaSgSf5qorLSyqYfBF2Q65RbZbg8KHlvyLSHYc0uJzR7W/8cU6\nFYVmhJB05UtptwGm/wHTLxQHXxsLKkq6IRoyJT1tliOmzPHebk7accYs6TjzWGwx\nnCuSRNTLmVi3SxPI7ORns81gJf4ayF70SuBOPINW+5UwXofvy+5fbsJiPjPOTQP8\nal9w+hqg9VqQ498FO/RrbIiLZftBverQ4qKh0ociI7WxIc0kso+rOh6157Z3j39K\n+vkc+wrxYDRgYhIgs6+Fuh30mejsTuAZ9FYDq6Q/NQKBgQD/+h2VnE4z1gRTnttu\nt0jR1YnNk8hmdKSfQsXGRuDHkKp2IHVxjx0L0Ms8g/uXHf90fdYFhebNsEFTJ5hh\n9M9PrNJsYszsTRnsUDbAxM4Eb7ReLMetn354EmWzQwEJMTjI/YBgxKG2KPji75Yg\nizj39Zd+XUyX9mwaMwETRE9JOwKBgQC14qfpJ/y8x+/LJE+NWoHm/Fv/EO5G3ETO\nOxsl9b63bBMHyfdy4NAsKg/iM6duvlgsDf9zLAti2LRAy3TDTL7hBmptmdiX4ytS\nXpKNFmDh+uED+i+cZaKMvnHN1VxavpakUKxJShuuoeLBa+VF/cmY0mZMAlpfoyUU\nK5F3qV3tewKBgHrWsj/LpJOnjqf6Qd9dwWpBCUJIOxE/xIhQ6Mv/03qxZ7wMU4/N\nV+kFp6JAzAl28dIbWQuJeHsYrCCVjcDkVGAt1UUCHMkBLwGCdOQJDbx/RpUy9BfT\nxEMmwPtHmkWpA1EgpezKL7hU7SsqQmcXqJ0FlE+lwk3iiXoBI/D1BP9lAoGAOYmm\nDH/119J37Q9jixfimCuk/p9ggVIVAhh4kh2XY3bw3jnp6ZFsyUvVEn28ra/RPL6A\n3PJF99MN0qGKIm4YxB6/dESC3Cmk/r2kJrW5mENBA30VqqgML/HfFno0aRB5nylW\nFyk2cJwNm5qCQQ3zxEBq1Ai6hh6aEDNoJS6S5BkCgYAuK9eVtnsFBKou7NVoQ4Cn\nypcCrMCQxDBBiDXnG7USu8DXJqVTAqMOmaMIdzWRMU/I5su/CmLqyMJg/kbYStVL\nfCd2T1bFRLFE7xDm2lJSDggcb868xSiHzmEHOOC5AclC32T2DrJXVKhIhDkUJfZv\nMS/Cyks517IoEEGuxNDOBw==\n-----END PRIVATE KEY-----\n",
+  "client_email": "springboot-storage-access@formidable-card-451902-k8.iam.gserviceaccount.com",
+  "client_id": "105737510855230087236",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/springboot-storage-access%40formidable-card-451902-k8.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
