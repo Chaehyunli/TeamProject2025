@@ -3,7 +3,8 @@ import { FaChevronDown } from "react-icons/fa";
 import { logout } from "../api/authApi";
 import {useLocation, useNavigate} from "react-router-dom";
 import { ProtectedImage } from "../api/uploadApi";
-import {disconnectWebSocket} from "../api/chatApi";
+import { disconnectWebSocket } from "../api/chatApi";
+import { useAuth } from "../context/AuthContext";
 
 const ProfileDropdown = ({ username, userImage, onLogout }) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -12,6 +13,8 @@ const ProfileDropdown = ({ username, userImage, onLogout }) => {
 
     const [logoutLoading, setLogoutLoading] = useState(false);
     const location = useLocation();
+
+    const { logoutUser } = useAuth();
 
     const handleLogout = async () => {
         if(logoutLoading) return;
@@ -34,12 +37,7 @@ const ProfileDropdown = ({ username, userImage, onLogout }) => {
             }
 
             await logout();
-            localStorage.removeItem("userId");  // userId 삭제
-            localStorage.removeItem("username");  // username 삭제
-            localStorage.removeItem("profileImage");  // profileImage 삭제
-            localStorage.removeItem("name");  // 사용자 이름 삭제
-            localStorage.removeItem("email");  // 사용자 이메일 삭제
-
+            logoutUser();
             alert("로그아웃 되었습니다.");
             window.location.href = "/login";
         } catch (error) {
