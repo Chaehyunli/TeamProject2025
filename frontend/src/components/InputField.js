@@ -15,7 +15,7 @@ const InputField = ({ label, type, name, value, onChange, placeholder, required,
                 accept={accept} // 파일 업로드의 경우 확장자 필터 적용
                 disabled={disabled} // 비활성화 속성 적용
                 onKeyDown={onKeyDown}
-                className="w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+                className="w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary  disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
             />
         </div>
     );
