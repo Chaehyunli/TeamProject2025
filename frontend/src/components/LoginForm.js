@@ -30,14 +30,12 @@ const LoginForm = () => {
             const result = await login(formData);
             setMessage(result.message);
 
-            // 사용자 정보 즉시 가져오기 (세션 반영 확인)
-            const userProfile = await getUserProfile();
-
             loginUser({
                 userId: result.data.userId,
                 username: result.data.username,
                 name: result.data.name,
-                profileImage: userProfile.profileImage,
+                profileImage: result.data.profileImage,
+                email: result.data.email,
             });
 
             window.dispatchEvent(new Event("storage"));
