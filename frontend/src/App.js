@@ -111,7 +111,7 @@ function App() {
 
                 {/* Footer */}
                 <footer className="text-center text-xs text-gray-500 py-4 border-t bg-white">
-                    © 2025 ClubMoa Team - This site is a university project. <br/>
+                    © 2025 ClubMoa Team. This website was created as an independent team project. All rights reserved. <br/>
                     ⚠️ 본 사이트는 데스크탑 환경에 최적화되어 있으며, 모바일 환경은 지원하지 않습니다.
                 </footer>
             </div>
