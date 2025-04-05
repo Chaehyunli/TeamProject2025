@@ -97,9 +97,9 @@ const TopNavbar = () => {
     };
 
     return (
-        <nav className="fixed top-0 left-0 w-full h-[72px] flex items-center border-b-[0.5px] border-black px-12 justify-between bg-white z-50 shadow-md">
+        <nav className="fixed top-0 left-0 w-full h-[72px] flex items-center border-b-[0.5px] border-black px-4 md:px-12 justify-between bg-white z-50 shadow-md">
             {/* 로고 및 메뉴 */}
-            <div className="flex items-center gap-8">
+            <div className="flex items-center gap-4 md:gap-8">
                 <MainLogoForm />
                 <button
                     onClick={() => {
@@ -138,12 +138,12 @@ const TopNavbar = () => {
 
             <div className="flex items-center gap-6">
                 {/* 검색창 */}
-                <div className="relative flex w-[248px] h-10 px-3 py-2 rounded-lg border border-gray-400">
+                <div className="relative flex w-[180px] sm:w-[220px] md:w-[248px] h-10 px-3 py-2 rounded-lg border border-gray-400">
                     <input
                         ref={inputRef}
                         type="text"
                         placeholder="동아리 검색"
-                        className="grow text-extraText text-base outline-none"
+                        className="grow text-sm md:text-base text-extraText outline-none"
                         onChange={(e) => setSearchQuery(e.target.value)}
                         onKeyDown={handleKeyDown}
                     />
@@ -159,13 +159,13 @@ const TopNavbar = () => {
                 ) : (
                     <div className="flex items-center gap-4">
                         <button
-                            className="px-5 py-2 bg-white rounded-lg border border-gray-300 text-black font-semibold hover:bg-hoverWhiteColor"
+                            className="px-4 sm:px-5 py-2 bg-white rounded-lg border border-gray-300 text-black font-semibold hover:bg-hoverWhiteColor"
                             onClick={() => navigate("/login")}
                         >
                             로그인
                         </button>
                         <button
-                            className="px-5 py-2 bg-primary rounded-lg border text-white font-semibold hover:bg-hoverBlueColor"
+                            className="px-4 sm:px-5 py-2 bg-primary rounded-lg border text-white font-semibold hover:bg-hoverBlueColor"
                             onClick={() => navigate("/register")}
                         >
                             회원가입
