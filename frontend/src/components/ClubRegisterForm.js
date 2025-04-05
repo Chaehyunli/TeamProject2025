@@ -3,6 +3,7 @@ import FileUpload from "./FileUpload";
 import InputField from "./InputField";
 import { getCategory } from "../api/categoryApi";
 import Spinner from "./Spinner";
+import TextareaField from "./TextareaField";
 
 const ClubRegistrationForm = ({ presidentName, onSubmit, actionLoading }) => {
     const [clubName, setClubName] = useState("");
@@ -93,7 +94,7 @@ const ClubRegistrationForm = ({ presidentName, onSubmit, actionLoading }) => {
 
             {/* 동아리 설명 */}
             {/*<label className="block text-sm font-medium text-gray-700 mt-4">동아리 설명</label>*/}
-            <textarea
+            <TextareaField
                 label="동아리 설명"
                 name="description"
                 value={description}
