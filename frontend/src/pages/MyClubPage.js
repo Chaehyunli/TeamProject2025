@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { getUserClubs, getClubList } from "../api/clubApi";
 import ClubList from "../components/ClubList";
 import { DEFAULT_CLUB_THUMBNAIL } from "../constants/DefaultImage";
+import BannerHeader from "../components/BannerHeader";
+import Spinner from "../components/Spinner";
 
 const MyClubsPage = () => {
     const navigate = useNavigate();
@@ -34,21 +36,12 @@ const MyClubsPage = () => {
     }, [username, navigate]);
 
     if (loading) {
-        return (
-            <div className="flex justify-center items-center h-96">
-                <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-primary"></div>
-            </div>
-        );
+        return <Spinner />;
     }
 
     return (
         <div className="container mx-auto px-8 lg:px-16">
-            <div className="w-full h-48 bg-cover bg-center rounded-lg shadow-md mb-6 mt-24"
-                 style={{ backgroundImage: "url('/banner.png')" }}>
-                <div className="flex items-center justify-center h-full rounded-lg">
-                    <h1 className="text-white text-3xl font-bold">내 동아리 목록</h1>
-                </div>
-            </div>
+            <BannerHeader imageUrl="/banner.png" title="나의 동아리 목록" />
 
             <ClubList clubs={userClubs} userClubs={userClubs} />
         </div>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 import { fetchMyChatRooms, leaveChatRoom } from "../api/chatApi";
 import backIcon from "../assets/backIcon.png";
 
@@ -8,10 +8,15 @@ const MyChatPage = () => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [leavingRoomId, setLeavingRoomId] = useState(null);
+    const location = useLocation();
 
     useEffect(() => {
+        if (location.state?.reload === true){
+            console.log("🥹🥹🥹🥹🥹🥹Load Chat Page with reload state:", location.state?.reload);
+        }
         loadMyChatRooms();
-    }, []);
+        navigate(location.pathname, { replace: true, state: { reload: false } });
+    }, [location.state?.reload]);
 
     // ✅ 내 채팅방 목록 불러오기
     const loadMyChatRooms = async () => {
@@ -34,7 +39,12 @@ const MyChatPage = () => {
 
     // ✅ 채팅방 입장
     const enterChatRoom = (roomId, receiverName) => {
-        navigate(`/chatpage/${roomId}`, { state: { receiverName } }); // press 입장 -> goto Stomp Page
+        navigate(`/chatpage/${roomId}`, {
+            state: {
+                receiverName,
+                previousPath: "/my-chatpage"
+            }
+        }); // press 입장 -> goto Stomp Page
     };
 
     // ✅ 채팅방 나가기
@@ -75,7 +85,7 @@ const MyChatPage = () => {
             <div className="w-full max-w-lg bg-white rounded-2xl shadow-lg flex flex-col overflow-hidden">
                 <div
                     className="p-4 border-primary border-b border-b-white flex relative justify-center items-center bg-hoverBlueColor text-white font-semibold text-lg rounded-t-2xl">
-                    <button onClick={() => window.history.back()} className="absolute left-4">
+                    <button onClick={() => navigate("/home")} className="absolute left-4">
                         <img src={String(backIcon)} alt="뒤로가기" className="w-5 h-5"/>
                     </button>
                     My Chatting Room
@@ -95,7 +105,12 @@ const MyChatPage = () => {
                             <div key={chat.roomId}
                                  className="flex items-center justify-between bg-white rounded-lg border p-3 shadow-sm">
                                 <div className="flex flex-col">
-                                    <span className="text-md font-semibold">{chat.roomName}</span>
+                                    <span
+                                        className="text-md font-semibold"
+                                        style={{ whiteSpace: 'pre-line' }}
+                                    >
+                                        {chat.roomName}
+                                    </span>
                                     <span className="text-sm text-gray-500">{formatTimeFromISO(chat.updatedAt)}</span>
                                 </div>
                                 <div className="flex items-center space-x-3">

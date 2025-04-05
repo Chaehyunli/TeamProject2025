@@ -44,60 +44,77 @@ import UpdateNoticePage from "./pages/UpdateNoticePage";
 function App() {
     return (
         <Router>
-            <TopNavbar />
-            <Routes>
-                {/* 로그인 필수 페이지 */}
-                <Route path="/" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
-                <Route path="/home" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
-                <Route path="/search" element={<ProtectedRoute><ClubSearchResultPage /></ProtectedRoute>} />
-                <Route path="/club-register" element={<ProtectedRoute><ClubRegisterPage /></ProtectedRoute>} />
-                <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
-                <Route path="/updateProfile" element={<ProtectedRoute><UpdateProfilePage /></ProtectedRoute>} />
-                <Route path="/users/submissions" element={<ProtectedRoute><MySubmissionsPage /></ProtectedRoute>} />
-                <Route path="/users/submissions/:applyId" element={<ProtectedRoute><MySubmissionsDetailPage /></ProtectedRoute>} />
-                <Route path="/users/submissions/:applyId/edit" element={<ProtectedRoute><MySubmissionsUpdatePage /></ProtectedRoute>} />
-                <Route path="/myclub" element={<ProtectedRoute><MyClubsPage /></ProtectedRoute>} />
-                <Route path="/profile/update-pw" element={<ProtectedRoute><UpdatePasswordPage /></ProtectedRoute>} />
+            <div className="flex flex-col min-h-screen">
+                <TopNavbar/>
 
-                {/* 로그인 불필요 페이지 */}
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/register" element={<RegisterPage />} />
-                <Route path="/account/find" element={<FindAccountPage />} />
-                <Route path="/account/reset-pw" element={<ResetPasswordPage />} />
+                {/* 본문 영역 */}
+                <div className="flex-grow">
+                    <Routes>
+                        {/* 로그인 필수 페이지 */}
+                        <Route path="/" element={<ProtectedRoute><HomePage/></ProtectedRoute>}/>
+                        <Route path="/home" element={<ProtectedRoute><HomePage/></ProtectedRoute>}/>
+                        <Route path="/search" element={<ProtectedRoute><ClubSearchResultPage/></ProtectedRoute>}/>
+                        <Route path="/club-register" element={<ProtectedRoute><ClubRegisterPage/></ProtectedRoute>}/>
+                        <Route path="/profile" element={<ProtectedRoute><ProfilePage/></ProtectedRoute>}/>
+                        <Route path="/updateProfile" element={<ProtectedRoute><UpdateProfilePage/></ProtectedRoute>}/>
+                        <Route path="/users/submissions" element={<ProtectedRoute><MySubmissionsPage/></ProtectedRoute>}/>
+                        <Route path="/users/submissions/:applyId"
+                               element={<ProtectedRoute><MySubmissionsDetailPage/></ProtectedRoute>}/>
+                        <Route path="/users/submissions/:applyId/edit"
+                               element={<ProtectedRoute><MySubmissionsUpdatePage/></ProtectedRoute>}/>
+                        <Route path="/myclub" element={<ProtectedRoute><MyClubsPage/></ProtectedRoute>}/>
+                        <Route path="/profile/update-pw" element={<ProtectedRoute><UpdatePasswordPage/></ProtectedRoute>}/>
 
-                {/* 채팅 관련 페이지 - 로그인 필수 */}
-                <Route path="/chat/userlist" element={<ProtectedRoute><UserChatList /></ProtectedRoute>} />
-                <Route path="/my-chatpage" element={<ProtectedRoute><MyChatPage /></ProtectedRoute>} />
+                        {/* 로그인 불필요 페이지 */}
+                        <Route path="/login" element={<LoginPage/>}/>
+                        <Route path="/register" element={<RegisterPage/>}/>
+                        <Route path="/account/find" element={<FindAccountPage/>}/>
+                        <Route path="/account/reset-pw" element={<ResetPasswordPage/>}/>
 
-                {/* 채팅 Layout 적용 */}
-                <Route path="/chatpage" element={<ProtectedRoute><ChatLayout /></ProtectedRoute>}>
-                    <Route path=":roomId" element={<ProtectedRoute><StompChatPage /></ProtectedRoute>} />
-                </Route>
+                        {/* 채팅 관련 페이지 - 로그인 필수 */}
+                        <Route path="/chat/userlist" element={<ProtectedRoute><UserChatList/></ProtectedRoute>}/>
+                        <Route path="/my-chatpage" element={<ProtectedRoute><MyChatPage/></ProtectedRoute>}/>
 
-                {/* 테스트 페이지 */}
-                <Route path="/test/chat" element={<ProtectedRoute><TestPage /></ProtectedRoute>} />
-                <Route path="/test/reset-pw" element={<ProtectedRoute><ResetPasswordPage /></ProtectedRoute>} />
-                <Route path="/test/find-pw" element={<ProtectedRoute><FindPasswordForm/></ProtectedRoute>} />
+                        {/* 채팅 Layout 적용 */}
+                        <Route path="/chatpage" element={<ProtectedRoute><ChatLayout/></ProtectedRoute>}>
+                            <Route path=":roomId" element={<ProtectedRoute><StompChatPage/></ProtectedRoute>}/>
+                        </Route>
 
-                {/* 동아리 관련 페이지 */}
-                <Route path="/clubs/:clubId" element={<ProtectedRoute><ClubDetailPage /></ProtectedRoute>}>
-                    <Route index element={<Navigate to="articles" replace />} />
-                    <Route path="articles" element={<ProtectedRoute><ClubArticlesList /></ProtectedRoute>} />
-                    <Route path="submissions" element={<ProtectedRoute><ClubSubmissions /></ProtectedRoute>} />
-                    <Route path="submissions/:applyId" element={<ProtectedRoute><ClubSubmissionDetail /></ProtectedRoute>} />
-                    <Route path="members" element={<ProtectedRoute><ClubMembers /></ProtectedRoute>} />
-                    <Route path="apply" element={<ProtectedRoute><ClubApply /></ProtectedRoute>} />
-                    <Route path="/clubs/:clubId/articles/create" element={<ProtectedRoute><CreateArticle /></ProtectedRoute>} />
-                    <Route path="articles/:articleId" element={<ProtectedRoute><ClubArticleDetail /></ProtectedRoute>} />
-                    <Route path="/clubs/:clubId/articles/:articleId/edit" element={<ProtectedRoute><UpdateArticlePage /></ProtectedRoute>} />
-                    <Route path="notices/create" element={<ProtectedRoute><CreateNotice /></ProtectedRoute>} />
-                    <Route path="notices" element={<ProtectedRoute><ClubNoticeList /></ProtectedRoute>} />
-                    <Route path="notices/:noticeId" element={<ProtectedRoute><ClubNoticeDetail /></ProtectedRoute>} />
-                    <Route path="notices/:noticeId/edit" element={<ProtectedRoute><UpdateNoticePage /></ProtectedRoute>} />
+                        {/* 테스트 페이지 */}
+                        <Route path="/test/chat" element={<ProtectedRoute><TestPage/></ProtectedRoute>}/>
+                        <Route path="/test/reset-pw" element={<ProtectedRoute><ResetPasswordPage/></ProtectedRoute>}/>
+                        <Route path="/test/find-pw" element={<ProtectedRoute><FindPasswordForm/></ProtectedRoute>}/>
 
-                </Route>
+                        {/* 동아리 관련 페이지 */}
+                        <Route path="/clubs/:clubId" element={<ProtectedRoute><ClubDetailPage/></ProtectedRoute>}>
+                            <Route index element={<Navigate to="articles" replace/>}/>
+                            <Route path="articles" element={<ProtectedRoute><ClubArticlesList/></ProtectedRoute>}/>
+                            <Route path="submissions" element={<ProtectedRoute><ClubSubmissions/></ProtectedRoute>}/>
+                            <Route path="submissions/:applyId"
+                                   element={<ProtectedRoute><ClubSubmissionDetail/></ProtectedRoute>}/>
+                            <Route path="members" element={<ProtectedRoute><ClubMembers/></ProtectedRoute>}/>
+                            <Route path="apply" element={<ProtectedRoute><ClubApply/></ProtectedRoute>}/>
+                            <Route path="/clubs/:clubId/articles/create"
+                                   element={<ProtectedRoute><CreateArticle/></ProtectedRoute>}/>
+                            <Route path="articles/:articleId" element={<ProtectedRoute><ClubArticleDetail/></ProtectedRoute>}/>
+                            <Route path="/clubs/:clubId/articles/:articleId/edit"
+                                   element={<ProtectedRoute><UpdateArticlePage/></ProtectedRoute>}/>
+                            <Route path="notices/create" element={<ProtectedRoute><CreateNotice/></ProtectedRoute>}/>
+                            <Route path="notices" element={<ProtectedRoute><ClubNoticeList/></ProtectedRoute>}/>
+                            <Route path="notices/:noticeId" element={<ProtectedRoute><ClubNoticeDetail/></ProtectedRoute>}/>
+                            <Route path="notices/:noticeId/edit"
+                                   element={<ProtectedRoute><UpdateNoticePage/></ProtectedRoute>}/>
 
-            </Routes>
+                        </Route>
+                    </Routes>
+                </div>
+
+                {/* Footer */}
+                <footer className="text-center text-xs text-gray-500 py-4 border-t bg-white">
+                    © 2025 ClubMoa Team. This website was created as an independent team project. All rights reserved. <br/>
+                    ⚠️ 본 사이트는 데스크탑 환경에 최적화되어 있으며, 모바일 환경은 지원하지 않습니다.
+                </footer>
+            </div>
         </Router>
     );
 }

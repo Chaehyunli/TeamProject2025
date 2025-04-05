@@ -1,8 +1,10 @@
 import React, { useState, useRef, useEffect } from "react";
 import { FaChevronDown } from "react-icons/fa";
 import { logout } from "../api/authApi";
-import { useNavigate } from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 import { ProtectedImage } from "../api/uploadApi";
+import { disconnectWebSocket } from "../api/chatApi";
+import { useAuth } from "../context/AuthContext";
 
 const ProfileDropdown = ({ username, userImage, onLogout }) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -10,6 +12,9 @@ const ProfileDropdown = ({ username, userImage, onLogout }) => {
     const dropdownRef = useRef(null);
 
     const [logoutLoading, setLogoutLoading] = useState(false);
+    const location = useLocation();
+
+    const { logoutUser } = useAuth();
 
     const handleLogout = async () => {
         if(logoutLoading) return;
@@ -19,13 +24,20 @@ const ProfileDropdown = ({ username, userImage, onLogout }) => {
 
         setLogoutLoading(true);
         try {
-            await logout();
-            localStorage.removeItem("userId");  // userId 삭제
-            localStorage.removeItem("username");  // username 삭제
-            localStorage.removeItem("profileImage");  // profileImage 삭제
-            localStorage.removeItem("name");  // 사용자 이름 삭제
-            localStorage.removeItem("email");  // 사용자 이메일 삭제
+            const currentPath = location.pathname;
+            const chatRoomRegex = /^\/chatpage\/(\d+)$/;   // 현재 경로가 ChatRoom 인지 확인
+            const match = currentPath.match(chatRoomRegex);
+            console.log(`🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑🛑 match is ${match}`);
 
+            if (match) {
+                const roomId = match[1];
+                console.log(`🛑 로그아웃 중 WebSocket 연결 해제 처리, roomId: ${roomId}`);
+                const isConnectedRef = { current: true };
+                await disconnectWebSocket(roomId, isConnectedRef);
+            }
+
+            await logout();
+            logoutUser();
             alert("로그아웃 되었습니다.");
             window.location.href = "/login";
         } catch (error) {

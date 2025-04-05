@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { getMySubmissionDetail, getParticularUserProfile } from "../api/userApi";
 import InputField from "../components/InputField";
 import dayjs from "dayjs";
+import Spinner from "../components/Spinner";
 
 const MySubmissionsDetailPage = () => {
     const { applyId } = useParams();
@@ -50,11 +51,7 @@ const MySubmissionsDetailPage = () => {
     }, [submission]);
 
     if (loading) {
-        return (
-            <div className="flex justify-center items-center h-screen">
-                <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-primary"></div>
-            </div>
-        );
+        return <Spinner />;
     }
 
     if (!submission) {

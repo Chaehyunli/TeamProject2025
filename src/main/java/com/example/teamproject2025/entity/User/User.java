@@ -17,6 +17,11 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "users")
+//@Table(name = "users", uniqueConstraints = {
+//        @UniqueConstraint(name = "users_email_unique", columnNames = "email"),
+//        @UniqueConstraint(name = "users_username_unique", columnNames = "username"),
+//        @UniqueConstraint(name = "users_studentId_unique", columnNames = "student_id")
+//}) // 이미 위 항목들이 unique = true로 설정이되어 있기 때문에 자동적으로 인덱스를 생성함. 이를 또 생성하는 것은 중복 인덱스를 생성하는 것이기 때문에 삭제!
 public class User {
 
     @Id

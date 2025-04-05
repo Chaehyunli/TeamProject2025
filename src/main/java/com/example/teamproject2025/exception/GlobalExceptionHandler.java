@@ -20,8 +20,21 @@ public class GlobalExceptionHandler {
     // 중복 데이터 예외 처리
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<CommonResponseDto<Void>> handleDataIntegrityViolationException(DataIntegrityViolationException e) {
+        String errorMessage = e.getMessage();
+
+        String fieldName = "존재하지 않는 필드입니다.";
+
+        if (errorMessage.contains("users_email_unique")) {
+            fieldName = "이메일";
+        } else if (errorMessage.contains("users_username_unique")) {
+            fieldName = "사용자 ID";
+        } else if (errorMessage.contains("users_studentId_unique")) {
+            fieldName = "학번";
+        }
+
+        String detailedMessage = String.format("이미 존재하는 %s입니다.", fieldName);
         return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(CommonResponseDto.error(HttpStatus.CONFLICT.value(), "Duplicate entry detected."));
+                .body(CommonResponseDto.error(HttpStatus.CONFLICT.value(), detailedMessage));
     }
 
     // 기본 예외 처리

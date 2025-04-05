@@ -142,7 +142,7 @@ const ClubDetailPage = () => {
 
                         {/* 🖊️ 연필 아이콘 수정 (onClick 이벤트 확인) */}
                         {(userRole === "PRESIDENT" || userRole === "VICE_PRESIDENT") && (
-                            <div className="absolute bottom-4 right-4 flex">
+                            <div className="absolute bottom-4 right-4 flex z-10">
                                 <button
                                     className="bg-white p-2 rounded-full shadow-md cursor-pointer flex items-center justify-center"
                                     onClick={(e) => {
@@ -156,7 +156,7 @@ const ClubDetailPage = () => {
 
                                 {/* 썸네일 수정 옵션 드롭다운 */}
                                 {showOptions && (
-                                    <div ref={dropdownRef} className="absolute bottom-12 right-0 bg-white shadow-lg rounded-md p-2 z-50"
+                                    <div ref={dropdownRef} className="absolute bottom-12 right-0 bg-white shadow-lg rounded-md p-2 z-10"
                                          style={{ minWidth: "150px", whiteSpace: "nowrap" }}
                                     >
                                         <button

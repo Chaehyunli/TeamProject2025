@@ -16,4 +16,5 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
             "JOIN ChatParticipant cp2 ON cp2.chatRoom = cr AND cp2.user.userId = :otherUserId " +
             "WHERE cr.isGroupChat = false AND cr.clubId = :clubId")
     Optional<ChatRoom> findExistingPrivateRoom(Long userId, Long otherUserId, Long clubId);
+    List<ChatRoom> findByClubId(Long clubId);
 }

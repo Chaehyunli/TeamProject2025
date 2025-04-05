@@ -3,6 +3,7 @@ import { getUserProfile, updateUserProfile } from "../api/userApi";
 import { useNavigate } from "react-router-dom";
 import UpdateProfileForm from "../components/UpdateProfileForm";
 import { uploadImageToGCP } from "../api/uploadApi";
+import Spinner from "../components/Spinner";
 
 const UpdateProfilePage = () => {
     const navigate = useNavigate();
@@ -102,11 +103,8 @@ const UpdateProfilePage = () => {
     };
 
     if (loading || !user) {
-        return (
-            <div className="flex justify-center items-center h-64">
-                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
-            </div>
-        );    }
+        return <Spinner />;
+    }
 
     return (
         <div className="w-full flex flex-col items-center my-28 py-12">

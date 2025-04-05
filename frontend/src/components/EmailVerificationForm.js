@@ -16,6 +16,8 @@ const EmailVerificationForm = ({
     const [timer, setTimer] = useState(300);
     const [intervalId, setIntervalId] = useState(null);
     const [isVerifying, setIsVerifying] = useState(false);
+    const [canResend, setCanResend] = useState(true); // 10초 제한 상태
+    const [resendCountdown, setResendCountdown] = useState(10);
 
     // `initialEmail` 값이 변경되면 자동으로 `email` 상태에 반영
     useEffect(() => {
@@ -35,6 +37,22 @@ const EmailVerificationForm = ({
 
     // 이메일 인증 요청
     const handleRequestVerificationCode = async () => {
+        if (!canResend) return; // 10초 제한 중일 때 막기
+
+        setCanResend(false);
+        setResendCountdown(10);
+
+        const countdownInterval = setInterval(() => {
+            setResendCountdown((prev) => {
+                if (prev <= 1) {
+                    clearInterval(countdownInterval);
+                    setCanResend(true);
+                    return 0;
+                }
+                return prev - 1;
+            });
+        }, 1000);
+
         setIsCodeSent(true);  // 즉시 UI 변경 (인증번호 입력칸 바로 표시)
         setMessage("✅ 인증 코드가 이메일로 전송 중입니다...");
 
@@ -124,7 +142,8 @@ const EmailVerificationForm = ({
                     type="button"
                     onClick={handleRequestVerificationCode}
                     className="px-4 py-2 text-sm border border-gray-300 rounded-full hover:bg-hoverWhiteColor transition"
-                    disabled={isCodeSent}
+                    disabled={!canResend}
+                    title={!canResend ? `${resendCountdown}초 뒤 재요청 가능` : ""}
                 >
                     인증번호 발송
                 </button>

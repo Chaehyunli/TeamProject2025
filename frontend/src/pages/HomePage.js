@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useInView } from "react-intersection-observer";
 import { getClubList, getUserClubs } from "../api/clubApi";
 import ClubList from "../components/ClubList";
+import BannerHeader from "../components/BannerHeader";
 
 const HomePage = () => {
     const navigate = useNavigate();
@@ -71,13 +72,7 @@ const HomePage = () => {
 
     return (
         <div className="container mx-auto px-8 lg:px-16">
-            {/* 상단 배너, 나중에 고정 이미지나 swiper 사용해서 자동 슬라이드 등 다양하게 변경 가능 */}
-            <div className="w-full h-48 bg-cover bg-center rounded-lg shadow-md mb-6 mt-24"
-                 style={{ backgroundImage: "url('/banner.png')" }}>
-                <div className="flex items-center justify-center h-full rounded-lg">
-                    <h1 className="text-white text-3xl font-bold">동아리를 찾아보세요!</h1>
-                </div>
-            </div>
+            <BannerHeader imageUrl="/banner.png" title="동아리를 찾아보세요!" />
 
             { clubs.length === 0 ? (
                 // 동아리가 없을 때 메시지 표시
