@@ -40,7 +40,7 @@ public class Article {
     @Column(nullable = false)
     private boolean is_notice;  // 게시물인가 공지사항인가 구분
 
-    @Column(columnDefinition = "TEXT", nullable = false)
+    @Column(columnDefinition = "TEXT", nullable = true)
     private String thumbUrl;  // 게시물 사진 URL (선택 사항)
 
     @CreationTimestamp
