@@ -30,11 +30,12 @@ const LoginForm = () => {
             const result = await login(formData);
             setMessage(result.message);
 
+            const userProfile = await getUserProfile();
             loginUser({
                 userId: result.data.userId,
                 username: result.data.username,
                 name: result.data.name,
-                profileImage: result.data.profileImage,
+                profileImage: userProfile.profileImage,
                 email: result.data.email,
             });
 
