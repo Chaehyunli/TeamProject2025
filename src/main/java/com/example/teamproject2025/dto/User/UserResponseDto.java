@@ -44,7 +44,7 @@ public class UserResponseDto {
     @Schema(description = "대학교 인증 여부", example = "true")
     private Boolean isUniVerified;
 
-    @Schema(description = "프로필 이미지", example = "profile.jpg")
+    @Schema(description = "프로필 이미지 객체 이름", example = "profile.jpg")
     private String profileImage;
 
     @Schema(description = "계정 생성일", example = "2024-01-01T12:00:00")

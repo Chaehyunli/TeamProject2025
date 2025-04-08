@@ -44,7 +44,7 @@ public class UserController {
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "User successfully deleted",
+                    description = "User deleted successfully.",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = CommonResponseDto.class))
             )
     })
@@ -54,7 +54,7 @@ public class UserController {
         session.setAttribute("deleted_mail_verified",true);
         userService.deleteUser(session);
         return ResponseEntity.status(HttpStatus.OK)
-                .body(CommonResponseDto.success(HttpStatus.OK.value(), "User deleted successfully"));
+                .body(CommonResponseDto.success(HttpStatus.OK.value(), "User deleted successfully."));
     }
 
     @GetMapping("/list")
@@ -103,56 +103,10 @@ public class UserController {
             @ApiResponse(
                     responseCode = "200",
                     description = "Successfully retrieved user profile.",
-                    content = @Content(
-                            mediaType = "application/json",
-                            schema = @Schema(implementation = UserResponseDto.class)
-                    )
-            ),
-            @ApiResponse(
-                    responseCode = "401",
-                    description = "Unauthorized",
-                    content = @Content(mediaType = "application/json", schema = @Schema(example = """
-        {
-          "message": "Unauthorized: Authentication is required.",
-          "status": 401,
-          "data": null
-        }
-        """))
-            ),
-            @ApiResponse(
-                    responseCode = "403",
-                    description = "Forbidden",
-                    content = @Content(mediaType = "application/json", schema = @Schema(example = """
-        {
-          "message": "Forbidden: Access to the resource is denied.",
-          "status": 403,
-          "data": null
-        }
-        """))
-            ),
-            @ApiResponse(
-                    responseCode = "404",
-                    description = "Not Found",
-                    content = @Content(mediaType = "application/json", schema = @Schema(example = """
-        {
-          "message": "Not Found: The requested resource could not be found.",
-          "status": 404,
-          "data": null
-        }
-        """))
-            ),
-            @ApiResponse(
-                    responseCode = "500",
-                    description = "Internal server error.",
-                    content = @Content(mediaType = "application/json", schema = @Schema(example = """
-        {
-          "message": "Internal Server Error: An unexpected error occurred.",
-          "status": 500,
-          "data": null
-        }
-        """))
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = CommonResponseDto.class))
             )
     })
+    @ApiCommonErrorResponses
     @GetMapping("/{userId}/profile")
     public ResponseEntity<CommonResponseDto<UserResponseDto>> getUserProfile(@PathVariable Long userId) {
         UserResponseDto userProfile = userService.getUserProfile(userId);

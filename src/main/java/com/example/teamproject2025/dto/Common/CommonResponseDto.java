@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Schema(description = "모든 API 표준 응답 DTO")
 public class CommonResponseDto<T> {
-    @Schema(description = "Message describing the result", example = "Success")
+    @Schema(description = "각 API의 응답 설명이 곧 반환 메시지입니다.", example = "Success")
     private String message;
 
     @Schema(description = "HTTP status code", example = "200")

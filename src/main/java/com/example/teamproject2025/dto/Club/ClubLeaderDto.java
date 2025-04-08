@@ -15,7 +15,7 @@ public class ClubLeaderDto {
     @Schema(description = "사용자 본명", example = "홍길동")
     private String name;
 
-    @Schema(description = "동아리 내 역할(회장/부회장)", example = "홍길동")
+    @Schema(description = "동아리 내 역할(회장/부회장)", example = "PRESIDENT/VICE_PRESIDENT")
     private String roleName;
 
     public static ClubLeaderDto fromEntity(UserClub userClub) {

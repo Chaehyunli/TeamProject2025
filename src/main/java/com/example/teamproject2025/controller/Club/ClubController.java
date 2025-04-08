@@ -1,9 +1,16 @@
 package com.example.teamproject2025.controller.Club;
 
+import com.example.teamproject2025.Common.annotation.ApiCommonErrorResponses;
 import com.example.teamproject2025.dto.Club.*;
 import com.example.teamproject2025.dto.Common.CommonResponseDto;
 import com.example.teamproject2025.dto.Membership.UserClubResponseDto;
 import com.example.teamproject2025.service.Club.ClubService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,12 +22,36 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+@Tag(name = "Club", description = "Club-related APIs")
 @RestController
 @RequestMapping("/api/v1/clubs")
 @RequiredArgsConstructor
 public class ClubController {
     private final ClubService clubService;
 
+    @Operation(
+            summary = "동아리 개설",
+            description = "multipart/form-data 형식으로 새로운 동아리를 개설"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Create a Club Successfully.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(example = """
+            {
+              "message": "Create a Club Successfully.",
+              "status": 200,
+              "data": {
+                "club_id": 1
+              }
+            }
+            """)
+                    )
+            )
+    })
+    @ApiCommonErrorResponses
     @PostMapping(consumes = "multipart/form-data") // multipart/form-data 사용
     public ResponseEntity<CommonResponseDto<Map<String, Long>>> createClub(
             HttpSession session, // 로그인한 사용자
@@ -33,10 +64,25 @@ public class ClubController {
         Long clubId = clubService.createClub(username, clubName, description, category, thumbUrl);
 
         return ResponseEntity.ok(
-                CommonResponseDto.success(200, "Create a Club Successfully", Map.of("club_id", clubId))
+                CommonResponseDto.success(200, "Create a Club Successfully.", Map.of("club_id", clubId))
         );
     }
 
+    @Operation(
+            summary = "동아리 목록 조회",
+            description = "로그인한 사용자의 소속 대학교에 해당하는 동아리 목록을 조회"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Club list retrieved successfully.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ClubListResponseDto.class)
+                    )
+            )
+    })
+    @ApiCommonErrorResponses
     @GetMapping
     public ResponseEntity<CommonResponseDto<ClubListResponseDto>> getClubs(
             HttpSession session, // 로그인한 사용자
@@ -46,7 +92,7 @@ public class ClubController {
         String username = (String) session.getAttribute("username");
         ClubListResponseDto clubList = clubService.getClubsByUserUniversity(username, limit, offset);
 
-        return ResponseEntity.ok(CommonResponseDto.success(200, "Club list retrieved successfully", clubList));
+        return ResponseEntity.ok(CommonResponseDto.success(200, "Club list retrieved successfully.", clubList));
     }
 
     @GetMapping("/{clubId}/role")
@@ -94,11 +140,26 @@ public class ClubController {
         );
     }
 
+    @Operation(
+            summary = "동아리 상세 조회",
+            description = "동아리 ID를 통해 동아리 상세 정보를 조회"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Club details retrieved successfully.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ClubResponseDto.class)
+                    )
+            )
+    })
+    @ApiCommonErrorResponses
     @GetMapping("/{clubId}")
     public ResponseEntity<CommonResponseDto<ClubResponseDto>> getClub(@PathVariable Long clubId) {
         ClubResponseDto club = clubService.getClub(clubId);
         return ResponseEntity.ok(
-                CommonResponseDto.success(200, "Club details retrieved successfully", club)
+                CommonResponseDto.success(200, "Club details retrieved successfully.", club)
         );
     }
 
@@ -274,7 +335,18 @@ public class ClubController {
         );
     }
 
-    // 동아리 thumbnail 수정
+    @Operation(
+            summary = "동아리 썸네일 수정",
+            description = "동아리 썸네일 수정"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Thumbnail updated successfully.",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = CommonResponseDto.class))
+            )
+    })
+    @ApiCommonErrorResponses
     @PatchMapping("/{clubId}/thumbnail")
     public ResponseEntity<CommonResponseDto<String>> updateClubThumbnail(
             HttpSession session,
@@ -284,10 +356,21 @@ public class ClubController {
         String username = (String) session.getAttribute("username");
         clubService.updateClubThumbnail(username, clubId, objectName);
 
-        return ResponseEntity.ok(CommonResponseDto.success(200, "Thumbnail updated successfully", null));
+        return ResponseEntity.ok(CommonResponseDto.success(200, "Thumbnail updated successfully.", null));
     }
 
-    // 동아리 thumbnail 삭제 후, default로 set
+    @Operation(
+            summary = "동아리 기본 썸네일로 수정",
+            description = "동아리 기본 썸네일로 수정"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Default Thumbnail updated successfully.",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = CommonResponseDto.class))
+            )
+    })
+    @ApiCommonErrorResponses
     @PatchMapping("/{clubId}/thumbnail/reset")
     public ResponseEntity<CommonResponseDto<Void>> resetClubThumbnail(
             HttpSession session,
@@ -296,7 +379,7 @@ public class ClubController {
         String username = (String) session.getAttribute("username");
         clubService.resetClubThumbnail(username, clubId);
 
-        return ResponseEntity.ok(CommonResponseDto.success(200, "Default Thumbnail updated successfully"));
+        return ResponseEntity.ok(CommonResponseDto.success(200, "Default Thumbnail updated successfully."));
     }
 
     // 검색어를 이용해서 동아리 검색
@@ -313,6 +396,18 @@ public class ClubController {
         return ResponseEntity.ok(CommonResponseDto.success(200, "Club search results retrieved successfully", clubList));
     }
 
+    @Operation(
+            summary = "동아리 삭제",
+            description = "로그인한 사용자가 특정 동아리를 삭제"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "The club has been deleted successfully.",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = CommonResponseDto.class))
+            )
+    })
+    @ApiCommonErrorResponses
     @DeleteMapping("/{clubId}")
     public ResponseEntity<CommonResponseDto<Void>> deleteClub(
             @PathVariable Long clubId,
@@ -321,11 +416,11 @@ public class ClubController {
         Long userId = (Long) session.getAttribute("userId"); // 세션에서 userId 가져오기
         if (userId == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(CommonResponseDto.error(401, "로그인이 필요합니다."));
+                    .body(CommonResponseDto.error(401, "Log in is required."));
         }
 
         clubService.deleteClub(clubId, userId);
 
-        return ResponseEntity.ok(CommonResponseDto.success(200, "동아리가 성공적으로 삭제되었습니다."));
+        return ResponseEntity.ok(CommonResponseDto.success(200, "The club has been deleted successfully."));
     }
 }
