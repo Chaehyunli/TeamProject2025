@@ -1,5 +1,6 @@
 package com.example.teamproject2025.dto.Common;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,9 +10,15 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Schema(description = "모든 API 표준 응답 DTO")
 public class CommonResponseDto<T> {
+    @Schema(description = "Message describing the result", example = "User deleted successfully")
     private String message;
+
+    @Schema(description = "HTTP status code", example = "200")
     private int status;
+
+    @Schema(description = "Actual response data. Can be null on error or empty responses.")
     private T data;
 
     // Success Response
