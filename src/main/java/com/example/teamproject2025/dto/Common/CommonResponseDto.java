@@ -12,13 +12,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Schema(description = "모든 API 표준 응답 DTO")
 public class CommonResponseDto<T> {
-    @Schema(description = "Message describing the result", example = "User deleted successfully")
+    @Schema(description = "Message describing the result", example = "Success")
     private String message;
 
     @Schema(description = "HTTP status code", example = "200")
     private int status;
 
-    @Schema(description = "Actual response data. Can be null on error or empty responses.")
+    @Schema(description = "Actual response data. Can be null on error or empty responses.", example = "null")
     private T data;
 
     // Success Response

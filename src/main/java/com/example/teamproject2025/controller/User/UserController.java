@@ -1,5 +1,6 @@
 package com.example.teamproject2025.controller.User;
 
+import com.example.teamproject2025.Common.annotation.ApiCommonErrorResponses;
 import com.example.teamproject2025.dto.Common.CommonResponseDto;
 import com.example.teamproject2025.dto.User.*;
 import com.example.teamproject2025.service.User.BanUserService;
@@ -44,59 +45,10 @@ public class UserController {
             @ApiResponse(
                     responseCode = "200",
                     description = "User successfully deleted",
-                    content = @Content(mediaType = "application/json", schema = @Schema(example = """
-        {
-          "message": "User successfully deleted",
-          "status": 200,
-          "data": null
-        }
-        """))
-            ),
-            @ApiResponse(
-                    responseCode = "401",
-                    description = "Unauthorized",
-                    content = @Content(mediaType = "application/json", schema = @Schema(example = """
-        {
-          "message": "Unauthorized: Authentication is required.",
-          "status": 401,
-          "data": null
-        }
-        """))
-            ),
-            @ApiResponse(
-                    responseCode = "403",
-                    description = "Forbidden",
-                    content = @Content(mediaType = "application/json", schema = @Schema(example = """
-        {
-          "message": "Forbidden: Access to the resource is denied.",
-          "status": 403,
-          "data": null
-        }
-        """))
-            ),
-            @ApiResponse(
-                    responseCode = "404",
-                    description = "Not Found",
-                    content = @Content(mediaType = "application/json", schema = @Schema(example = """
-        {
-          "message": "Not Found: The requested resource could not be found.",
-          "status": 404,
-          "data": null
-        }
-        """))
-            ),
-            @ApiResponse(
-                    responseCode = "500",
-                    description = "Internal server error.",
-                    content = @Content(mediaType = "application/json", schema = @Schema(example = """
-        {
-          "message": "Internal Server Error: An unexpected error occurred.",
-          "status": 500,
-          "data": null
-        }
-        """))
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = CommonResponseDto.class))
             )
     })
+    @ApiCommonErrorResponses
     @DeleteMapping()
     public ResponseEntity<CommonResponseDto<Void>> deleteUser(HttpSession session) {
         session.setAttribute("deleted_mail_verified",true);
