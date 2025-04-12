@@ -3,6 +3,7 @@ package com.example.teamproject2025.service.Club;
 import com.example.teamproject2025.constant.DefaultImage;
 import com.example.teamproject2025.dto.Club.*;
 import com.example.teamproject2025.dto.Membership.UserClubResponseDto;
+import com.example.teamproject2025.entity.Chat.ChatRoom;
 import com.example.teamproject2025.entity.Club.Article;
 import com.example.teamproject2025.entity.Club.Category;
 import com.example.teamproject2025.entity.Club.Club;
@@ -12,6 +13,7 @@ import com.example.teamproject2025.entity.Membership.UserClub;
 import com.example.teamproject2025.entity.Membership.UserRole;
 import com.example.teamproject2025.entity.University.University;
 import com.example.teamproject2025.entity.User.User;
+import com.example.teamproject2025.repository.Chat.ChatRoomRepository;
 import com.example.teamproject2025.repository.Club.CategoryRepository;
 import com.example.teamproject2025.repository.Club.ClubArticleRepository;
 import com.example.teamproject2025.repository.Club.ClubNoticeRepository;
@@ -21,6 +23,7 @@ import com.example.teamproject2025.repository.Membership.UserClubRepository;
 import com.example.teamproject2025.repository.Membership.UserRoleRepository;
 import com.example.teamproject2025.repository.University.UniversityRepository;
 import com.example.teamproject2025.repository.User.UserRepository;
+import com.example.teamproject2025.service.Chat.ChatService;
 import com.google.cloud.storage.Storage;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -52,6 +55,8 @@ public class ClubServiceImpl implements ClubService {
     private final ClubSubmissionRepository clubSubmissionRepository;
     private final Storage storage;
     private final ApplicationContext applicationContext;
+    private final ChatRoomRepository chatRoomRepository;
+    private final ChatService chatService;
 
     // 업로드 경로 (Spring Boot의 정적 리소스로 활용, 현재 프로젝트 루트 경로에 uploads 폴더 생성)
     @Value("${GCP_BUCKET}")
@@ -517,6 +522,15 @@ public class ClubServiceImpl implements ClubService {
         clubSubmissionRepository.deleteAllByClub_ClubId(clubId);
         clubArticleRepository.deleteAllByClub_ClubId(clubId);
         clubNoticeRepository.deleteAllByClub_ClubId(clubId);
+
+        // ChatRoom 나가기
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        ChatRoom chatRoom = chatRoomRepository.findChatRoomByClubId(clubId)
+                .orElseThrow(() -> new IllegalArgumentException("채팅방을 찾을 수 없습니다."));
+        chatService.leavePrivateChatRoomInternal(chatRoom, user);
+
+        // public void leavePrivateChatRoomInternal(ChatRoom chatRoom, User user)
 
         // 4. GCP에 저장된 썸네일 이미지 삭제 (기본 이미지가 아닐 경우)
         if (club.getThumbUrl() != null && !club.getThumbUrl().equals(DefaultImage.CLUB_THUMBNAIL)) {
