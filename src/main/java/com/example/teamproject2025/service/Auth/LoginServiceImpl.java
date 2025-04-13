@@ -37,12 +37,12 @@ public class LoginServiceImpl implements LoginService {
         String password = dto.getPassword();
 
         if (username == null || password == null) {
-            throw new IllegalArgumentException("Invalid request: missing username or password");
+            throw new IllegalArgumentException("사용자 ID 및 비밀번호를 입력하세요.");
         }
 
         // 사용자 조회
         User user = (User) userRepository.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("User not found: " + username));
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다 : " + username));
 
         // 제재 대상 유저인가 검증
         Optional<BanUser> checkBanUser = banUserRepository.findByUser(user); // 없다고 에러 내서는 안됨
@@ -52,12 +52,12 @@ public class LoginServiceImpl implements LoginService {
             int daysLeft = (int) ChronoUnit.DAYS.between(LocalDate.now(), allowedLoginDate);
 
             if (daysLeft < 0){
-                System.out.println("\n\n⚠️⚠️⚠️daysLeft cannot be negative⚠️⚠️⚠️\n\n");
-                throw new IllegalArgumentException("daysLeft cannot be negative");
+                System.out.println("\n\n⚠️⚠️⚠️제재 잔여일이 0보다 낮을 수 없습니다.⚠️⚠️⚠️\n\n");
+                throw new IllegalArgumentException("제재 잔여일이 0보다 낮을 수 없습니다.");
             } else {
-                System.out.println("\n\n⚠️⚠️⚠️You are currently restricted from logging in⚠️⚠️⚠️\n\n");
-                throw new AccessDeniedException("You are currently restricted from logging in." +
-                        "\nYou will be able to log in on " + allowedLoginDate + ".");
+                System.out.println("\n\n⚠️⚠️⚠️당신은 현재 제재 상태로, 로그인 할 수 없습니다.⚠️⚠️⚠️\n\n");
+                throw new AccessDeniedException("당신은 현재 제재 상태로, 로그인 할 수 없습니다." +
+                        "\n로그인 가능 일자는 " + allowedLoginDate + " 입니다.");
             }
         }
 
@@ -68,7 +68,7 @@ public class LoginServiceImpl implements LoginService {
 
         // 비밀번호 검증
         if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new IllegalArgumentException("Invalid Password");
+            throw new IllegalArgumentException("잘못된 패스워드 입니다.");
         }
 
         // 세션 저장

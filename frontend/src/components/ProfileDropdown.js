@@ -1,12 +1,12 @@
 import React, { useState, useRef, useEffect } from "react";
 import { FaChevronDown } from "react-icons/fa";
-import { logout } from "../api/authApi";
+import { logout, banUser } from "../api/authApi";
 import {useLocation, useNavigate} from "react-router-dom";
 import { ProtectedImage } from "../api/uploadApi";
 import { disconnectWebSocket } from "../api/chatApi";
 import { useAuth } from "../context/AuthContext";
 
-const ProfileDropdown = ({ username, userImage, onLogout }) => {
+const ProfileDropdown = ({ username, userImage }) => {
     const [isOpen, setIsOpen] = useState(false);
     const navigate = useNavigate();
     const dropdownRef = useRef(null);
@@ -34,6 +34,15 @@ const ProfileDropdown = ({ username, userImage, onLogout }) => {
                 console.log(`🛑 로그아웃 중 WebSocket 연결 해제 처리, roomId: ${roomId}`);
                 const isConnectedRef = { current: true };
                 await disconnectWebSocket(roomId, isConnectedRef);
+            }
+
+            // Ban User Logic
+            const userId = localStorage.getItem("userId");
+            if (userId) {
+                await banUser(userId);
+                console.log("🟢🟢🟢 Ban User Logic Well");
+            } else {
+                console.warn("❗ localStorage에 userId가 없습니다.");
             }
 
             await logout();

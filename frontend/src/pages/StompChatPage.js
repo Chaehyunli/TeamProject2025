@@ -41,8 +41,6 @@ const StompChatPage = () => {
         };
     }, []);
 
-    // console.log(`아이 시발시발십라시바ㅣㅁㄴ아ㅣ라ㅣㄴㅇ라ㅣㅁㄴㅇ라ㅣㅁㄴㅇㄹ${previousPath.current}`);
-
     // 전체로직 부분: 연결상태인가 체크하고 아니라면 연결과 함꼐, 챗 관련 정보들을 로드한다. 종료하면 연결해제한다.
     useEffect(() => {
         console.log("🔌 Connecting WebSocket...");

@@ -291,8 +291,6 @@ public class ChatServiceImpl implements ChatService {
         }
     }
 
-
-
     @Override
     public Long getOrCreatePrivateRoom(Long otherUserId, Long clubId, HttpServletRequest request){
         User user = getSessionUser(request);
@@ -312,7 +310,7 @@ public class ChatServiceImpl implements ChatService {
         }
 
         // 나는 나가서 없지만 상대방은 남아있는 채팅방을 조회
-        List<ChatRoom> clubChatRooms = chatRoomRepository.findByClubId(club.getClubId());
+        List<ChatRoom> clubChatRooms = chatRoomRepository.findChatRoomsByClubId(club.getClubId());
         if (!clubChatRooms.isEmpty()){
             Optional<ChatRoom> clubChatRoom = chatMessageRepository.findChatRoomByChatRoomsAndUser(clubChatRooms, user);
             if (clubChatRoom.isPresent()){

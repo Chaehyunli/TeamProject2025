@@ -33,8 +33,6 @@ public class UserCreateRequestDto {
     private String profileImage = DefaultImage.PROFILE_IMAGE;
     @Builder.Default
     private Boolean isEmailVerified = false; // Ref1
-    @Builder.Default
-    private Boolean isUniVerified = false;
 
     // DTO → Entity 변환 메서드
     public User toEntity(Long universityId, String encodedPassword) {
@@ -47,7 +45,6 @@ public class UserCreateRequestDto {
                 .studentId(this.studentId)
                 .profileImage(this.profileImage)
                 .isEmailVerified(this.isEmailVerified)
-                .isUniVerified(this.isUniVerified != null ? this.isUniVerified : false)
                 .build();
     }
 }

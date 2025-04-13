@@ -2,12 +2,14 @@ package com.example.teamproject2025.controller.Auth;
 
 import com.example.teamproject2025.dto.Auth.*;
 import com.example.teamproject2025.dto.Common.CommonResponseDto;
+import com.example.teamproject2025.dto.User.BanUserResponseDto;
 import com.example.teamproject2025.dto.User.UserLoginRequestDto;
 import com.example.teamproject2025.dto.User.UserLoginResponseDto;
 import com.example.teamproject2025.service.Auth.EmailServiceImpl;
 import com.example.teamproject2025.service.Auth.FindUserAuthService;
 import com.example.teamproject2025.service.Auth.LoginService;
 import com.example.teamproject2025.service.Auth.LogoutService;
+import com.example.teamproject2025.service.User.BanUserService;
 import com.example.teamproject2025.service.User.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -27,6 +29,7 @@ public class AuthController {
     private final LogoutService logoutService;
     private final UserService userService;
     private final FindUserAuthService findUserAuthService;
+    private final BanUserService banUserService;
 
     // 이메일 인증 요청
     @PostMapping("/email")
@@ -92,6 +95,13 @@ public class AuthController {
         String universityName = emailServiceImpl.getUniversityNameByEmail(email);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(CommonResponseDto.success(HttpStatus.OK.value(), "Success: Get University Name", universityName));
+    }
+
+    @PutMapping("/ban-user/{userId}")
+    public ResponseEntity<CommonResponseDto<BanUserResponseDto>> updateBanUserInfo(@PathVariable Long userId){
+        BanUserResponseDto banUserDto = banUserService.updateBanUserInfo(userId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CommonResponseDto.success(HttpStatus.OK.value(), "Complete Ban User Info", banUserDto));
     }
 }
 

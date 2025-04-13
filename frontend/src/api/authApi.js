@@ -175,3 +175,18 @@ export const getUniversityNameByEmail = async (email) => {
         throw error;
     }
 };
+
+// 사용자 차단 API
+export const banUser = async (userId) => {
+    try {
+        const response = await axios.put(
+            `${API_BASE_URL}/ban-user/${userId}`,
+            {},
+            { withCredentials: true }
+        );
+        return response.data;
+    } catch (error) {
+        console.error("사용자 차단 실패:", error);
+        throw error;
+    }
+};

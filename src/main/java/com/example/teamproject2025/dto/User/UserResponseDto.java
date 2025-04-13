@@ -24,7 +24,6 @@ public class UserResponseDto {
     private Long universityId;
     private String universityName;
     private Boolean isEmailVerified;
-    private Boolean isUniVerified;
     private String profileImage;
     private LocalDateTime createdAt;
     private String department;
@@ -42,7 +41,6 @@ public class UserResponseDto {
                 .universityId(user.getUniversityId())
                 .universityName(universityName)
                 .isEmailVerified(user.getIsEmailVerified())
-                .isUniVerified(user.getIsUniVerified())
                 .profileImage(user.getProfileImage())
                 .createdAt(user.getCreatedAt())
                 .build();
@@ -57,7 +55,6 @@ public class UserResponseDto {
                 .studentId(user.getStudentId())
                 .department(user.getDepartment())
                 .isEmailVerified(user.getIsEmailVerified())
-                .isUniVerified(user.getIsUniVerified())
                 .profileImage(user.getProfileImage())
                 .createdAt(user.getCreatedAt())
                 .build();
@@ -80,7 +77,6 @@ public class UserResponseDto {
                 .universityId(user.getUniversityId())
                 .universityName(universityName)
                 .isEmailVerified(user.getIsEmailVerified())
-                .isUniVerified(user.getIsUniVerified())
                 .createdAt(user.getCreatedAt())
                 .joinedClubs(joinedClubs)   // 가입한 동아리 목록 추가
                 .managedClubs(managedClubs) // 운영하는 동아리 목록 추가
