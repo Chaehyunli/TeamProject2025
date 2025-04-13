@@ -32,7 +32,8 @@ const UpdateProfileForm = ({ formData, setFormData, handleEmailChange, handleEma
                     type="text"
                     name="studentId"
                     value={formData.studentId}
-                    onChange={(e) => setFormData({...formData, studentId: e.target.value})}
+                    //onChange={(e) => setFormData({...formData, studentId: e.target.value})}
+                    disabled={true}
                 />
 
                 <InputField
