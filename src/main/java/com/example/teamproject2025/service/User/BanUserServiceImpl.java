@@ -21,9 +21,6 @@ public class BanUserServiceImpl implements BanUserService {
     private final BanUserRepository banUserRepository;
     private final ChatMessageRepository chatMessageRepository;
 
-//    @PersistenceContext
-//    private EntityManager entityManager;
-
     @Override
     public BanUserResponseDto updateBanUserInfo(Long userId) {
         // 1-step: Define User
@@ -72,9 +69,9 @@ public class BanUserServiceImpl implements BanUserService {
     }
 
     private int calculateBanDays(int newBadMessages) {
-        if (newBadMessages >= 6) return 30;
-        if (newBadMessages >= 4) return 21;
-        if (newBadMessages >= 2) return 14;
+        if (newBadMessages >= 15) return 30;
+        if (newBadMessages >= 10) return 21;
+        if (newBadMessages >= 5) return 14;
         return 0;
     }
 }

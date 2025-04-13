@@ -202,9 +202,6 @@ export const sendMessage = (roomId, senderEmail, message, isConnectedRef) => {
 };
 
 export const disconnectWebSocket = async (roomId, isConnectedRef) => {
-    console.log("🔌🔌🔌🔌🔌🔌시발시발시발시발🔌🔌🔌🔌🔌🔌🔌🔌🔌🔌");
-    console.log(`🔌🔌🔌🔌${isConnectedRef}🔌🔌🔌🔌`);
-
     if (!stompClient || !isConnectedRef.current) {
 
         if(!isConnectedRef.current){

@@ -19,7 +19,6 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
-    private final BanUserService banUserService;
 
     // 사용자 등록
     @PostMapping("/register")
@@ -96,13 +95,5 @@ public class UserController {
 
         userService.resetUserProfileImage(userId);
         return ResponseEntity.ok(CommonResponseDto.success(200, "기본 프로필 이미지로 변경 완료"));
-    }
-
-    @PutMapping("/ban-user/{userId}")
-    public ResponseEntity<CommonResponseDto<BanUserResponseDto>> updateBanUserInfo(@PathVariable Long userId){
-        System.out.println("\n\nTEST is Well?\n\n");
-        BanUserResponseDto banUserDto = banUserService.updateBanUserInfo(userId);
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(CommonResponseDto.success(HttpStatus.OK.value(), "Complete Ban User Info", banUserDto));
     }
 }
