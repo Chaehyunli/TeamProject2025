@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import API_BASE_URL from "./api";
 
-const API_BASE_URL = "http://localhost:8080/api/v1/upload";
+const UPLOAD_URL = `${API_BASE_URL}/api/v1/upload`;
 
 // Presigned URL 요청 및 파일 업로드 함수
 export const uploadImageToGCP = async (file) => {
     try {
         // 1. presigned URL 요청
-        const presignedRes = await axios.get(`${API_BASE_URL}/presigned-url`, {
+        const presignedRes = await axios.get(`${UPLOAD_URL}/presigned-url`, {
             params: { fileName: file.name, fileType: file.type },
             withCredentials: true
         });
@@ -38,7 +39,7 @@ export const ProtectedImage = ({ objectName, alt = "Image", className = "w-32 h-
 
         const fetchImageUrl = async () => {
             try {
-                const res = await axios.get(`${API_BASE_URL}/presigned-url/download`, {
+                const res = await axios.get(`${UPLOAD_URL}/presigned-url/download`, {
                     params: { objectName },
                     withCredentials: true
                 });

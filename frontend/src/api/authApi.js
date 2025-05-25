@@ -1,11 +1,12 @@
 import axios from "axios";
+import API_BASE_URL from './api';
 
-const API_BASE_URL = "http://localhost:8080/api/v1/auth";
+const AUTH_URL = `${API_BASE_URL}/api/v1/auth`;
 
 // 이메일 인증 요청
 export const requestVerificationCode = async (email, universityName) => {
     try {
-        await axios.post(`${API_BASE_URL}/email`, {
+        await axios.post(`${AUTH_URL}/email`, {
             email,
             university: universityName,
         });
@@ -18,7 +19,7 @@ export const requestVerificationCode = async (email, universityName) => {
 // 인증 코드 검증 요청
 export const verifyCode = async (email, verificationCode) => {
     try {
-        const response = await axios.post(`${API_BASE_URL}/email/verify`, { email, verificationCode });
+        const response = await axios.post(`${AUTH_URL}/email/verify`, { email, verificationCode });
         return response.data;
     } catch (error) {
         console.error("인증 코드 검증 오류: ", error);
@@ -28,7 +29,7 @@ export const verifyCode = async (email, verificationCode) => {
 
 export const login = async (formData) => {
     try {
-        const response = await fetch(`${API_BASE_URL}/login`, {
+        const response = await fetch(`${AUTH_URL}/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(formData),
@@ -56,7 +57,7 @@ export const login = async (formData) => {
 
 export const logout = async () => {
     try {
-        const response = await fetch(`${API_BASE_URL}/logout`, {
+        const response = await fetch(`${AUTH_URL}/logout`, {
             method: "POST",
             credentials: "include", // 세션을 포함하여 요청
         });
@@ -76,7 +77,7 @@ export const logout = async () => {
 
 export const resetPassword = async (formData) => {
     try{
-        const response = await fetch(`${API_BASE_URL}/password-reset`, {
+        const response = await fetch(`${AUTH_URL}/password-reset`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(formData),
@@ -98,7 +99,7 @@ export const resetPassword = async (formData) => {
 // 아이디 검증 요청 (find-id API 호출) for reset-pw
 export const verifyUsername = async (formData) => {
     try {
-        const response = await fetch(`${API_BASE_URL}/find-id`, {
+        const response = await fetch(`${AUTH_URL}/find-id`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -131,7 +132,7 @@ export const verifyUsername = async (formData) => {
 // 아이디 찾기 -> 위의 코드랑 중복이 좀 많긴한데, 프로젝트 어느 정도 완성도가 생기면 어차피 리팩토링 해야함. 그떄 ㄱㄱ
 export const findUsername = async (formData) => {
     try {
-        const response = await fetch(`${API_BASE_URL}/find-id`, {
+        const response = await fetch(`${AUTH_URL}/find-id`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(formData),
@@ -157,7 +158,7 @@ export const findUsername = async (formData) => {
 
 export const getUniversityNameByEmail = async (email) => {
     try {
-        const response = await axios.post(`${API_BASE_URL}/univ-name`, { email }, {  // ← 수정된 부분
+        const response = await axios.post(`${AUTH_URL}/univ-name`, { email }, {  // ← 수정된 부분
             headers: { "Content-Type": "application/json" }
         });
 
@@ -180,7 +181,7 @@ export const getUniversityNameByEmail = async (email) => {
 export const banUser = async (userId) => {
     try {
         const response = await axios.put(
-            `${API_BASE_URL}/ban-user/${userId}`,
+            `${AUTH_URL}/ban-user/${userId}`,
             {},
             { withCredentials: true }
         );

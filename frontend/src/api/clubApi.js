@@ -1,11 +1,12 @@
 import axios from "axios";
+import API_BASE_URL from "./api";
 
-const API_BASE_URL = "http://localhost:8080/api/v1/clubs";
+const CLUB_URL = `${API_BASE_URL}/api/v1/clubs`;
 
 // 동아리 목록 조회
 export const getClubList = async(limit, offset) => {
     try{
-        const response = await axios.get(`${API_BASE_URL}`, {
+        const response = await axios.get(`${CLUB_URL}`, {
             params: { limit, offset },
             withCredentials: true // 세션 인증 유지 위해 추가
         });
@@ -28,7 +29,7 @@ export const createClub = async(clubData) => {
             }
         });
 
-        const response = await axios.post(`${API_BASE_URL}`, formData, {
+        const response = await axios.post(`${CLUB_URL}`, formData, {
             withCredentials: true
         });
 
@@ -42,7 +43,7 @@ export const createClub = async(clubData) => {
 // 동아리 내에서의 사용자 역할 반환
 export const getUserClubRole = async (clubId) => {
     try {
-        const response = await axios.get(`${API_BASE_URL}/${clubId}/role`, {
+        const response = await axios.get(`${CLUB_URL}/${clubId}/role`, {
             withCredentials: true
         });
 
@@ -57,7 +58,7 @@ export const getUserClubRole = async (clubId) => {
 // 사용자가 가입한 동아리 목록 가져오기
 export const getUserClubs = async () => {
     try {
-        const response = await axios.get(`${API_BASE_URL}/my-clubs`, { withCredentials: true });
+        const response = await axios.get(`${CLUB_URL}/my-clubs`, { withCredentials: true });
         return response.data.data || []; // userClubs 배열 반환
     } catch (error) {
         console.error("사용자가 속한 동아리 목록 가져오기 실패:", error);
@@ -69,7 +70,7 @@ export const getUserClubs = async () => {
 export const submitClubApplication = async (clubId, formData) => {
     try {
         const response = await axios.post(
-            `${API_BASE_URL}/${clubId}/submissions`,
+            `${CLUB_URL}/${clubId}/submissions`,
             formData,
             { withCredentials: true } // 세션 기반 인증 유지
         );
@@ -83,7 +84,7 @@ export const submitClubApplication = async (clubId, formData) => {
 // 사용자의 동아리 지원 여부 확인
 export const getUserClubSubmissionStatus = async (clubId) => {
     try {
-        const response = await axios.get(`${API_BASE_URL}/${clubId}/submissions/status`, {
+        const response = await axios.get(`${CLUB_URL}/${clubId}/submissions/status`, {
             withCredentials: true
         });
         return response.data.data.hasApplied;
@@ -96,7 +97,7 @@ export const getUserClubSubmissionStatus = async (clubId) => {
 // 동아리 지원자 목록 조회 
 export const getClubSubmissions = async (clubId) => {
     try {
-        const response = await axios.get(`${API_BASE_URL}/${clubId}/submissions`, {
+        const response = await axios.get(`${CLUB_URL}/${clubId}/submissions`, {
             withCredentials: true,
         });
         return response.data;
@@ -109,7 +110,7 @@ export const getClubSubmissions = async (clubId) => {
 // 특정 동아리 정보 조회
 export const getClub = async (clubId) => {
     try {
-        const response = await axios.get(`${API_BASE_URL}/${clubId}`, {
+        const response = await axios.get(`${CLUB_URL}/${clubId}`, {
             withCredentials: true, // 세션 기반 인증 유지
         });
         return response.data.data; // ClubResponseDto 데이터 반환
@@ -121,7 +122,7 @@ export const getClub = async (clubId) => {
 // 특정 지원서 상세정보 조회
 export const getClubSubmissionDetail = async (clubId, applyId) => {
     try {
-        const response = await axios.get(`${API_BASE_URL}/${clubId}/submissions/${applyId}`, { withCredentials: true });
+        const response = await axios.get(`${CLUB_URL}/${clubId}/submissions/${applyId}`, { withCredentials: true });
         return response.data;
     } catch (error) {
         console.error("지원서 상세 조회 실패:", error);
@@ -132,7 +133,7 @@ export const getClubSubmissionDetail = async (clubId, applyId) => {
 // 특정 지원서 승인
 export const approveSubmission = async (clubId, applyId) => {
     try {
-        const response = await axios.patch(`${API_BASE_URL}/${clubId}/submissions/${applyId}/approve`,
+        const response = await axios.patch(`${CLUB_URL}/${clubId}/submissions/${applyId}/approve`,
             {},
             { withCredentials: true }
         );
@@ -146,7 +147,7 @@ export const approveSubmission = async (clubId, applyId) => {
 // 특정 지원서 거절
 export const rejectSubmission = async (clubId, applyId) => {
     try {
-        const response = await axios.patch(`${API_BASE_URL}/${clubId}/submissions/${applyId}/reject`,
+        const response = await axios.patch(`${CLUB_URL}/${clubId}/submissions/${applyId}/reject`,
             {},
             { withCredentials: true }
         );
@@ -160,7 +161,7 @@ export const rejectSubmission = async (clubId, applyId) => {
 // 동아리 멤버 목록 가져오기
 export const getClubMembers = async (clubId) => {
     try {
-        const response = await axios.get(`${API_BASE_URL}/${clubId}/members`, {
+        const response = await axios.get(`${CLUB_URL}/${clubId}/members`, {
             withCredentials: true,
         });
         return response.data;
@@ -174,7 +175,7 @@ export const getClubMembers = async (clubId) => {
 export const createArticle = async (clubId, articleData) => {
     try {
         const response = await axios.post(
-            `${API_BASE_URL}/${clubId}/articles`,
+            `${CLUB_URL}/${clubId}/articles`,
             articleData,
             { withCredentials: true }
         );
@@ -188,7 +189,7 @@ export const createArticle = async (clubId, articleData) => {
 // 동아리 게시물 리스트
 export const getClubArticles = async (clubId, limit = 10, offset = 0) => {
     try {
-        const response = await axios.get(`${API_BASE_URL}/${clubId}/articles`, {
+        const response = await axios.get(`${CLUB_URL}/${clubId}/articles`, {
             params: {
                 limit,
                 offset
@@ -206,7 +207,7 @@ export const getClubArticles = async (clubId, limit = 10, offset = 0) => {
 export const getArticleDetail = async (clubId, articleId) => {
     try {
         const response = await axios.get(
-            `${API_BASE_URL}/${clubId}/articles/${articleId}`,
+            `${CLUB_URL}/${clubId}/articles/${articleId}`,
             { withCredentials: true }
         );
         console.log('clubApi authorId', response.data.data);
@@ -221,7 +222,7 @@ export const getArticleDetail = async (clubId, articleId) => {
 export const updateArticle = async (clubId, articleId, articleData) => {
     try {
         const response = await axios.put(
-            `${API_BASE_URL}/${clubId}/articles/${articleId}`,
+            `${CLUB_URL}/${clubId}/articles/${articleId}`,
             articleData,
             { withCredentials: true }
         );
@@ -236,7 +237,7 @@ export const updateArticle = async (clubId, articleId, articleData) => {
 export const deleteArticle = async (clubId, articleId) => {
     try {
         const response = await axios.delete(
-            `${API_BASE_URL}/${clubId}/articles/${articleId}`,
+            `${CLUB_URL}/${clubId}/articles/${articleId}`,
             { withCredentials: true }
         );
         return response.data;
@@ -248,7 +249,7 @@ export const deleteArticle = async (clubId, articleId) => {
 
 export const getUserRoleInClub = async (clubId) => {
     try {
-        const response = await axios.get(`${API_BASE_URL}/${clubId}/role`, {
+        const response = await axios.get(`${CLUB_URL}/${clubId}/role`, {
             withCredentials: true
         });
 
@@ -263,7 +264,7 @@ export const getUserRoleInClub = async (clubId) => {
 // 공지사항 작성
 export const createNotice = async (clubId, noticeData) => {
     try{
-        const response = await axios.post(`${API_BASE_URL}/${clubId}/notices`,
+        const response = await axios.post(`${CLUB_URL}/${clubId}/notices`,
             noticeData,
             {withCredentials: true}
         );
@@ -279,7 +280,7 @@ export const getNoticeDetail = async (clubId, noticeId) => {
 
     try {
         const response = await axios.get(
-            `${API_BASE_URL}/${clubId}/notices/${noticeId}`,
+            `${CLUB_URL}/${clubId}/notices/${noticeId}`,
             { withCredentials: true }
         );
         console.log('clubApi authorId', response.data.data);
@@ -293,7 +294,7 @@ export const getNoticeDetail = async (clubId, noticeId) => {
 // 공지사항 조회
 export const getNoticeList = async (clubId, limit = 10, offset = 0) => {
     try {
-        const response = await axios.get(`${API_BASE_URL}/${clubId}/notices`, {
+        const response = await axios.get(`${CLUB_URL}/${clubId}/notices`, {
             params: {
                 limit,
                 offset
@@ -312,7 +313,7 @@ export const updateNotice = async (clubId, noticeId, noticeData) => {
 
     try {
         const response = await axios.put(
-            `${API_BASE_URL}/${clubId}/notices/${noticeId}`,
+            `${CLUB_URL}/${clubId}/notices/${noticeId}`,
             noticeData,
             { withCredentials: true }
         );
@@ -327,7 +328,7 @@ export const updateNotice = async (clubId, noticeId, noticeData) => {
 export const deleteNotice = async (clubId, noticeId) => {
     try {
         const response = await axios.delete(
-            `${API_BASE_URL}/${clubId}/notices/${noticeId}`,
+            `${CLUB_URL}/${clubId}/notices/${noticeId}`,
             { withCredentials: true }
         );
         return response.data;
@@ -341,7 +342,7 @@ export const deleteNotice = async (clubId, noticeId) => {
 export const updateClubThumbnail = async (clubId, objectName) => {
     try {
         const response = await axios.patch(
-            `${API_BASE_URL}/${clubId}/thumbnail`,
+            `${CLUB_URL}/${clubId}/thumbnail`,
             new URLSearchParams({ objectName }), // x-www-form-urlencoded 형식
             { withCredentials: true }
         );
@@ -355,7 +356,7 @@ export const updateClubThumbnail = async (clubId, objectName) => {
 // 기본 Thumbnail로 변경
 export const resetClubThumbnail = async (clubId) =>{
   try {
-      const response = await axios.patch(`${API_BASE_URL}/${clubId}/thumbnail/reset`,
+      const response = await axios.patch(`${CLUB_URL}/${clubId}/thumbnail/reset`,
           {},
           { withCredentials: true }
       );
@@ -371,7 +372,7 @@ export const resetClubThumbnail = async (clubId) =>{
 export const grantRole = async (targetUserId, clubId, role) => {
     try {
         const response = await axios.post(
-            `${API_BASE_URL}/grant-role`,
+            `${CLUB_URL}/grant-role`,
             { targetUserId, clubId, role },
             {
                 withCredentials: true,
@@ -391,7 +392,7 @@ export const grantRole = async (targetUserId, clubId, role) => {
 export const leaveClub = async (targetUserId, clubId) => {
     try {
         const response = await axios.delete(
-            `${API_BASE_URL}/leave-club`,
+            `${CLUB_URL}/leave-club`,
             {
                 data: { targetUserId, clubId },
                 withCredentials: true,
@@ -410,7 +411,7 @@ export const leaveClub = async (targetUserId, clubId) => {
 // 검색어로 동아리 검색 (페이지네이션 고려 x)
 export const getSearchClubList = async (searchQuery) => {
     try {
-        const response = await axios.get(`${API_BASE_URL}/search`, {
+        const response = await axios.get(`${CLUB_URL}/search`, {
             params: { search: searchQuery }, // 검색어만 전달
             withCredentials: true
         });
@@ -424,7 +425,7 @@ export const getSearchClubList = async (searchQuery) => {
 
 export const deleteClub = async (clubId) => {
     try {
-        await axios.delete(`${API_BASE_URL}/${clubId}`, { withCredentials: true });
+        await axios.delete(`${CLUB_URL}/${clubId}`, { withCredentials: true });
         return true;
     } catch (error){
         console.log("동아리 삭제 실패:", error);

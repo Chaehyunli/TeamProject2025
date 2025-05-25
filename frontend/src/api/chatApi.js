@@ -1,16 +1,18 @@
 import axios from "axios";
 import SockJS from "sockjs-client";
 import Stomp from "webstomp-client";
+import API_BASE_URL from "./api";
 
-const API_BASE_URL = "http://localhost:8080/api/v1/chat";
-const API_LOCAL_BASE_URL = "http://localhost:8080";
+const CHAT_URL = `${API_BASE_URL}/api/v1/chat`;
+
+// const API_LOCAL_BASE_URL = "http://localhost:8080";
 
 // 채팅방 참여자 목록 가져오기
 export const fetchChatParticipants = async (roomId) => {
     console.log("Fetching participants for room:", roomId);
 
     try {
-        const response = await axios.get(`${API_BASE_URL}/room/${roomId}/participants`, {
+        const response = await axios.get(`${CHAT_URL}/room/${roomId}/participants`, {
             withCredentials: true // ✅ 세션 방식 적용
         });
 
@@ -44,7 +46,7 @@ export const fetchChatParticipants = async (roomId) => {
 // 채팅 내역 가져오기
 export const fetchChatHistory = async (roomId) => {
     try {
-        const response = await axios.get(`${API_BASE_URL}/history/${roomId}`, {
+        const response = await axios.get(`${CHAT_URL}/history/${roomId}`, {
             withCredentials: true // ✅ 세션 방식으로 변경
         });
         return response.data.data;
@@ -57,7 +59,7 @@ export const fetchChatHistory = async (roomId) => {
 // 채팅 읽음 처리
 export const markMessagesAsRead = async (roomId) => {
     try {
-        await axios.patch(`${API_BASE_URL}/room/${roomId}/read`, {}, {
+        await axios.patch(`${CHAT_URL}/room/${roomId}/read`, {}, {
             withCredentials: true // ✅ 세션 방식으로 변경
         });
         console.log("✅ 채팅 메시지 읽음 처리 완료");
@@ -70,7 +72,7 @@ export const markMessagesAsRead = async (roomId) => {
 export const createPrivateChatRoom = async (otherUserId, clubId) => {
     try {
         const response = await axios.post(
-            `${API_BASE_URL}/room/private/create?otherUserId=${otherUserId}&clubId=${clubId}`,
+            `${CHAT_URL}/room/private/create?otherUserId=${otherUserId}&clubId=${clubId}`,
             {},
             { withCredentials: true } // ✅ 세션 방식으로 변경
         );
@@ -84,7 +86,7 @@ export const createPrivateChatRoom = async (otherUserId, clubId) => {
 // 채팅방 나가기
 export const leaveChatRoom = async (roomId) => {
     try {
-        await axios.delete(`${API_BASE_URL}/room/private/${roomId}/leave`, {
+        await axios.delete(`${CHAT_URL}/room/private/${roomId}/leave`, {
             withCredentials: true // ✅ 세션 방식 적용
         });
         console.log(`✅ 채팅방 (${roomId}) 나가기 성공`);
@@ -97,7 +99,7 @@ export const leaveChatRoom = async (roomId) => {
 // 내 채팅방 목록 가져오기
 export const fetchMyChatRooms = async () => {
     try {
-        const response = await axios.get(`${API_BASE_URL}/my/rooms`, {
+        const response = await axios.get(`${CHAT_URL}/my/rooms`, {
             withCredentials: true
         });
         return response.data.data;
@@ -109,7 +111,7 @@ export const fetchMyChatRooms = async () => {
 
 export const fetchChatRoomName = async (roomId) => {
     try {
-        const response = await axios.get(`${API_BASE_URL}/room/${roomId}/name`, {
+        const response = await axios.get(`${CHAT_URL}/room/${roomId}/name`, {
             withCredentials: true
         });
         return response.data.data; // roomName 반환
@@ -121,7 +123,7 @@ export const fetchChatRoomName = async (roomId) => {
 
 export const fetchPresignedUrl = async (objectName) => {
     try {
-        const response = await axios.get(`${API_LOCAL_BASE_URL}/api/v1/upload/presigned-url/download`, {
+        const response = await axios.get(`${API_BASE_URL}/api/v1/upload/presigned-url/download`, {
             params: { objectName },
             withCredentials: true
         });
@@ -160,7 +162,7 @@ export const connectWebSocket = (roomId, onMessageReceived, isConnectedRef) => {
 
     console.log("🔗 Connecting WebSocket...");
 
-    const sockJs = new SockJS(`${API_LOCAL_BASE_URL}/connect`);
+    const sockJs = new SockJS(`${API_BASE_URL}/connect`);
     stompClient = Stomp.over(sockJs);
     isConnectedRef.current = true;
 
