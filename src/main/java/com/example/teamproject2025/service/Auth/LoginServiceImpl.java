@@ -51,9 +51,9 @@ public class LoginServiceImpl implements LoginService {
             LocalDate allowedLoginDate = banUser.getAllowedLoginDate();
             int daysLeft = (int) ChronoUnit.DAYS.between(LocalDate.now(), allowedLoginDate);
 
-            if (daysLeft < 0){
-                System.out.println("\n\n⚠️⚠️⚠️제재 잔여일이 0보다 낮을 수 없습니다.⚠️⚠️⚠️\n\n");
-                throw new IllegalArgumentException("제재 잔여일이 0보다 낮을 수 없습니다.");
+            if (daysLeft <= 0){
+                banUserRepository.deleteByUser(user);
+                System.out.println("BanUser 삭제됨: " + user.getUsername());
             } else {
                 System.out.println("\n\n⚠️⚠️⚠️당신은 현재 제재 상태로, 로그인 할 수 없습니다.⚠️⚠️⚠️\n\n");
                 throw new AccessDeniedException("당신은 현재 제재 상태로, 로그인 할 수 없습니다." +
