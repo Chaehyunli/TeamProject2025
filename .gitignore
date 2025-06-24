@@ -40,3 +40,5 @@ node_modules/
 
 ### GCP key ###
 src/main/resources/service-key.json
+src/main/service-key.json
+
