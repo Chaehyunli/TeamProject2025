@@ -1,8 +1,7 @@
-# 1. OpenJDK 기반 이미지 사용
 FROM openjdk:17-jdk-slim
+VOLUME /tmp
+ARG JAR_FILE=build/libs/*.jar
+COPY ${JAR_FILE} app.jar
+COPY src/main/resources/service-key.json /app/credentials/service-key.json
+ENTRYPOINT ["java","-jar","/app.jar"]
 
-# 2. JAR 파일 복사
-COPY build/libs/*.jar app.jar
-
-# 3. 실행 명령어
-ENTRYPOINT ["java", "-jar", "/app.jar"]
