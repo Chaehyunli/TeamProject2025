@@ -7,7 +7,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - REACT_APP_API_BASE_URL=http://35.216.67.162:8080
+      - REACT_APP_API_BASE_URL=${REACT_APP_API_BASE_URL}
     depends_on:
       - backend
 
@@ -18,12 +18,12 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - SPRING_PROFILES_ACTIVE=prod
-      - GCP_BUCKET=formidable-card-451902-bucket
-      - GCP_PROJECT_ID=formidable-card-451902
-      - GCP_CREDENTIALS_PATH=/app/credentials/service-key.json
-      - DB_PWD=yse96519@
-      - SMTP_PWD=hwkztzudddcidzox
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
+      - GCP_BUCKET=${GCP_BUCKET}
+      - GCP_PROJECT_ID=${GCP_PROJECT_ID}
+      - GCP_CREDENTIALS_PATH=${GCP_CREDENTIALS_PATH}
+      - DB_PWD=${DB_PWD}
+      - SMTP_PWD=${SMTP_PWD}
     volumes:
       - ./service-key.json:/app/credentials/service-key.json:ro
 
